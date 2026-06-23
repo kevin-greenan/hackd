@@ -135,7 +135,7 @@ async function main() {
       title: "Intro Static Flag",
       summary: "Practice a simple challenge submission workflow with a static flag.",
       bodyMarkdown:
-        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.\n\n### What you will see\n\n- A linked challenge section\n- Attempt history reflected in recent activity\n- Module progress state on the dashboard\n\n```txt\nflag{sample}\n```\n\nThe static challenge validator is implemented in a later milestone.",
+        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.\n\n### What you will see\n\n- A linked challenge section\n- Attempt history reflected in recent activity\n- Module progress state on the dashboard\n\n```txt\nflag{sample}\n```\n\nSubmit the sample flag to complete the required challenge.",
       difficulty: "beginner",
       estimatedMinutes: 20,
       status: ContentStatus.PUBLISHED,
@@ -147,7 +147,7 @@ async function main() {
       slug: "intro-static-flag",
       summary: "Practice a simple challenge submission workflow with a static flag.",
       bodyMarkdown:
-        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.\n\n### What you will see\n\n- A linked challenge section\n- Attempt history reflected in recent activity\n- Module progress state on the dashboard\n\n```txt\nflag{sample}\n```\n\nThe static challenge validator is implemented in a later milestone.",
+        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.\n\n### What you will see\n\n- A linked challenge section\n- Attempt history reflected in recent activity\n- Module progress state on the dashboard\n\n```txt\nflag{sample}\n```\n\nSubmit the sample flag to complete the required challenge.",
       difficulty: "beginner",
       estimatedMinutes: 20,
       status: ContentStatus.PUBLISHED,
@@ -224,6 +224,51 @@ async function main() {
     }
   });
 
+  const trustBoundaryChallenge = await prisma.challenge.upsert({
+    where: { slug: "identify-trust-boundaries" },
+    update: {
+      title: "Identify Trust Boundaries",
+      description: "Select the inputs that should be treated as untrusted in a web request.",
+      type: ChallengeType.MULTIPLE_CHOICE,
+      difficulty: "beginner",
+      points: 25,
+      tags: ["appsec", "fundamentals"],
+      validationConfig: {
+        type: "multiple_choice",
+        allowMultiple: true,
+        options: [
+          { id: "query", label: "Query string parameters" },
+          { id: "headers", label: "HTTP request headers" },
+          { id: "server-config", label: "Server-side configuration constants" }
+        ],
+        correctOptionIds: ["query", "headers"]
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "Identify Trust Boundaries",
+      slug: "identify-trust-boundaries",
+      description: "Select the inputs that should be treated as untrusted in a web request.",
+      type: ChallengeType.MULTIPLE_CHOICE,
+      difficulty: "beginner",
+      points: 25,
+      tags: ["appsec", "fundamentals"],
+      validationConfig: {
+        type: "multiple_choice",
+        allowMultiple: true,
+        options: [
+          { id: "query", label: "Query string parameters" },
+          { id: "headers", label: "HTTP request headers" },
+          { id: "server-config", label: "Server-side configuration constants" }
+        ],
+        correctOptionIds: ["query", "headers"]
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
   await prisma.moduleChallenge.upsert({
     where: {
       moduleId_challengeId: {
@@ -253,6 +298,22 @@ async function main() {
       challengeId: flagChallenge.id,
       sortOrder: 1,
       required: true
+    }
+  });
+
+  await prisma.moduleChallenge.upsert({
+    where: {
+      moduleId_challengeId: {
+        moduleId: secureCodeReview.id,
+        challengeId: trustBoundaryChallenge.id
+      }
+    },
+    update: { sortOrder: 2, required: false },
+    create: {
+      moduleId: secureCodeReview.id,
+      challengeId: trustBoundaryChallenge.id,
+      sortOrder: 2,
+      required: false
     }
   });
 
