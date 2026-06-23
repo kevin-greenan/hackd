@@ -17,6 +17,11 @@ const mocks = vi.hoisted(() => ({
   challengeCreate: vi.fn(),
   challengeUpdate: vi.fn(),
   moduleChallengeUpsert: vi.fn(),
+  assignmentCreate: vi.fn(),
+  assignmentUpdate: vi.fn(),
+  assignmentFindFirst: vi.fn(),
+  assignmentFindUnique: vi.fn(),
+  assignmentDelete: vi.fn(),
   auditLogCreate: vi.fn()
 }));
 
@@ -52,6 +57,13 @@ vi.mock("@/lib/db/prisma", () => ({
     moduleChallenge: {
       upsert: mocks.moduleChallengeUpsert
     },
+    assignment: {
+      create: mocks.assignmentCreate,
+      update: mocks.assignmentUpdate,
+      findFirst: mocks.assignmentFindFirst,
+      findUnique: mocks.assignmentFindUnique,
+      delete: mocks.assignmentDelete
+    },
     auditLog: {
       create: mocks.auditLogCreate
     }
@@ -59,10 +71,13 @@ vi.mock("@/lib/db/prisma", () => ({
 }));
 
 const {
+  createAdminAssignment,
   createAdminChallenge,
   createAdminModule,
   createAdminUser,
+  deleteAdminAssignment,
   deleteAdminGroup,
+  updateAdminAssignment,
   updateAdminUser,
   upsertAdminModuleChallenge
 } = await import("@/lib/core/admin-management");
@@ -74,6 +89,7 @@ describe("admin management", () => {
     mocks.transaction.mockResolvedValue([]);
     mocks.groupMembershipCreate.mockReturnValue({});
     mocks.groupMembershipDeleteMany.mockReturnValue({});
+    mocks.assignmentFindFirst.mockResolvedValue(null);
   });
 
   it("creates users with a hashed password and audit log", async () => {
@@ -298,6 +314,154 @@ describe("admin management", () => {
           challengeId: "challenge-1",
           required: true,
           sortOrder: 2
+        }
+      }
+    });
+  });
+
+  it("creates assignments for one target and logs the change", async () => {
+    mocks.assignmentCreate.mockResolvedValue({
+      id: "assignment-1",
+      moduleId: "module-1",
+      userId: "user-1",
+      groupId: null,
+      dueAt: new Date("2026-07-01T00:00:00.000Z"),
+      required: true
+    });
+
+    await createAdminAssignment({
+      actorUserId: "admin-1",
+      input: {
+        moduleId: "module-1",
+        targetType: "user",
+        targetId: "user-1",
+        dueAt: "2026-07-01",
+        required: true
+      }
+    });
+
+    expect(mocks.assignmentFindFirst).toHaveBeenCalledWith({
+      where: {
+        moduleId: "module-1",
+        userId: "user-1"
+      }
+    });
+    expect(mocks.assignmentCreate).toHaveBeenCalledWith({
+      data: {
+        moduleId: "module-1",
+        assignedById: "admin-1",
+        dueAt: new Date("2026-07-01"),
+        required: true,
+        userId: "user-1"
+      }
+    });
+    expect(mocks.auditLogCreate).toHaveBeenCalledWith({
+      data: {
+        actorUserId: "admin-1",
+        action: "admin.assignment.create",
+        targetType: "assignment",
+        targetId: "assignment-1",
+        metadata: {
+          moduleId: "module-1",
+          userId: "user-1",
+          groupId: null,
+          dueAt: "2026-07-01T00:00:00.000Z",
+          required: true
+        }
+      }
+    });
+  });
+
+  it("rejects duplicate assignment targets", async () => {
+    mocks.assignmentFindFirst.mockResolvedValue({
+      id: "assignment-1"
+    });
+
+    await expect(
+      createAdminAssignment({
+        actorUserId: "admin-1",
+        input: {
+          moduleId: "module-1",
+          targetType: "group",
+          targetId: "group-1",
+          dueAt: "",
+          required: false
+        }
+      })
+    ).rejects.toThrow("already assigned");
+
+    expect(mocks.assignmentCreate).not.toHaveBeenCalled();
+  });
+
+  it("updates assignments and clears the previous target type", async () => {
+    mocks.assignmentUpdate.mockResolvedValue({
+      id: "assignment-1",
+      moduleId: "module-2",
+      userId: null,
+      groupId: "group-1",
+      dueAt: null,
+      required: false
+    });
+
+    await updateAdminAssignment({
+      actorUserId: "admin-1",
+      input: {
+        assignmentId: "assignment-1",
+        moduleId: "module-2",
+        targetType: "group",
+        targetId: "group-1",
+        dueAt: "",
+        required: false
+      }
+    });
+
+    expect(mocks.assignmentFindFirst).toHaveBeenCalledWith({
+      where: {
+        moduleId: "module-2",
+        groupId: "group-1",
+        NOT: {
+          id: "assignment-1"
+        }
+      }
+    });
+    expect(mocks.assignmentUpdate).toHaveBeenCalledWith({
+      where: { id: "assignment-1" },
+      data: {
+        moduleId: "module-2",
+        userId: null,
+        groupId: "group-1",
+        dueAt: null,
+        required: false
+      }
+    });
+  });
+
+  it("deletes assignments and logs the removed target", async () => {
+    mocks.assignmentFindUnique.mockResolvedValue({
+      id: "assignment-1",
+      moduleId: "module-1",
+      userId: null,
+      groupId: "group-1"
+    });
+
+    await deleteAdminAssignment({
+      actorUserId: "admin-1",
+      assignmentId: "assignment-1"
+    });
+
+    expect(mocks.assignmentDelete).toHaveBeenCalledWith({
+      where: { id: "assignment-1" }
+    });
+    expect(mocks.auditLogCreate).toHaveBeenCalledWith({
+      data: {
+        actorUserId: "admin-1",
+        action: "admin.assignment.delete",
+        targetType: "assignment",
+        targetId: "assignment-1",
+        metadata: {
+          moduleId: "module-1",
+          userId: null,
+          groupId: "group-1"
         }
       }
     });

@@ -185,6 +185,32 @@ export async function getAdminChallengeOptions(limit = DEFAULT_LIMIT) {
   });
 }
 
+export async function getAdminUserOptions(limit = DEFAULT_LIMIT) {
+  return prisma.user.findMany({
+    take: limit,
+    orderBy: [{ role: "asc" }, { email: "asc" }],
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true
+    }
+  });
+}
+
+export async function getAdminGroupOptions(limit = DEFAULT_LIMIT) {
+  return prisma.group.findMany({
+    take: limit,
+    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      slug: true
+    }
+  });
+}
+
 export async function getAdminAssignments(limit = DEFAULT_LIMIT) {
   const assignments = await prisma.assignment.findMany({
     take: limit,
@@ -220,6 +246,9 @@ export async function getAdminAssignments(limit = DEFAULT_LIMIT) {
 
   return assignments.map((assignment) => ({
     id: assignment.id,
+    moduleId: assignment.moduleId,
+    userId: assignment.userId,
+    groupId: assignment.groupId,
     module: assignment.module,
     target: assignment.user
       ? {
