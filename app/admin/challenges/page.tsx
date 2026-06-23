@@ -69,7 +69,7 @@ function ChallengeConfigFields({
 
   return (
     <div className="grid gap-3 lg:col-span-2">
-      <details className="rounded-md border border-border bg-slate-50 p-3" open>
+      <details className="rounded-md border border-border bg-surface p-3" open>
         <summary className="cursor-pointer text-sm font-semibold">Static flag</summary>
         <label className="mt-3 grid gap-1 text-sm font-medium">
           Flag
@@ -81,7 +81,7 @@ function ChallengeConfigFields({
           />
         </label>
       </details>
-      <details className="rounded-md border border-border bg-slate-50 p-3">
+      <details className="rounded-md border border-border bg-surface p-3">
         <summary className="cursor-pointer text-sm font-semibold">Short answer</summary>
         <label className="mt-3 grid gap-1 text-sm font-medium">
           Accepted answers
@@ -102,7 +102,7 @@ function ChallengeConfigFields({
           Case-insensitive
         </label>
       </details>
-      <details className="rounded-md border border-border bg-slate-50 p-3">
+      <details className="rounded-md border border-border bg-surface p-3">
         <summary className="cursor-pointer text-sm font-semibold">Multiple choice</summary>
         <label className="mt-3 grid gap-1 text-sm font-medium">
           Options
@@ -132,7 +132,7 @@ function ChallengeConfigFields({
           Allow multiple answers
         </label>
       </details>
-      <details className="rounded-md border border-border bg-slate-50 p-3">
+      <details className="rounded-md border border-border bg-surface p-3">
         <summary className="cursor-pointer text-sm font-semibold">Docker web runtime</summary>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <label className="grid gap-1 text-sm font-medium sm:col-span-2">
@@ -244,7 +244,7 @@ export default async function AdminChallengesPage({
         </ButtonLink>
       </div>
       <section>
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Challenges</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Challenges</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Challenge catalog</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Review challenge metadata, supported validation types, linked modules, and attempt volume.
@@ -346,7 +346,7 @@ export default async function AdminChallengesPage({
                 {challenge.attachments.length > 0 ? (
                   <div className="grid gap-2">
                     {challenge.attachments.map((attachment) => (
-                      <div className="rounded-md border border-border bg-slate-50 p-2" key={attachment.id}>
+                      <div className="rounded-md border border-border bg-surface p-2" key={attachment.id}>
                         <p className="font-semibold">{attachment.originalName}</p>
                         <p className="text-xs text-muted-foreground">
                           {attachment.mimeType} · {formatBytes(attachment.sizeBytes)}

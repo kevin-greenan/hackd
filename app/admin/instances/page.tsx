@@ -69,7 +69,7 @@ export default async function AdminInstancesPage({
         </ButtonLink>
       </div>
       <section>
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Runtime</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Runtime</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Challenge instances</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Review Dockerized challenge lifecycle state and stop running or expired instances.
@@ -113,7 +113,7 @@ export default async function AdminInstancesPage({
                   {formatAdminLabel(instance.status)}
                 </StatusBadge>,
                 instance.url ? (
-                  <a className="font-semibold text-teal-700 hover:text-teal-900" href={instance.url} key="url">
+                  <a className="font-semibold text-primary hover:opacity-80" href={instance.url} key="url">
                     {instance.url}
                   </a>
                 ) : (
@@ -126,7 +126,7 @@ export default async function AdminInstancesPage({
                   <p>Expires: {formatDateTime(instance.expiresAt)}</p>
                   <p>Stopped: {formatDateTime(instance.stoppedAt)}</p>
                 </div>,
-                <code className="block max-w-sm whitespace-pre-wrap break-words rounded-md bg-slate-50 px-2 py-1 text-xs" key="log">
+                <code className="block max-w-sm whitespace-pre-wrap break-words rounded-md bg-surface px-2 py-1 text-xs" key="log">
                   {instance.statusMessage || instance.runnerLog || "No runner log"}
                 </code>,
                 instance.status === InstanceStatus.RUNNING || instance.status === InstanceStatus.STARTING ? (

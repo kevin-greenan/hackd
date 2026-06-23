@@ -1654,6 +1654,7 @@ Potential scope:
 * Backup/restore tooling
 * Observability integration
 * Admin-friendly content workflows
+* Custom branding and theme configuration
 
 13. Out of Scope for Initial Version
 
@@ -1798,6 +1799,7 @@ The following decisions should be made early:
 * Support dark mode in v1 or defer?
 * Support dynamic flags in v1 or defer?
 * Support Git-backed module import in v1 or defer?
+* Support admin-managed branding in v1 or environment-only branding?
 
 22. Recommended Initial Decisions
 

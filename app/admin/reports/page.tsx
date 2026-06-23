@@ -81,7 +81,7 @@ export default async function AdminReportsPage({
         </ButtonLink>
       </div>
       <section>
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Reports</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Reports</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Progress reporting</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Review learner progress, module completion, challenge performance, and export raw completion or attempt data.

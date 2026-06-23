@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { getBranding } from "@/lib/branding/theme";
 
 const errorMessages: Record<string, string> = {
   invalid: "The email or password is incorrect.",
@@ -15,6 +16,7 @@ export default async function LoginPage({
   searchParams?: { error?: string };
 }) {
   const user = await getCurrentUser();
+  const branding = getBranding();
 
   if (user) {
     redirect("/dashboard");
@@ -25,12 +27,14 @@ export default async function LoginPage({
   return (
     <main className="mx-auto grid min-h-screen max-w-6xl items-center gap-8 px-5 py-10 lg:grid-cols-[0.95fr_1.05fr]">
       <section>
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
           Welcome back
         </p>
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-950">Sign in to hackd</h1>
-        <p className="mt-4 max-w-xl text-lg leading-8 text-slate-700">
-          Access learner modules, admin controls, and the platform foundation for hands-on security training.
+        <h1 className="mt-4 text-4xl font-bold tracking-tight text-foreground">
+          Sign in to {branding.name}
+        </h1>
+        <p className="mt-4 max-w-xl text-lg leading-8 text-muted-foreground">
+          {branding.tagline}
         </p>
       </section>
       <Card>
@@ -40,7 +44,7 @@ export default async function LoginPage({
               Email
             </label>
             <input
-              className="mt-2 h-11 w-full rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+              className="mt-2 h-11 w-full rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               id="email"
               name="email"
               type="email"
@@ -53,7 +57,7 @@ export default async function LoginPage({
               Password
             </label>
             <input
-              className="mt-2 h-11 w-full rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+              className="mt-2 h-11 w-full rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               id="password"
               name="password"
               type="password"

@@ -21,7 +21,7 @@ export default async function DashboardPage({
       ) : null}
       <section className="flex flex-wrap items-start justify-between gap-5">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Dashboard</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Dashboard</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight">Good to see you, {user.name}</h1>
           <p className="mt-2 text-muted-foreground">
             Signed in as {user.email} with role {user.role.toLowerCase()}.
@@ -36,10 +36,10 @@ export default async function DashboardPage({
           {dashboard.assignedModules.length > 0 ? (
             <div className="mt-4 grid gap-3">
               {dashboard.assignedModules.slice(0, 3).map((assignment) => (
-                <div key={assignment.id} className="rounded-md border border-border bg-slate-50 p-4">
+                <div key={assignment.id} className="rounded-md border border-border bg-surface p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <h3 className="font-semibold">{assignment.module.title}</h3>
-                    <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-teal-700">
+                    <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-primary">
                       {assignment.completionStatus.toLowerCase().replace("_", " ")}
                     </span>
                   </div>
@@ -79,7 +79,7 @@ export default async function DashboardPage({
           {dashboard.recentAttempts.length > 0 ? (
             <div className="mt-4 grid gap-3">
               {dashboard.recentAttempts.map((attempt) => (
-                <div key={attempt.id} className="rounded-md border border-border bg-slate-50 p-3">
+                <div key={attempt.id} className="rounded-md border border-border bg-surface p-3">
                   <p className="text-sm font-semibold">{attempt.challengeTitle}</p>
                   <p className="mt-1 text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     {attempt.result.toLowerCase().replace("_", " ")}

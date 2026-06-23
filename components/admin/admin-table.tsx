@@ -53,7 +53,7 @@ export function StatusBadge({
 }) {
   const tones = {
     neutral: "bg-slate-100 text-slate-700",
-    success: "bg-teal-100 text-teal-800",
+    success: "bg-primary/10 text-primary",
     warning: "bg-amber-100 text-amber-800"
   };
 

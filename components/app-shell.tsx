@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Role } from "@prisma/client";
+import { BrandMark } from "@/components/brand-mark";
 import { Button } from "@/components/button";
+import { getBranding } from "@/lib/branding/theme";
 
 export function AppShell({
   children,
@@ -12,6 +14,7 @@ export function AppShell({
   user: { name: string; email: string; role: Role };
   area: "learner" | "admin";
 }) {
+  const branding = getBranding();
   const adminLinks = [
     { href: "/admin/users", label: "Users" },
     { href: "/admin/groups", label: "Groups" },
@@ -26,11 +29,11 @@ export function AppShell({
       <header className="border-b border-border bg-white/86 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
           <div>
-            <Link href="/dashboard" className="text-lg font-bold tracking-tight">
-              hackd
+            <Link href="/dashboard" className="flex items-center gap-3 text-lg font-bold tracking-tight">
+              <BrandMark name={branding.name} logoUrl={branding.logoUrl} />
             </Link>
             <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
-              {area === "admin" ? "Admin control plane" : "Learner workspace"}
+              {area === "admin" ? branding.adminLabel : branding.learnerLabel}
             </p>
           </div>
           <nav className="flex items-center gap-2 text-sm">
