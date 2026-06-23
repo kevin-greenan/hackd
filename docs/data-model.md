@@ -44,3 +44,7 @@ The dashboard currently reads assignments from both:
 - Assignments inherited through group membership
 
 Additional indexes support common early reads for assignments, attempts, and completions.
+
+## Content Import
+
+`npm run content:import -- --file <bundle>` upserts modules and challenges by slug, then upserts `ModuleChallenge` links. The importer validates duplicate slugs and missing challenge references before writing. It does not delete existing content or links that are omitted from a partial bundle.

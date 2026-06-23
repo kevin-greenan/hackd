@@ -1537,34 +1537,34 @@ Support structured import of modules and challenges from local content files.
 
 Deliverables
 
-* YAML/JSON module schema
-* YAML/JSON challenge schema
-* Import command
-* Schema validation
-* Example content
+* [x] YAML/JSON module schema
+* [x] YAML/JSON challenge schema
+* [x] Import command
+* [x] Schema validation
+* [x] Example content
 
 Tasks
 
-* Define module schema.
-* Define challenge schema.
-* Add schema validation.
-* Create content import CLI/script.
-* Import Markdown lesson content.
-* Import challenge definitions.
-* Link modules to challenges.
-* Detect duplicate slugs.
-* Add dry-run mode.
-* Add example module.
-* Add example challenge.
-* Document content format.
+* [x] Define module schema.
+* [x] Define challenge schema.
+* [x] Add schema validation.
+* [x] Create content import CLI/script.
+* [x] Import Markdown lesson content.
+* [x] Import challenge definitions.
+* [x] Link modules to challenges.
+* [x] Detect duplicate slugs.
+* [x] Add dry-run mode.
+* [x] Add example module.
+* [x] Add example challenge.
+* [x] Document content format.
 
 Acceptance Criteria
 
-* Developer can import a module from local files.
-* Developer can import challenges from local files.
-* Invalid content fails with useful errors.
-* Imported module appears in admin UI.
-* Imported module can be assigned to a learner.
+* [x] Developer can import a module from local files.
+* [x] Developer can import challenges from local files.
+* [x] Invalid content fails with useful errors.
+* [x] Imported module appears in admin UI.
+* [x] Imported module can be assigned to a learner.
 
 Milestone 10: Hardening and Developer Experience
 
