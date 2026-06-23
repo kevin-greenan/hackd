@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: hackd
+      POSTGRES_PASSWORD: hackd_dev_password
+      POSTGRES_DB: hackd
+    ports:
+      - "5432:5432"
+    volumes:
+      - hackd-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hackd -d hackd"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+    environment:
+      DATABASE_URL: postgresql://hackd:hackd_dev_password@db:5432/hackd?schema=public
+      APP_URL: http://localhost:3000
+      SESSION_SECRET: local-dev-session-secret-change-before-production
+      SEED_ADMIN_EMAIL: admin@hackd.local
+      SEED_ADMIN_PASSWORD: change-me-in-development
+      SEED_LEARNER_EMAIL: learner@hackd.local
+      SEED_LEARNER_PASSWORD: change-me-in-development
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate deploy && npx tsx prisma/seed.ts && node server.js"
+
+volumes:
+  hackd-postgres-data:
