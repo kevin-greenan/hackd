@@ -1,6 +1,6 @@
 # Operations Runbook
 
-This runbook is for local internal testing and demo preparation.
+This runbook supports local internal testing, demos, and release preparation.
 
 ## Start and Stop
 
@@ -16,7 +16,7 @@ Stop the stack:
 docker compose down
 ```
 
-Run the automated compose smoke test:
+Run the automated Compose smoke test:
 
 ```sh
 npm run smoke:compose
@@ -36,10 +36,10 @@ App and database:
 curl -fsS http://localhost:3000/api/healthz
 ```
 
-Runner:
+Runner, from the Compose network:
 
 ```sh
-curl -fsS http://localhost:4010/healthz
+docker compose exec -T runner node -e "fetch('http://127.0.0.1:4010/healthz').then((r) => r.text()).then(console.log)"
 ```
 
 ## Logs

@@ -1,8 +1,10 @@
-hackd Requirements & Delivery Roadmap
+# hackd Requirements and Delivery Roadmap
 
 hackd is a containerized security training platform runtime for building, assigning, running, validating, and tracking hands-on security learning modules.
 
 The project is the application and infrastructure layer only. It does not initially include a full training curriculum. Content should be authored separately as modules and challenges that the platform can ingest, render, run, and score.
+
+This document is the implementation roadmap. Completed checklist items reflect functionality already delivered in the application; unchecked items remain planned work.
 
 1. Product Summary
 
@@ -1599,7 +1601,7 @@ Tasks
 * [x] Add secret scanning.
 * [x] Add structured logging.
 * [x] Add global error handling.
-* [x] Add release tagging.
+* [x] Document release tagging process.
 * Create v0.1.0 release.
 
 Acceptance Criteria

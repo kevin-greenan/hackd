@@ -4,14 +4,19 @@ Use this checklist for the first internal release tag.
 
 ## Preflight
 
-Run local checks:
+Run the release check:
 
 ```sh
 npm run release:check
+```
+
+Run the Compose smoke test:
+
+```sh
 npm run smoke:compose
 ```
 
-Run the UI smoke test against a running compose stack:
+Run the browser UI smoke test against a running Compose stack:
 
 ```sh
 docker compose up -d --build
@@ -19,7 +24,7 @@ npm run ui:smoke
 docker compose down
 ```
 
-Run the container scan after compose has built images:
+Run the container scan after Compose has built images:
 
 ```sh
 docker compose build web runner
@@ -33,7 +38,7 @@ npm run container:scan
 - Confirm `/admin`, `/dashboard`, `/admin/reports`, and `/api/healthz` load.
 - Confirm `examples/content/secure-notes.yaml` can be imported with `--dry-run`.
 - Confirm no real secrets are present in `.env`, logs, commits, or docs.
-- Confirm the PR containing this checklist has merged to `main`.
+- Confirm the release PR has merged to `main`.
 
 ## Tag
 

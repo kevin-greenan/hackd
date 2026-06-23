@@ -1,6 +1,6 @@
 # Docker Deployment
 
-hackd is currently packaged for local or single-host internal testing with Docker Compose.
+hackd is packaged for local or single-host internal testing with Docker Compose.
 
 ## Required Configuration
 
@@ -26,13 +26,15 @@ Use a unique `SESSION_SECRET` of at least 32 characters. Do not reuse the defaul
 docker compose up --build
 ```
 
-The web service runs migrations and seed data on startup:
+The web service runs migrations, seeds local data, and starts the standalone Next server:
 
 ```sh
-npx prisma migrate deploy
-npx tsx prisma/seed.ts
+./node_modules/.bin/prisma migrate deploy
+./node_modules/.bin/tsx prisma/seed.ts
 node server.js
 ```
+
+The runtime image removes global `npm`/`npx` and development-only packages after build. Runtime startup should use local binaries from `node_modules/.bin`.
 
 ## Volumes
 

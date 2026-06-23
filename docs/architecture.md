@@ -1,41 +1,47 @@
-# hackd Architecture Notes
+# Architecture
 
-hackd uses a single full-stack Next.js application backed by Postgres through Prisma.
+hackd is a single full-stack Next.js application backed by Postgres through Prisma. Docker Compose runs the web app, database, and an internal runtime runner used for Dockerized challenges.
 
-## Current Components
+## Runtime Components
 
-- `web`: Next.js App Router application with server-rendered pages and route handlers.
-- `db`: Postgres database managed locally by Docker Compose.
-- `prisma`: ORM schema, migration, generated client, and seed script.
+- `web`: Next.js App Router application with server-rendered pages, server actions, and route handlers.
+- `db`: Postgres database with a persistent Docker volume.
+- `runner`: Internal service that owns Docker socket access for challenge runtime lifecycle operations.
+- `prisma`: Schema, migrations, generated client, and seed script.
 
-## Auth Boundary
+The `web` service does not mount the Docker socket. It calls the runner through `RUNTIME_RUNNER_URL`.
 
-Authentication is local email/password for v1. Successful login creates a signed HTTP-only cookie. Server components call `requireUser()` and `requireAdmin()` before rendering protected routes.
+## Request Boundaries
 
-## Deferred Components
-
-Rich authoring editors, advanced admin lifecycle controls, scheduled reporting, container vulnerability scanning, release tagging, and hardened runtime isolation are intentionally deferred. Their database models are present to keep the foundation aligned with the roadmap.
+- Authentication uses local email/password credentials.
+- Successful login creates a signed HTTP-only cookie.
+- Server components and server actions call `requireUser()` or `requireAdmin()` before rendering or mutating protected resources.
+- Client-side checks are presentation only; server-side helpers are the authorization boundary.
 
 ## Core Data Layer
 
-Milestone 2 adds small server-side helpers under `lib/core/`:
+Server-side application logic lives under `lib/core/`:
 
 - `assignments.ts` enforces user-or-group assignment targeting and wraps assignment creation.
 - `learner-dashboard.ts` resolves direct and group assignments for the current learner.
-- `module-detail.ts` resolves an assigned learner module, Markdown body, linked challenges, and challenge completion state.
+- `module-detail.ts` resolves assigned learner modules, Markdown bodies, linked challenges, progress, attempts, attachments, and active runtime instances.
 - `challenge-validation.ts` validates supported challenge submissions without leaking expected answers.
 - `challenge-submissions.ts` records attempts and updates module completion.
 - `challenge-attachments.ts` validates uploads, stores local challenge files, enforces attachment download access, and cleans up deleted files.
 - `challenge-runtime.ts` validates Docker web runtime definitions, calls the internal runner service, and stores instance lifecycle state.
-- `admin-metrics.ts` collects basic counts and recent learner attempts for the admin dashboard.
-- `admin-lists.ts` powers read-only admin list views for users, groups, modules, challenges, and assignments.
-- `admin-management.ts` validates admin user/group/module/challenge/assignment mutations, module-challenge associations, and writes audit log records.
-- `admin-reports.ts` powers filtered admin progress reporting and CSV exports for completions and attempts.
+- `admin-metrics.ts` collects counts and recent learner attempts for the admin dashboard.
+- `admin-lists.ts` powers admin list views.
+- `admin-management.ts` validates admin mutations, manages module-challenge associations, reconciles assignment completion lifecycle, and writes audit records.
+- `admin-reports.ts` powers filtered progress reporting and CSV exports.
 - `content-import.ts` validates YAML/JSON content bundles, imports Markdown lesson bodies, and upserts modules, challenges, and module links.
 - `audit-log.ts` centralizes admin action audit writes and bounded audit-log reads.
 - `completions.ts` calculates progress summaries without coupling UI code to completion math.
-- `logger.ts` writes single-line JSON events for route and auth observability.
+- `logger.ts` writes single-line JSON events for operational visibility.
 
 ## Error Handling
 
-Next.js error boundaries in `app/error.tsx` and `app/global-error.tsx` render controlled retry pages for route-level and application-shell failures. Server route failures that are expected operational events, such as database health-check failures, are logged with structured JSON before returning bounded error responses.
+Next.js error boundaries in `app/error.tsx` and `app/global-error.tsx` render controlled retry pages for route-level and application-shell failures. Expected operational failures, such as database health-check failures, are logged with structured JSON before returning bounded responses.
+
+## Deferred Areas
+
+The current architecture is intentionally local-first. Production-grade multi-tenancy, advanced runtime isolation, durable rate limiting, federated identity, scheduled report delivery, and marketplace concepts remain future work.

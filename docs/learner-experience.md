@@ -1,23 +1,25 @@
 # Learner Experience
 
-Milestone 3 adds the first real learner flow on top of the seeded data model.
+Learners use hackd through the dashboard and module detail pages.
 
-## Current Flow
+## Flow
 
 1. Learner signs in at `/login`.
-2. `/dashboard` shows assigned modules from direct user assignments and group assignments.
+2. `/dashboard` shows modules assigned directly to the learner or inherited through group membership.
 3. Each assigned module card links to `/modules/[slug]`.
 4. The module page shows:
    - Module summary, tags, difficulty, estimate, and due date
    - Markdown lesson content
    - Linked challenge sections
+   - Overall and required-challenge progress
+   - Recent attempt history
    - Challenge attachment download links
    - Dockerized challenge runtime launch and stop controls
    - Challenge completion state based on correct attempts
    - Submission forms for supported challenge types
    - Module completion status from the `Completion` record
 
-Admins can also open module pages for preview, but learners only see modules assigned to them or to one of their groups.
+Admins can preview published module pages. Learners only see modules assigned to them or to one of their groups.
 
 ## Access Rules
 
@@ -34,10 +36,9 @@ Admins can also open module pages for preview, but learners only see modules ass
 - Dockerized web challenge launch/stop controls are implemented for assigned published modules.
 - Challenge completion reflects correct attempts recorded by the submission flow.
 - Module reading progress is not tracked yet.
-- Module detail pages render Markdown but do not yet support syntax highlighting beyond readable code blocks.
-- Admin authoring and assignment management UI exists for the current basic workflows.
+- Module detail pages render Markdown but do not yet support advanced syntax highlighting.
 - Admin reporting includes module, learner, and group filters with completion and attempt CSV exports.
 
-## Next Step
+## Next Areas
 
-Next milestones should expand challenge types, content import, advanced report delivery, and runtime-backed exercises.
+Future learner work should focus on additional challenge types, richer feedback, durable anti-automation controls, and more granular lesson progress.
