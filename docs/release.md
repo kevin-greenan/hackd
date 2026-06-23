@@ -38,6 +38,8 @@ npm run container:scan
 - Confirm `/admin`, `/dashboard`, `/admin/reports`, and `/api/healthz` load.
 - Confirm `examples/content/secure-notes.yaml` can be imported with `--dry-run`.
 - Confirm login, logout, admin mutations, learner submissions, and runtime controls include and enforce CSRF tokens.
+- Confirm `npm run ops:backup` creates a database dump, uploads archive, and manifest.
+- Confirm `npm run ops:restore -- <backup-directory>` works against a disposable stack before tagging.
 - Confirm no real secrets are present in `.env`, logs, commits, or docs.
 - Confirm the release PR has merged to `main`.
 

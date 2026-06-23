@@ -124,11 +124,18 @@ npm run dev
 | `npm run container:scan` | Scan local `hackd-web` and `hackd-runner` images with Trivy. |
 | `npm run release:check` | Run lint, tests, security checks, and production build. |
 | `npm run smoke:compose` | Build, start, health-check, and stop the Compose stack. |
+| `npm run ops:backup` | Back up Compose-managed Postgres data and uploaded files. |
+| `npm run ops:restore -- <backup-directory>` | Restore Postgres data and uploaded files into a running Compose stack. |
 | `npm run content:import -- --file examples/content/secure-notes.yaml --dry-run` | Validate sample content without writing. |
 | `npm run db:migrate` | Apply local Prisma migrations in development. |
 | `npm run db:seed` | Seed local users and sample content. |
 
-`npm run smoke:compose` builds the containers, starts the stack, waits for `/api/healthz`, checks the runner, prints health responses, and stops the stack.
+`npm run smoke:compose` builds the containers, starts the stack, waits for `/api/healthz`, checks `/api/readyz` and the runner, prints health responses, and stops the stack.
+
+Operational endpoints:
+
+- `/api/healthz` checks the app and database.
+- `/api/readyz` checks the app, database, and runtime runner.
 
 ## Documentation
 

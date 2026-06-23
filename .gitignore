@@ -8,3 +8,4 @@ build
 *.log
 prisma/dev.db
 data/uploads
+backups

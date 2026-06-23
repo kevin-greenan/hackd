@@ -13,6 +13,8 @@
     "security:check": "./scripts/security-check.sh",
     "container:scan": "./scripts/container-scan.sh",
     "release:check": "./scripts/release-check.sh",
+    "ops:backup": "./scripts/backup.sh",
+    "ops:restore": "./scripts/restore.sh",
     "content:import": "tsx scripts/import-content.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",

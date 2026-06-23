@@ -52,31 +52,29 @@ Back up both volumes before destructive local testing or upgrades.
 
 ## Backup
 
-Database backup:
+Create a timestamped backup directory containing `postgres.sql`, `uploads.tgz`, and `manifest.txt`:
 
 ```sh
-docker compose exec -T db pg_dump -U hackd -d hackd > hackd-backup.sql
+npm run ops:backup
 ```
 
-Attachment backup:
+By default, backups are written under `backups/<UTC timestamp>/`. Override the root directory with `BACKUP_DIR`:
 
 ```sh
-docker run --rm -v hackd-file-uploads:/data -v "$PWD":/backup node:22-bookworm-slim tar -czf /backup/hackd-file-uploads.tgz -C /data .
+BACKUP_DIR=/secure/backups npm run ops:backup
 ```
 
 ## Restore
 
-Database restore into a running stack:
+Restore into a running stack from a backup directory:
 
 ```sh
-cat hackd-backup.sql | docker compose exec -T db psql -U hackd -d hackd
+npm run ops:restore -- backups/20260623T000000Z
 ```
 
-Attachment restore:
+Restore replaces database contents through `psql` and replaces files in the upload volume. Test restores before relying on backups for production recovery.
 
-```sh
-docker run --rm -v hackd-file-uploads:/data -v "$PWD":/backup node:22-bookworm-slim tar -xzf /backup/hackd-file-uploads.tgz -C /data
-```
+Set `UPLOADS_VOLUME` when the Compose project name changes the generated volume name.
 
 ## Runtime Runner
 
