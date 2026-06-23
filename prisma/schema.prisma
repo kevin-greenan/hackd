@@ -1,0 +1,253 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  LEARNER
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ChallengeType {
+  STATIC_FLAG
+  MULTIPLE_CHOICE
+  SHORT_ANSWER
+  FILE_BASED
+  DOCKER_WEB
+}
+
+enum AssignmentStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum AttemptResult {
+  CORRECT
+  INCORRECT
+  PENDING_REVIEW
+}
+
+enum InstanceStatus {
+  STARTING
+  RUNNING
+  STOPPED
+  EXPIRED
+  FAILED
+}
+
+model User {
+  id                String              @id @default(cuid())
+  email             String              @unique
+  name              String
+  passwordHash      String
+  role              Role                @default(LEARNER)
+  status            UserStatus          @default(ACTIVE)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  groupMemberships  GroupMembership[]
+  createdModules    Module[]            @relation("ModuleCreator")
+  createdChallenges Challenge[]         @relation("ChallengeCreator")
+  assignedBy        Assignment[]        @relation("AssignmentAssigner")
+  assignments       Assignment[]        @relation("UserAssignments")
+  attempts          Attempt[]
+  completions       Completion[]
+  challengeInstances ChallengeInstance[]
+  auditLogs         AuditLog[]          @relation("AuditActor")
+
+  @@index([role])
+  @@index([status])
+}
+
+model Group {
+  id          String            @id @default(cuid())
+  name        String
+  slug        String            @unique
+  description String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  memberships GroupMembership[]
+  assignments Assignment[]      @relation("GroupAssignments")
+}
+
+model GroupMembership {
+  id        String   @id @default(cuid())
+  userId    String
+  groupId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@index([groupId])
+}
+
+model Module {
+  id               String            @id @default(cuid())
+  title            String
+  slug             String            @unique
+  summary          String
+  bodyMarkdown     String            @default("")
+  difficulty       String
+  estimatedMinutes Int?
+  status           ContentStatus     @default(DRAFT)
+  tags             String[]          @default([])
+  createdById      String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  createdBy        User?             @relation("ModuleCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  challenges       ModuleChallenge[]
+  assignments      Assignment[]
+  completions      Completion[]
+
+  @@index([status])
+  @@index([createdById])
+}
+
+model Challenge {
+  id                 String              @id @default(cuid())
+  title              String
+  slug               String              @unique
+  description        String
+  type               ChallengeType
+  difficulty         String
+  points             Int                 @default(0)
+  tags               String[]            @default([])
+  validationConfig   Json?
+  runtimeConfig      Json?
+  status             ContentStatus       @default(DRAFT)
+  createdById        String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  createdBy          User?               @relation("ChallengeCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  modules            ModuleChallenge[]
+  attempts           Attempt[]
+  challengeInstances ChallengeInstance[]
+
+  @@index([type])
+  @@index([status])
+  @@index([createdById])
+}
+
+model ModuleChallenge {
+  id          String    @id @default(cuid())
+  moduleId    String
+  challengeId String
+  sortOrder   Int       @default(0)
+  required    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  module      Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, challengeId])
+  @@index([challengeId])
+}
+
+model Assignment {
+  id           String    @id @default(cuid())
+  moduleId     String
+  userId       String?
+  groupId      String?
+  assignedById String?
+  dueAt        DateTime?
+  required     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  module       Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  user         User?     @relation("UserAssignments", fields: [userId], references: [id], onDelete: Cascade)
+  group        Group?    @relation("GroupAssignments", fields: [groupId], references: [id], onDelete: Cascade)
+  assignedBy   User?     @relation("AssignmentAssigner", fields: [assignedById], references: [id], onDelete: SetNull)
+
+  // Enforced in the initial SQL migration: assignments target exactly one user or group.
+  @@index([moduleId])
+  @@index([userId])
+  @@index([groupId])
+  @@index([assignedById])
+}
+
+model Attempt {
+  id             String        @id @default(cuid())
+  userId         String
+  challengeId    String
+  submittedValue String
+  result         AttemptResult
+  scoreAwarded   Int           @default(0)
+  feedback       String?
+  createdAt      DateTime      @default(now())
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge      Challenge     @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([challengeId])
+  @@index([result])
+}
+
+model Completion {
+  id          String           @id @default(cuid())
+  userId      String
+  moduleId    String
+  status      AssignmentStatus @default(NOT_STARTED)
+  completedAt DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module      Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@index([moduleId])
+  @@index([status])
+}
+
+model ChallengeInstance {
+  id          String         @id @default(cuid())
+  userId      String
+  challengeId String
+  status      InstanceStatus @default(STARTING)
+  containerId String?
+  image       String?
+  url         String?
+  port        Int?
+  startedAt   DateTime?
+  expiresAt   DateTime?
+  stoppedAt   DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge   Challenge      @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([challengeId])
+  @@index([status])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String
+  targetType  String?
+  targetId    String?
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  actor       User?    @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([actorUserId])
+  @@index([action])
+  @@index([targetType, targetId])
+}
