@@ -15,7 +15,10 @@ Copy `.env.example` to `.env` and provide:
 - `SEED_LEARNER_PASSWORD`
 - `FILE_STORAGE_DIR`
 - `MAX_ATTACHMENT_BYTES`
+- `CHALLENGE_SUBMISSION_LIMIT`
+- `CHALLENGE_SUBMISSION_WINDOW_SECONDS`
 - `RUNTIME_RUNNER_URL`
+- `RUNTIME_ALLOWED_IMAGES`
 - `CHALLENGE_PUBLIC_HOST`
 
 Optional branding and theme variables are documented in [Branding and themes](branding.md).
@@ -78,5 +81,11 @@ docker run --rm -v hackd-file-uploads:/data -v "$PWD":/backup node:22-bookworm-s
 ## Runtime Runner
 
 The `runner` service owns Docker socket access. The `web` service talks to the runner through `RUNTIME_RUNNER_URL` and does not mount `/var/run/docker.sock`.
+
+`RUNTIME_ALLOWED_IMAGES` controls which Docker images learner-launched challenges may use. Use a comma-separated list of exact image references and optional prefix patterns ending in `*`, for example:
+
+```env
+RUNTIME_ALLOWED_IMAGES="nginx:alpine,ghcr.io/acme-security/hackd-labs/*"
+```
 
 This runner is suitable for local internal testing. Before using untrusted challenge workloads in a shared environment, add stronger isolation such as rootless Docker, network egress controls, signed image allowlists, and a hardened sandbox runtime.

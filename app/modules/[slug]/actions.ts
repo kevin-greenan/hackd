@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth/current-user";
+import { assertValidCsrfToken } from "@/lib/auth/csrf";
 import { launchChallengeInstance, stopChallengeInstance } from "@/lib/core/challenge-runtime";
 import { submitChallengeAnswer } from "@/lib/core/challenge-submissions";
 
@@ -15,6 +16,7 @@ function runtimeRedirect(moduleSlug: string, challengeId: string, status: string
 }
 
 export async function submitChallengeAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const user = await requireUser();
   const moduleSlug = String(formData.get("moduleSlug") ?? "");
   const challengeId = String(formData.get("challengeId") ?? "");
@@ -47,6 +49,7 @@ export async function submitChallengeAction(formData: FormData) {
 }
 
 export async function launchChallengeInstanceAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const user = await requireUser();
   const moduleSlug = String(formData.get("moduleSlug") ?? "");
   const challengeId = String(formData.get("challengeId") ?? "");
@@ -71,6 +74,7 @@ export async function launchChallengeInstanceAction(formData: FormData) {
 }
 
 export async function stopChallengeInstanceAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const user = await requireUser();
   const moduleSlug = String(formData.get("moduleSlug") ?? "");
   const challengeId = String(formData.get("challengeId") ?? "");

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
+import { CsrfField } from "@/components/csrf-field";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getBranding } from "@/lib/branding/theme";
 
@@ -39,6 +40,7 @@ export default async function LoginPage({
       </section>
       <Card>
         <form action="/api/auth/login" method="post" className="grid gap-5">
+          <CsrfField />
           <div>
             <label className="text-sm font-medium" htmlFor="email">
               Email

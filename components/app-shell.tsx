@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Role } from "@prisma/client";
 import { BrandMark } from "@/components/brand-mark";
 import { Button } from "@/components/button";
+import { CsrfField } from "@/components/csrf-field";
 import { getBranding } from "@/lib/branding/theme";
 
 export function AppShell({
@@ -59,6 +60,7 @@ export function AppShell({
               </>
             ) : null}
             <form action="/api/auth/logout" method="post">
+          <CsrfField />
               <Button type="submit" variant="secondary">
                 Logout
               </Button>

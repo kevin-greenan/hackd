@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ContentStatus } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth/current-user";
+import { assertValidCsrfToken } from "@/lib/auth/csrf";
 import {
   createAdminModule,
   updateAdminModule,
@@ -19,6 +20,7 @@ function requiredValue(value: FormDataEntryValue | null, fallback = "") {
 }
 
 export async function createModuleAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "created";
 
@@ -45,6 +47,7 @@ export async function createModuleAction(formData: FormData) {
 }
 
 export async function updateModuleAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "updated";
 
@@ -72,6 +75,7 @@ export async function updateModuleAction(formData: FormData) {
 }
 
 export async function linkChallengeAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "linked";
 

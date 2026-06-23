@@ -61,7 +61,7 @@ Out of scope for `v1.0` unless explicitly reprioritized:
 
 - Add CSRF-specific protection for state-changing routes.
 - Move login rate limiting out of in-memory process state, likely to Redis or an edge control.
-- Add submission throttling or attempt limits for challenge submissions.
+- Move challenge submission throttling out of in-memory process state, likely to Redis or an edge control.
 - Revisit static expected answer storage and consider hashing or encrypting static flags.
 - Add Docker runtime image allowlisting.
 - Improve runner lifecycle reconciliation and scheduled cleanup.
@@ -148,7 +148,7 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 
 ### v0.4: Runtime Hardening
 
-- Docker image allowlisting.
+- Docker image allowlisting. (Implemented for exact image references and prefix patterns.)
 - Runner lifecycle reconciliation.
 - Scheduled cleanup.
 - Stronger runtime failure handling.
@@ -176,7 +176,7 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 - [ ] Required commands pass in CI and on a clean local checkout.
 - [ ] Docker Compose deployment path is documented and tested.
 - [ ] Secrets and local-only defaults are clearly separated.
-- [ ] CSRF protection is implemented for state-changing routes.
+- [x] CSRF protection is implemented for state-changing routes.
 - [ ] Login and challenge submission throttling are production-appropriate.
 - [ ] OIDC decision is made and documented.
 - [ ] Content schema is versioned and documented.

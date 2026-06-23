@@ -39,8 +39,17 @@ This document summarizes the current security posture for local and single-host 
 ## Rate Limiting
 
 - Login attempts use an in-memory limiter keyed by forwarded IP.
+- Challenge submissions use an in-memory limiter keyed by learner and challenge.
 - This is suitable for the local foundation only.
 - Production deployments should move rate limiting to durable infrastructure such as Redis or an edge layer.
+
+## CSRF Protection
+
+- State-changing forms include a signed CSRF token.
+- Login uses an anonymous pre-session token.
+- Authenticated forms bind the token to the active session user.
+- Server actions and POST route handlers verify the token before applying mutations.
+- Tokens expire after two hours and are signed with `SESSION_SECRET`.
 
 ## File Attachments
 
@@ -55,6 +64,7 @@ This document summarizes the current security posture for local and single-host 
 - The web service does not mount the Docker socket.
 - Docker socket access is isolated to the internal `runner` service in Docker Compose.
 - Runtime containers are created without privileged mode.
+- Runtime images must match `RUNTIME_ALLOWED_IMAGES` before the runner is called.
 - Runtime containers drop all Linux capabilities, set `no-new-privileges`, set a read-only root filesystem, and apply memory, CPU, and PID limits.
 - Runtime containers avoid host filesystem mounts.
 - Runtime containers are labeled with `hackd.runtime=true` and tracked in `ChallengeInstance`.

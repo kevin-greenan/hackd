@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { Button, ButtonLink } from "@/components/button";
 import { Card, EmptyState } from "@/components/card";
+import { CsrfField } from "@/components/csrf-field";
 import { MarkdownContent } from "@/components/learning/markdown-content";
 import { requireUser } from "@/lib/auth/current-user";
 import { getLearnerModuleDetail, type LearnerModuleChallenge } from "@/lib/core/module-detail";
@@ -94,6 +95,7 @@ function RuntimeControls({
         ) : null}
         {isRunning || isStarting ? (
           <form action={stopChallengeInstanceAction}>
+          <CsrfField />
             <input name="moduleSlug" type="hidden" value={moduleSlug} />
             <input name="challengeId" type="hidden" value={challenge.id} />
             <input name="instanceId" type="hidden" value={instance.id} />
@@ -103,6 +105,7 @@ function RuntimeControls({
           </form>
         ) : (
           <form action={launchChallengeInstanceAction}>
+          <CsrfField />
             <input name="moduleSlug" type="hidden" value={moduleSlug} />
             <input name="challengeId" type="hidden" value={challenge.id} />
             <Button type="submit">Launch</Button>
@@ -128,6 +131,7 @@ function ChallengeSubmissionForm({
 
   return (
     <form action={submitChallengeAction} className="mt-4 grid gap-3">
+          <CsrfField />
       <input name="moduleSlug" type="hidden" value={moduleSlug} />
       <input name="challengeId" type="hidden" value={challenge.id} />
       {submissionConfig.type === "text" ? (

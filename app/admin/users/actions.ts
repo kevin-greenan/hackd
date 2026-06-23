@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Role, UserStatus } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth/current-user";
+import { assertValidCsrfToken } from "@/lib/auth/csrf";
 import { createAdminUser, updateAdminUser } from "@/lib/core/admin-management";
 
 function selectedGroupIds(formData: FormData) {
@@ -15,6 +16,7 @@ function adminUsersRedirect(status: string) {
 }
 
 export async function createUserAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "created";
 
@@ -39,6 +41,7 @@ export async function createUserAction(formData: FormData) {
 }
 
 export async function updateUserAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "updated";
 

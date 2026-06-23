@@ -21,3 +21,7 @@ export function checkRateLimit(key: string, limit = 8, windowMs = 60_000) {
   current.count += 1;
   return { allowed: true, remaining: limit - current.count };
 }
+
+export function resetRateLimits() {
+  buckets.clear();
+}

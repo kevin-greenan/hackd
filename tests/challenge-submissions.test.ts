@@ -29,10 +29,13 @@ vi.mock("@/lib/db/prisma", () => ({
 }));
 
 const { submitChallengeAnswer } = await import("@/lib/core/challenge-submissions");
+const { resetRateLimits } = await import("@/lib/auth/rate-limit");
 
 describe("challenge submissions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.unstubAllEnvs();
+    resetRateLimits();
   });
 
   it("records a correct attempt and marks the module complete when all required challenges are correct", async () => {
@@ -115,5 +118,66 @@ describe("challenge submissions", () => {
         completedAt: expect.any(Date)
       }
     });
+  });
+
+  it("throttles repeated submissions for the same user and challenge", async () => {
+    vi.stubEnv("CHALLENGE_SUBMISSION_LIMIT", "1");
+    vi.stubEnv("CHALLENGE_SUBMISSION_WINDOW_SECONDS", "60");
+    mocks.getLearnerModuleDetail.mockResolvedValue({
+      id: "module-1",
+      title: "Web Basics",
+      slug: "web-basics",
+      summary: "Learn the basics.",
+      bodyMarkdown: "",
+      difficulty: "beginner",
+      estimatedMinutes: 30,
+      tags: [],
+      assignment: {
+        id: "assignment-1",
+        required: true,
+        dueAt: null,
+        targetType: "user"
+      },
+      completionStatus: AssignmentStatus.IN_PROGRESS,
+      challenges: []
+    });
+    mocks.moduleChallengeFindFirst.mockResolvedValue({
+      moduleId: "module-1",
+      challengeId: "challenge-1",
+      required: true,
+      challenge: {
+        id: "challenge-1",
+        type: ChallengeType.STATIC_FLAG,
+        points: 25,
+        validationConfig: { type: "static_flag", flag: "flag{sample}" },
+        status: ContentStatus.PUBLISHED
+      }
+    });
+    mocks.moduleChallengeFindMany.mockResolvedValue([
+      {
+        challenge: {
+          attempts: []
+        }
+      }
+    ]);
+
+    await submitChallengeAnswer({
+      userId: "user-1",
+      role: Role.LEARNER,
+      moduleSlug: "web-basics",
+      challengeId: "challenge-1",
+      submittedValue: "wrong"
+    });
+
+    await expect(
+      submitChallengeAnswer({
+        userId: "user-1",
+        role: Role.LEARNER,
+        moduleSlug: "web-basics",
+        challengeId: "challenge-1",
+        submittedValue: "wrong again"
+      })
+    ).rejects.toThrow("Too many submissions");
+    expect(mocks.attemptCreate).toHaveBeenCalledTimes(1);
   });
 });

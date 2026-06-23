@@ -2,6 +2,7 @@ import { AdminTable, StatusBadge } from "@/components/admin/admin-table";
 import { AppShell } from "@/components/app-shell";
 import { Button, ButtonLink } from "@/components/button";
 import { Card } from "@/components/card";
+import { CsrfField } from "@/components/csrf-field";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { formatAdminLabel, getAdminChallenges } from "@/lib/core/admin-lists";
 import {
@@ -259,6 +260,7 @@ export default async function AdminChallengesPage({
         <Card>
           <h2 className="text-lg font-semibold">Create challenge</h2>
           <form action={createChallengeAction} className="mt-4 grid gap-4 lg:grid-cols-2">
+          <CsrfField />
             <label className="grid gap-1 text-sm font-medium">
               Title
               <input className="h-10 rounded-md border border-border px-3" name="title" required />
@@ -352,6 +354,7 @@ export default async function AdminChallengesPage({
                           {attachment.mimeType} · {formatBytes(attachment.sizeBytes)}
                         </p>
                         <form action={deleteChallengeAttachmentAction} className="mt-2">
+          <CsrfField />
                           <input name="attachmentId" type="hidden" value={attachment.id} />
                           <Button className="h-8 px-2" type="submit" variant="ghost">
                             Delete
@@ -364,6 +367,7 @@ export default async function AdminChallengesPage({
                   <span className="text-muted-foreground">No files</span>
                 )}
                 <form action={uploadChallengeAttachmentAction} className="grid gap-2" encType="multipart/form-data">
+          <CsrfField />
                   <input name="challengeId" type="hidden" value={challenge.id} />
                   <input
                     className="rounded-md border border-border px-2 py-1 text-sm"
@@ -378,6 +382,7 @@ export default async function AdminChallengesPage({
               </div>,
               <span key="updated">{formatDate(challenge.updatedAt)}</span>,
               <form action={updateChallengeAction} className="grid min-w-[22rem] gap-2" key="update">
+          <CsrfField />
                 <input name="challengeId" type="hidden" value={challenge.id} />
                 <input className="h-9 rounded-md border border-border px-2 text-sm" name="title" defaultValue={challenge.title} required />
                 <input className="h-9 rounded-md border border-border px-2 text-sm" name="slug" defaultValue={challenge.slug} pattern="[a-z0-9]+(-[a-z0-9]+)*" required />

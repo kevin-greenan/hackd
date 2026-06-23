@@ -3,6 +3,7 @@ import { AdminTable, StatusBadge } from "@/components/admin/admin-table";
 import { AppShell } from "@/components/app-shell";
 import { Button, ButtonLink } from "@/components/button";
 import { Card } from "@/components/card";
+import { CsrfField } from "@/components/csrf-field";
 import { requireAdmin } from "@/lib/auth/current-user";
 import {
   formatAdminLabel,
@@ -79,6 +80,7 @@ export default async function AdminModulesPage({
         <Card>
           <h2 className="text-lg font-semibold">Create module</h2>
           <form action={createModuleAction} className="mt-4 grid gap-4 lg:grid-cols-2">
+          <CsrfField />
             <label className="grid gap-1 text-sm font-medium">
               Title
               <input className="h-10 rounded-md border border-border px-3" name="title" required />
@@ -125,6 +127,7 @@ export default async function AdminModulesPage({
         <Card>
           <h2 className="text-lg font-semibold">Associate challenge</h2>
           <form action={linkChallengeAction} className="mt-4 grid gap-4 lg:grid-cols-[1fr_1fr_8rem_8rem_auto]">
+          <CsrfField />
             <label className="grid gap-1 text-sm font-medium">
               Module
               <select className="h-10 rounded-md border border-border px-3" name="moduleId" required>
@@ -197,6 +200,7 @@ export default async function AdminModulesPage({
               </div>,
               <span key="updated">{formatDate(module.updatedAt)}</span>,
               <form action={updateModuleAction} className="grid min-w-[20rem] gap-2" key="update">
+          <CsrfField />
                 <input name="moduleId" type="hidden" value={module.id} />
                 <input className="h-9 rounded-md border border-border px-2 text-sm" name="title" defaultValue={module.title} required />
                 <input className="h-9 rounded-md border border-border px-2 text-sm" name="slug" defaultValue={module.slug} pattern="[a-z0-9]+(-[a-z0-9]+)*" required />

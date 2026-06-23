@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Role } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth/current-user";
+import { assertValidCsrfToken } from "@/lib/auth/csrf";
 import {
   cleanupExpiredChallengeInstances,
   stopChallengeInstance
@@ -14,6 +15,7 @@ function instancesRedirect(status: string) {
 }
 
 export async function stopAdminChallengeInstanceAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   await requireAdmin();
   let status = "stopped";
 
@@ -31,7 +33,8 @@ export async function stopAdminChallengeInstanceAction(formData: FormData) {
   instancesRedirect(status);
 }
 
-export async function cleanupExpiredInstancesAction() {
+export async function cleanupExpiredInstancesAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   await requireAdmin();
   let status = "cleaned";
 
