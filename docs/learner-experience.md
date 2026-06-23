@@ -31,8 +31,9 @@ Admins can also open module pages for preview, but learners only see modules ass
 - Challenge completion reflects correct attempts recorded by the submission flow.
 - Module reading progress is not tracked yet.
 - Module detail pages render Markdown but do not yet support syntax highlighting beyond readable code blocks.
-- Admin authoring and assignment management UI are deferred to a later milestone.
+- Admin authoring and assignment management UI exists for the current basic workflows.
+- Reporting filters and richer exports are not implemented yet.
 
 ## Next Step
 
-Next milestones should expand challenge types, admin CRUD, assignment management, and reporting.
+Next milestones should expand challenge types, reporting filters, richer exports, and runtime-backed exercises.
