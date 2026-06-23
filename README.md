@@ -1,15 +1,31 @@
 # hackd
 
-hackd is a containerized control plane for hands-on security training modules, challenges, sandboxes, validation, and learner progress.
+hackd is a containerized training control plane for hands-on security modules. It packages learner assignments, Markdown lessons, challenge validation, Dockerized challenge runtimes, admin workflows, reporting, and local release checks into a single Next.js application backed by Postgres.
 
-This repository currently implements Milestone 0 through Milestone 9 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, admin list views, basic user/group/content/assignment management, admin audit visibility, filtered progress reporting with CSV exports, content import from YAML/JSON bundles, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, challenge file attachments and downloads, Dockerized web challenge launch/stop flows, recent attempt visibility for admins, and health endpoints.
+The current foundation is designed for local and single-host internal testing. It is not yet a hosted multi-tenant platform.
+
+## Capabilities
+
+- Local email/password authentication with signed HTTP-only sessions
+- Server-side role checks for learner and admin routes
+- Seeded admin, learner, groups, modules, challenges, assignments, attempts, and completions
+- Learner dashboard with direct and group assignments
+- Module detail pages with Markdown lessons, challenge progress, attachment downloads, attempt history, and Dockerized runtime controls
+- Static flag, exact-text short-answer, and multiple-choice challenge validation
+- Admin management for users, groups, modules, challenges, assignments, challenge attachments, and runtime instances
+- Type-specific challenge authoring controls that write portable validation/runtime JSON
+- Assignment lifecycle cleanup that removes stale completions when assignments change
+- Admin reporting for learner progress, module progress, challenge performance, recent attempts, and filtered CSV exports
+- Admin audit-log visibility for management actions
+- YAML/JSON content import with dry-run validation
+- Health checks, structured logs, release checks, UI smoke tests, and local container vulnerability scanning
 
 ## Prerequisites
 
 - Docker and Docker Compose
 - Node.js 22 and npm for non-container local development
 
-## Environment
+## Configuration
 
 Copy the example environment file and adjust values as needed:
 
@@ -32,25 +48,27 @@ Required variables:
 - `CHALLENGE_PUBLIC_HOST`
 
 Do not commit real secrets. `SESSION_SECRET` must be at least 32 characters.
-`FILE_STORAGE_DIR` stores admin-uploaded challenge attachments and should point to durable local storage or a mounted volume.
-`RUNTIME_RUNNER_URL` is the internal Docker runner service URL. `CHALLENGE_PUBLIC_HOST` is the browser-visible host used when formatting mapped challenge URLs.
 
-## Run With Docker Compose
+`FILE_STORAGE_DIR` stores admin-uploaded challenge attachments and should point to durable local storage or a mounted volume. `RUNTIME_RUNNER_URL` is the internal Docker runner service URL. `CHALLENGE_PUBLIC_HOST` is the browser-visible host used when formatting mapped challenge URLs.
+
+## Quick Start
+
+Start the full local stack:
 
 ```sh
 docker compose up --build
 ```
 
-The app will be available at [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000).
 
-On startup, the web service runs Prisma migrations and seeds local users plus sample core data from the environment variables in `docker-compose.yml`.
+The web service runs Prisma migrations and seeds local users plus sample content on startup.
 
-Default local admin credentials:
+Default local admin:
 
 - Email: `admin@hackd.local`
 - Password: `change-me-in-development`
 
-Default local learner credentials:
+Default local learner:
 
 - Email: `learner@hackd.local`
 - Password: `change-me-in-development`
@@ -71,7 +89,7 @@ Start Postgres:
 docker compose up db
 ```
 
-Run migrations and seed local users plus sample data:
+Run migrations and seed local data:
 
 ```sh
 npm run db:migrate
@@ -86,23 +104,36 @@ npm run dev
 
 ## Commands
 
-```sh
-npm run dev
-npm run build
-npm run lint
-npm run test
-npm run security:check
-npm run content:import -- --file examples/content/secure-notes.yaml --dry-run
-npm run db:migrate
-npm run db:seed
-npm run smoke:compose
-```
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Next.js development server. |
+| `npm run build` | Generate Prisma client and build the production app. |
+| `npm run lint` | Run ESLint. |
+| `npm run test` | Run Vitest unit and core-flow tests. |
+| `npm run ui:smoke` | Run Playwright smoke tests against a running app. |
+| `npm run security:check` | Run local dependency and secret-pattern checks. |
+| `npm run container:scan` | Scan local `hackd-web` and `hackd-runner` images with Trivy. |
+| `npm run release:check` | Run lint, tests, security checks, and production build. |
+| `npm run smoke:compose` | Build, start, health-check, and stop the Compose stack. |
+| `npm run content:import -- --file examples/content/secure-notes.yaml --dry-run` | Validate sample content without writing. |
+| `npm run db:migrate` | Apply local Prisma migrations in development. |
+| `npm run db:seed` | Seed local users and sample content. |
 
-`npm run smoke:compose` builds the containers, starts the stack, waits for `/api/healthz`, prints the health response, and stops the stack.
+`npm run smoke:compose` builds the containers, starts the stack, waits for `/api/healthz`, checks the runner, prints health responses, and stops the stack.
 
-[Learner experience notes](docs/learner-experience.md) describe the current `/dashboard` to `/modules/[slug]` flow.
-[Content import notes](docs/content-import.md) describe the YAML/JSON module and challenge bundle format.
-[Admin usage notes](docs/admin-usage.md), [Docker deployment notes](docs/deployment.md), and the [operations runbook](docs/operations-runbook.md) cover internal testing workflows.
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Data model](docs/data-model.md)
+- [Security notes](docs/security.md)
+- [Admin usage](docs/admin-usage.md)
+- [Learner experience](docs/learner-experience.md)
+- [Challenge workflows](docs/challenges.md)
+- [Content import](docs/content-import.md)
+- [Docker deployment](docs/deployment.md)
+- [Operations runbook](docs/operations-runbook.md)
+- [Release checklist](docs/release.md)
+- [Requirements and roadmap](requirements.md)
 
 ## Manual Smoke Test
 
@@ -112,73 +143,32 @@ After `docker compose up --build`:
 2. Sign in as `admin@hackd.local`.
 3. Confirm `/dashboard` shows the admin identity and an `Open admin` action.
 4. Open `/admin` and confirm the admin dashboard loads with metric cards and recent attempts.
-5. Open the admin Users, Groups, Modules, Challenges, Assignments, Instances, Reports, and Audit links and confirm each view renders.
-6. Create a test group from `/admin/groups`, then update it and delete it before adding members or assignments.
-7. Create a test learner from `/admin/users`, assign it to a group, then disable it.
-8. Create a draft module from `/admin/modules`, update it, and link an existing challenge.
-9. Create a draft challenge from `/admin/challenges`, then update its metadata.
+5. Open Users, Groups, Modules, Challenges, Assignments, Instances, Reports, and Audit.
+6. Create, update, and delete a test group before adding members or assignments.
+7. Create a test learner, assign it to a group, then disable it.
+8. Create a draft module, update it, and link an existing challenge.
+9. Create a draft challenge with type-specific settings, then update its metadata.
 10. Upload and delete a small `.txt` attachment from an admin challenge row.
-11. Create, update, and delete a test assignment from `/admin/assignments`.
-12. Open `/admin/reports`, apply module/learner/group filters, and confirm learner progress, module progress, challenge performance, and filtered CSV export links render.
-13. Log out.
-14. Sign in as `learner@hackd.local`.
-15. Confirm `/dashboard` loads for the learner.
-16. Open an assigned module and confirm Markdown content plus challenge sections render.
-17. Confirm challenge attachments render as download links when files are attached.
-18. Submit an incorrect challenge answer and confirm the attempt feedback appears.
-19. Submit the seeded correct static flag `flag{sample}` and confirm progress updates.
-20. Launch the sample Dockerized web challenge, open the generated URL, then stop the instance.
-21. Open the secure code review module and confirm the optional multiple-choice challenge renders with selectable answers.
-22. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
-23. Log out and confirm `/dashboard` redirects to `/login`.
+11. Create, update, and delete a test assignment.
+12. Open `/admin/reports`, apply filters, and confirm filtered CSV export links render.
+13. Sign out, then sign in as `learner@hackd.local`.
+14. Confirm `/dashboard` lists assigned modules.
+15. Open an assigned module and confirm Markdown content, challenge progress, and challenge sections render.
+16. Confirm challenge attachments render as download links when files are attached.
+17. Submit an incorrect answer and confirm attempt feedback appears.
+18. Submit the seeded correct static flag `flag{sample}` and confirm progress updates.
+19. Launch the sample Dockerized web challenge, open the generated URL, then stop the instance.
+20. Open the secure code review module and confirm the optional multiple-choice challenge renders with selectable answers.
+21. Open `/admin` as the learner and confirm the learner is redirected to `/dashboard?error=unauthorized`.
+22. Sign out and confirm `/dashboard` redirects to `/login`.
 
-## Implemented
+## Current Limits
 
-- Next.js App Router with TypeScript and Tailwind CSS
-- Postgres via Docker Compose with persistent named volume
-- Prisma schema and initial migration for the roadmap entities
-- Idempotent admin, learner, group, module, challenge, assignment, completion, and attempt seed data
-- Local login/logout flow
-- Signed HTTP-only session cookie
-- Server-side `getCurrentUser()`, `requireUser()`, and `requireAdmin()` helpers
-- Basic admin and learner route separation with database-backed dashboard data
-- Admin lists for users, groups, modules, challenges, and assignments
-- Admin create/edit workflows for users and groups with audit logging
-- Admin create/edit workflows for modules and challenges, plus challenge association
-- Admin create/edit/delete workflows for assignments with audit logging
-- Admin audit log visibility for user, group, module, challenge, and assignment changes
-- Admin progress reports for learners, modules, challenge performance, module/learner/group filters, and CSV exports
-- Content import CLI for YAML/JSON module and challenge bundles with dry-run validation
-- Admin challenge attachment upload/delete workflows with local file storage
-- Learner challenge attachment downloads for assigned modules
-- Internal Docker runtime runner service for sample Dockerized web challenges
-- Learner launch/stop controls and admin instance visibility for Dockerized challenge instances
-- Learner module detail pages with Markdown lesson rendering and challenge status sections
-- Static flag, exact-text short-answer, and multiple-choice validation with attempt recording
-- Admin recent-attempt visibility for learner submissions
-- Landing, login, dashboard, and admin pages
-- `/api/healthz` endpoint with database connectivity check
-- Vitest coverage for password hashing and RBAC helpers
-- GitHub Actions workflow for install, Prisma generate, lint, test, and build
-- Local security check for production dependency audit and common secret patterns
-- Dependency lockfile and clean `npm audit` result
-- Docker Compose smoke-test script
-
-## Known Limitations
-
-- Password reset and hard user deletion are not implemented yet.
-- Scheduled reports and advanced report delivery are not implemented yet.
-- Rich type-specific challenge config editors are not implemented yet; validation/runtime config is edited as JSON.
-- File-based answer submissions are not implemented yet.
-- Docker runtime hardening beyond local V1 limits is not implemented yet.
-- OIDC/SAML, multi-tenancy, and marketplace concepts are deferred.
-- Auth rate limiting is in-memory and suitable only for local/dev foundations.
-- CSRF-specific token handling is not implemented yet.
-- Container vulnerability scanning and release tagging are not implemented yet.
-
-## Next Milestone Checklist
-
-Next milestones should expand hardening and challenge coverage:
-
-- Assignment lifecycle refinements, including completion reconciliation after assignment deletion
-- Rich type-specific challenge config editors
+- Password reset and hard user deletion are planned.
+- Scheduled reports and advanced report delivery are planned.
+- File-based answer submissions are planned.
+- Docker runtime hardening beyond local V1 limits is planned.
+- OIDC/SAML, MFA, SCIM, multi-tenancy, and marketplace concepts are deferred.
+- Auth rate limiting is in-memory and suitable only for local development.
+- CSRF-specific token handling is planned.
+- The `v0.1.0` release tag is not created yet.

@@ -23,8 +23,172 @@ function statusTone(status: string): "neutral" | "success" | "warning" {
   return status === "PUBLISHED" ? "success" : status === "DRAFT" ? "warning" : "neutral";
 }
 
-function formatJson(value: unknown) {
-  return value ? JSON.stringify(value, null, 2) : "";
+function asRecord(value: unknown) {
+  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
+}
+
+function stringValue(value: unknown, fallback = "") {
+  return typeof value === "string" ? value : fallback;
+}
+
+function numberValue(value: unknown, fallback: number) {
+  return typeof value === "number" ? value : fallback;
+}
+
+function arrayValue(value: unknown) {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function optionText(value: unknown) {
+  if (!Array.isArray(value)) {
+    return "";
+  }
+
+  return value
+    .filter((option): option is { id: string; label: string } => {
+      return (
+        typeof option === "object" &&
+        option !== null &&
+        typeof (option as { id?: unknown }).id === "string" &&
+        typeof (option as { label?: unknown }).label === "string"
+      );
+    })
+    .map((option) => `${option.id}|${option.label}`)
+    .join("\n");
+}
+
+function ChallengeConfigFields({
+  runtimeConfig,
+  validationConfig
+}: {
+  runtimeConfig?: unknown;
+  validationConfig?: unknown;
+}) {
+  const validation = asRecord(validationConfig);
+  const runtime = asRecord(runtimeConfig);
+
+  return (
+    <div className="grid gap-3 lg:col-span-2">
+      <details className="rounded-md border border-border bg-slate-50 p-3" open>
+        <summary className="cursor-pointer text-sm font-semibold">Static flag</summary>
+        <label className="mt-3 grid gap-1 text-sm font-medium">
+          Flag
+          <input
+            className="h-9 rounded-md border border-border px-2 text-sm"
+            name="staticFlag"
+            placeholder="flag{example}"
+            defaultValue={stringValue(validation.flag)}
+          />
+        </label>
+      </details>
+      <details className="rounded-md border border-border bg-slate-50 p-3">
+        <summary className="cursor-pointer text-sm font-semibold">Short answer</summary>
+        <label className="mt-3 grid gap-1 text-sm font-medium">
+          Accepted answers
+          <textarea
+            className="min-h-20 rounded-md border border-border px-2 py-1 text-sm"
+            name="acceptedAnswers"
+            placeholder="One answer per line"
+            defaultValue={arrayValue(validation.acceptedAnswers).join("\n")}
+          />
+        </label>
+        <label className="mt-3 flex items-center gap-2 text-sm font-medium">
+          <input
+            className="h-4 w-4 accent-teal-700"
+            defaultChecked={validation.caseInsensitive === true}
+            name="caseInsensitive"
+            type="checkbox"
+          />
+          Case-insensitive
+        </label>
+      </details>
+      <details className="rounded-md border border-border bg-slate-50 p-3">
+        <summary className="cursor-pointer text-sm font-semibold">Multiple choice</summary>
+        <label className="mt-3 grid gap-1 text-sm font-medium">
+          Options
+          <textarea
+            className="min-h-24 rounded-md border border-border px-2 py-1 font-mono text-xs"
+            name="choiceOptions"
+            placeholder={"id|Option label\nother|Other label"}
+            defaultValue={optionText(validation.options)}
+          />
+        </label>
+        <label className="mt-3 grid gap-1 text-sm font-medium">
+          Correct option IDs
+          <input
+            className="h-9 rounded-md border border-border px-2 text-sm"
+            name="correctOptionIds"
+            placeholder="id, other"
+            defaultValue={arrayValue(validation.correctOptionIds).join(", ")}
+          />
+        </label>
+        <label className="mt-3 flex items-center gap-2 text-sm font-medium">
+          <input
+            className="h-4 w-4 accent-teal-700"
+            defaultChecked={validation.allowMultiple === true}
+            name="allowMultiple"
+            type="checkbox"
+          />
+          Allow multiple answers
+        </label>
+      </details>
+      <details className="rounded-md border border-border bg-slate-50 p-3">
+        <summary className="cursor-pointer text-sm font-semibold">Docker web runtime</summary>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label className="grid gap-1 text-sm font-medium sm:col-span-2">
+            Image
+            <input
+              className="h-9 rounded-md border border-border px-2 text-sm"
+              name="dockerImage"
+              placeholder="nginx:alpine"
+              defaultValue={stringValue(runtime.image)}
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-medium">
+            Container port
+            <input
+              className="h-9 rounded-md border border-border px-2 text-sm"
+              defaultValue={numberValue(runtime.containerPort, 80)}
+              min={1}
+              name="containerPort"
+              type="number"
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-medium">
+            Memory MB
+            <input
+              className="h-9 rounded-md border border-border px-2 text-sm"
+              defaultValue={numberValue(runtime.memoryMb, 128)}
+              min={64}
+              name="memoryMb"
+              type="number"
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-medium">
+            CPU count
+            <input
+              className="h-9 rounded-md border border-border px-2 text-sm"
+              defaultValue={numberValue(runtime.cpuCount, 0.25)}
+              min={0.1}
+              name="cpuCount"
+              step={0.05}
+              type="number"
+            />
+          </label>
+          <label className="grid gap-1 text-sm font-medium">
+            TTL minutes
+            <input
+              className="h-9 rounded-md border border-border px-2 text-sm"
+              defaultValue={numberValue(runtime.ttlMinutes, 30)}
+              min={1}
+              name="ttlMinutes"
+              type="number"
+            />
+          </label>
+        </div>
+      </details>
+    </div>
+  );
 }
 
 function formatBytes(sizeBytes: number) {
@@ -139,14 +303,7 @@ export default async function AdminChallengesPage({
               Tags
               <input className="h-10 rounded-md border border-border px-3" name="tags" placeholder="appsec, fundamentals" />
             </label>
-            <label className="grid gap-1 text-sm font-medium">
-              Validation config JSON
-              <textarea className="min-h-40 rounded-md border border-border px-3 py-2 font-mono text-sm" name="validationConfig" />
-            </label>
-            <label className="grid gap-1 text-sm font-medium">
-              Runtime config JSON
-              <textarea className="min-h-40 rounded-md border border-border px-3 py-2 font-mono text-sm" name="runtimeConfig" />
-            </label>
+            <ChallengeConfigFields />
             <div className="lg:col-span-2">
               <Button type="submit">Create challenge</Button>
             </div>
@@ -242,8 +399,10 @@ export default async function AdminChallengesPage({
                 </div>
                 <input className="h-9 rounded-md border border-border px-2 text-sm" name="difficulty" defaultValue={challenge.difficulty} required />
                 <input className="h-9 rounded-md border border-border px-2 text-sm" name="tags" defaultValue={challenge.tags.join(", ")} />
-                <textarea className="min-h-28 rounded-md border border-border px-2 py-1 font-mono text-xs" name="validationConfig" defaultValue={formatJson(challenge.validationConfig)} />
-                <textarea className="min-h-28 rounded-md border border-border px-2 py-1 font-mono text-xs" name="runtimeConfig" defaultValue={formatJson(challenge.runtimeConfig)} />
+                <ChallengeConfigFields
+                  runtimeConfig={challenge.runtimeConfig}
+                  validationConfig={challenge.validationConfig}
+                />
                 <Button className="h-9" type="submit" variant="secondary">
                   Save
                 </Button>
@@ -253,7 +412,7 @@ export default async function AdminChallengesPage({
         </Card>
       </section>
       <p className="mt-4 text-sm text-muted-foreground">
-        Validation config is edited as JSON until richer type-specific editors are added.
+        Type-specific fields are translated to validation and runtime JSON when saved.
       </p>
     </AppShell>
   );

@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   userUpdate: vi.fn(),
   groupMembershipDeleteMany: vi.fn(),
   groupMembershipCreate: vi.fn(),
+  groupMembershipFindMany: vi.fn(),
   groupCreate: vi.fn(),
   groupUpdate: vi.fn(),
   groupFindUnique: vi.fn(),
@@ -19,9 +20,11 @@ const mocks = vi.hoisted(() => ({
   moduleChallengeUpsert: vi.fn(),
   assignmentCreate: vi.fn(),
   assignmentUpdate: vi.fn(),
+  assignmentFindMany: vi.fn(),
   assignmentFindFirst: vi.fn(),
   assignmentFindUnique: vi.fn(),
   assignmentDelete: vi.fn(),
+  completionDeleteMany: vi.fn(),
   auditLogCreate: vi.fn()
 }));
 
@@ -38,7 +41,8 @@ vi.mock("@/lib/db/prisma", () => ({
     },
     groupMembership: {
       deleteMany: mocks.groupMembershipDeleteMany,
-      create: mocks.groupMembershipCreate
+      create: mocks.groupMembershipCreate,
+      findMany: mocks.groupMembershipFindMany
     },
     group: {
       create: mocks.groupCreate,
@@ -60,9 +64,13 @@ vi.mock("@/lib/db/prisma", () => ({
     assignment: {
       create: mocks.assignmentCreate,
       update: mocks.assignmentUpdate,
+      findMany: mocks.assignmentFindMany,
       findFirst: mocks.assignmentFindFirst,
       findUnique: mocks.assignmentFindUnique,
       delete: mocks.assignmentDelete
+    },
+    completion: {
+      deleteMany: mocks.completionDeleteMany
     },
     auditLog: {
       create: mocks.auditLogCreate
@@ -89,7 +97,10 @@ describe("admin management", () => {
     mocks.transaction.mockResolvedValue([]);
     mocks.groupMembershipCreate.mockReturnValue({});
     mocks.groupMembershipDeleteMany.mockReturnValue({});
+    mocks.groupMembershipFindMany.mockResolvedValue([]);
     mocks.assignmentFindFirst.mockResolvedValue(null);
+    mocks.assignmentFindMany.mockResolvedValue([]);
+    mocks.completionDeleteMany.mockResolvedValue({ count: 0 });
   });
 
   it("creates users with a hashed password and audit log", async () => {
@@ -394,6 +405,12 @@ describe("admin management", () => {
   });
 
   it("updates assignments and clears the previous target type", async () => {
+    mocks.assignmentFindUnique.mockResolvedValue({
+      id: "assignment-1",
+      moduleId: "module-1",
+      userId: "user-1",
+      groupId: null
+    });
     mocks.assignmentUpdate.mockResolvedValue({
       id: "assignment-1",
       moduleId: "module-2",
@@ -434,15 +451,33 @@ describe("admin management", () => {
         required: false
       }
     });
+    expect(mocks.completionDeleteMany).toHaveBeenCalledWith({
+      where: {
+        moduleId: "module-1",
+        userId: {
+          in: ["user-1"]
+        }
+      }
+    });
   });
 
-  it("deletes assignments and logs the removed target", async () => {
+  it("deletes assignments, reconciles completions, and logs the removed target", async () => {
     mocks.assignmentFindUnique.mockResolvedValue({
       id: "assignment-1",
       moduleId: "module-1",
       userId: null,
       groupId: "group-1"
     });
+    mocks.groupMembershipFindMany
+      .mockResolvedValueOnce([{ userId: "user-1" }, { userId: "user-2" }])
+      .mockResolvedValueOnce([{ userId: "user-1", groupId: "group-2" }]);
+    mocks.assignmentFindMany.mockResolvedValue([
+      {
+        userId: null,
+        groupId: "group-2"
+      }
+    ]);
+    mocks.completionDeleteMany.mockResolvedValue({ count: 1 });
 
     await deleteAdminAssignment({
       actorUserId: "admin-1",
@@ -451,6 +486,14 @@ describe("admin management", () => {
 
     expect(mocks.assignmentDelete).toHaveBeenCalledWith({
       where: { id: "assignment-1" }
+    });
+    expect(mocks.completionDeleteMany).toHaveBeenCalledWith({
+      where: {
+        moduleId: "module-1",
+        userId: {
+          in: ["user-2"]
+        }
+      }
     });
     expect(mocks.auditLogCreate).toHaveBeenCalledWith({
       data: {
@@ -461,7 +504,8 @@ describe("admin management", () => {
         metadata: {
           moduleId: "module-1",
           userId: null,
-          groupId: "group-1"
+          groupId: "group-1",
+          staleCompletionCount: 1
         }
       }
     });

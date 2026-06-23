@@ -1,6 +1,6 @@
 # Admin Usage
 
-This guide covers the current admin workflows for local internal testing.
+This guide covers the admin workflows available in the local internal testing build.
 
 ## Access
 
@@ -8,19 +8,21 @@ This guide covers the current admin workflows for local internal testing.
 2. Sign in at `/login` with the configured admin account.
 3. Open `/admin` from the dashboard.
 
-Default Docker Compose credentials are documented in the README and are for local development only.
+Default Docker Compose credentials are listed in the README and are for local development only.
 
 ## Users and Groups
 
 - `/admin/users` creates and updates local users.
-- Users can be assigned `ADMIN` or `LEARNER` roles and `ACTIVE` or `DISABLED` status.
+- Users can have `ADMIN` or `LEARNER` roles and `ACTIVE` or `DISABLED` status.
+- Admins cannot disable their own active session account through the user update form.
 - `/admin/groups` creates learner groups that can receive module assignments.
 - Groups can be deleted only when they have no members or assignments.
 
 ## Content
 
 - `/admin/modules` creates modules, edits Markdown lesson bodies, and links challenges.
-- `/admin/challenges` creates challenges, edits validation/runtime JSON, and manages downloadable attachments.
+- `/admin/challenges` creates challenges, edits type-specific validation/runtime settings, and manages downloadable attachments.
+- The form stores validation/runtime settings as JSON so UI-authored content stays compatible with content import/export workflows.
 - The content import CLI can upsert modules and challenges from YAML/JSON bundles:
 
 ```sh
@@ -31,7 +33,7 @@ npm run content:import -- --file examples/content/secure-notes.yaml --dry-run
 
 - `/admin/assignments` assigns modules to exactly one learner or group.
 - Direct learner assignments and group assignments both appear on learner dashboards.
-- Assignment delete currently removes the assignment record only; completion reconciliation is still a future lifecycle refinement.
+- Assignment update and delete reconcile learner completions when a learner no longer has a direct or group assignment for the affected module.
 
 ## Runtime Instances
 

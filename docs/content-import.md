@@ -1,10 +1,10 @@
 # Content Import
 
-Milestone 9 adds a developer-facing importer for local module and challenge content.
+The content importer lets developers load local module and challenge bundles from YAML or JSON.
 
-## Command
+## Commands
 
-Validate and import a YAML or JSON bundle:
+Validate and import a bundle:
 
 ```sh
 npm run content:import -- --file examples/content/secure-notes.yaml
@@ -61,7 +61,9 @@ challenges:
 Each module must define exactly one lesson body source:
 
 - `bodyMarkdown`: inline Markdown content.
-- `bodyFile`: relative Markdown file path next to the bundle. Absolute paths and parent-directory escapes are rejected.
+- `bodyFile`: relative Markdown file path next to the bundle.
+
+Absolute paths and parent-directory escapes are rejected.
 
 ## Validation
 
@@ -71,7 +73,7 @@ The importer fails before writing when:
 - A challenge slug is duplicated in the bundle.
 - A module links to a challenge slug that is not defined in the bundle.
 - A module links to the same challenge more than once.
-- Any field violates the same broad constraints used by the admin UI, such as slug shape, status enum, challenge type enum, or point bounds.
+- A field violates the same broad constraints used by the admin UI, such as slug shape, status enum, challenge type enum, or point bounds.
 
 ## Import Behavior
 

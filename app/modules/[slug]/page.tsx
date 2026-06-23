@@ -24,6 +24,15 @@ function formatDate(date: Date | null) {
   }).format(date);
 }
 
+function formatDateTime(date: Date) {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(date);
+}
+
 function formatLabel(value: string) {
   return value.toLowerCase().replaceAll("_", " ");
 }
@@ -185,6 +194,12 @@ export default async function ModuleDetailPage({
   const completeChallengeCount = learningModule.challenges.filter(
     (challenge) => challenge.isComplete
   ).length;
+  const requiredChallenges = learningModule.challenges.filter((challenge) => challenge.required);
+  const completeRequiredCount = requiredChallenges.filter((challenge) => challenge.isComplete).length;
+  const progressPercent =
+    learningModule.challenges.length === 0
+      ? 0
+      : Math.round((completeChallengeCount / learningModule.challenges.length) * 100);
 
   return (
     <AppShell user={user} area="learner">
@@ -239,7 +254,19 @@ export default async function ModuleDetailPage({
                 {completeChallengeCount} of {learningModule.challenges.length} complete
               </dd>
             </div>
+            <div>
+              <dt className="text-muted-foreground">Required</dt>
+              <dd className="font-semibold">
+                {completeRequiredCount} of {requiredChallenges.length} complete
+              </dd>
+            </div>
           </dl>
+          <div className="mt-5">
+            <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+              <div className="h-full rounded-full bg-teal-600" style={{ width: `${progressPercent}%` }} />
+            </div>
+            <p className="mt-2 text-xs font-semibold text-muted-foreground">{progressPercent}% challenge progress</p>
+          </div>
         </Card>
       </section>
       <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
@@ -277,6 +304,27 @@ export default async function ModuleDetailPage({
                         Latest attempt: {formatLabel(challenge.latestAttempt.result)}
                         {challenge.latestAttempt.feedback ? ` · ${challenge.latestAttempt.feedback}` : ""}
                       </p>
+                    ) : null}
+                    {challenge.recentAttempts.length > 0 ? (
+                      <div className="mt-3 rounded-md border border-border bg-white p-3">
+                        <h4 className="text-sm font-semibold">Attempt history</h4>
+                        <div className="mt-2 grid gap-2">
+                          {challenge.recentAttempts.map((attempt) => (
+                            <div
+                              className="flex flex-wrap items-center justify-between gap-2 text-sm"
+                              key={`${attempt.createdAt.toISOString()}-${attempt.result}`}
+                            >
+                              <span className="font-semibold">{formatLabel(attempt.result)}</span>
+                              <span className="text-muted-foreground">
+                                {attempt.scoreAwarded} / {challenge.points} · {formatDateTime(attempt.createdAt)}
+                              </span>
+                              {attempt.feedback ? (
+                                <span className="basis-full text-xs text-muted-foreground">{attempt.feedback}</span>
+                              ) : null}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     ) : null}
                     {challenge.attachments.length > 0 ? (
                       <div className="mt-3 rounded-md border border-border bg-white p-3">

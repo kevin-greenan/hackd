@@ -1,16 +1,16 @@
 # Challenge Workflows
 
-Milestone 4 introduces the first learner challenge submission path.
+hackd supports several local challenge types and records every learner submission as an attempt.
 
 ## Supported Validators
 
-Current validators:
+- Static flag: exact string comparison after trimming whitespace.
+- Short answer: exact text match against configured accepted answers, with optional case-insensitive matching.
+- Multiple choice: single-answer radio selection or multi-answer checkbox selection against configured option IDs.
 
-- Static flag: exact string comparison after trimming whitespace
-- Short answer: exact text match against configured accepted answers, with optional case-insensitive matching
-- Multiple choice: single-answer radio selection or multi-answer checkbox selection against configured option IDs
+Admins configure these validators with type-specific fields in `/admin/challenges`. The form writes the underlying `validationConfig` and `runtimeConfig` JSON for portability and content import compatibility.
 
-Unsupported challenge types return a generic disabled response and do not reveal expected answers.
+Unsupported challenge types return a disabled response without revealing expected answers.
 
 ## Learner Flow
 
@@ -23,11 +23,11 @@ Unsupported challenge types return a generic disabled response and do not reveal
 
 ## Attachments
 
-Admins can upload downloadable files to challenges from `/admin/challenges`.
-Learners see attachment download links on assigned module challenge cards.
+Admins can upload downloadable files to challenges from `/admin/challenges`. Learners see attachment download links on assigned module challenge cards.
+
 The download route requires an active session and allows access only to admins or learners assigned to a published module containing the challenge.
 
-Attachment storage is local for v1:
+Attachment storage is local:
 
 - `FILE_STORAGE_DIR` controls the storage root.
 - `MAX_ATTACHMENT_BYTES` controls the upload size limit.
@@ -35,7 +35,7 @@ Attachment storage is local for v1:
 
 ## Dockerized Web Challenges
 
-Milestone 7 adds a local Docker runtime runner service for `DOCKER_WEB` challenges.
+`DOCKER_WEB` challenges use the internal runtime runner service.
 
 - `runtimeConfig.type` must be `docker_web`.
 - `runtimeConfig.image` names the Docker image to pull and launch.
@@ -55,7 +55,7 @@ When an answer is submitted, hackd checks all required challenges for the module
 
 ## Current Limits
 
-- File-based answer submissions are not implemented yet.
-- Expected static flags are stored in `validationConfig` for this early local version.
+- File-based answer submissions are planned.
+- Expected static flags are stored in `validationConfig` for this local foundation.
 - There is no per-challenge attempt limit yet.
 - There is no advanced anti-automation or durable rate limiting for submissions yet.

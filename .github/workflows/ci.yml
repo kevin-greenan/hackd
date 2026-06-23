@@ -20,3 +20,38 @@ jobs:
       - run: npm run test
       - run: npm run security:check
       - run: npm run build
+
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: docker compose up -d --build
+      - run: |
+          for attempt in {1..30}; do
+            if curl -fsS http://localhost:3000/api/healthz; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose logs web
+          exit 1
+      - run: |
+          npm run ui:smoke || {
+            docker compose logs --no-color web
+            exit 1
+          }
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
+          PLAYWRIGHT_ADMIN_EMAIL: admin@hackd.local
+          PLAYWRIGHT_ADMIN_PASSWORD: change-me-in-development
+          PLAYWRIGHT_LEARNER_EMAIL: learner@hackd.local
+          PLAYWRIGHT_LEARNER_PASSWORD: change-me-in-development
+      - run: npm run container:scan
+      - if: always()
+        run: docker compose down

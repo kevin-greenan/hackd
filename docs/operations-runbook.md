@@ -1,6 +1,6 @@
 # Operations Runbook
 
-This runbook is for local internal testing and demo preparation.
+This runbook supports local internal testing, demos, and release preparation.
 
 ## Start and Stop
 
@@ -16,10 +16,16 @@ Stop the stack:
 docker compose down
 ```
 
-Run the automated compose smoke test:
+Run the automated Compose smoke test:
 
 ```sh
 npm run smoke:compose
+```
+
+Run browser UI smoke tests against a running stack:
+
+```sh
+npm run ui:smoke
 ```
 
 ## Health Checks
@@ -30,10 +36,10 @@ App and database:
 curl -fsS http://localhost:3000/api/healthz
 ```
 
-Runner:
+Runner, from the Compose network:
 
 ```sh
-curl -fsS http://localhost:4010/healthz
+docker compose exec -T runner node -e "fetch('http://127.0.0.1:4010/healthz').then((r) => r.text()).then(console.log)"
 ```
 
 ## Logs
@@ -75,6 +81,14 @@ npm run security:check
 ```
 
 The current check runs `npm audit --omit=dev` and scans tracked source files for common secret patterns. It is intentionally local and free of paid GitHub security features.
+
+Run container scanning after images are built:
+
+```sh
+npm run container:scan
+```
+
+The container scan uses Trivy against the local `hackd-web:latest` and `hackd-runner:latest` images.
 
 ## Demo Checklist
 

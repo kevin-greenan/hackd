@@ -6,6 +6,8 @@ This imported lesson walks through a small notes feature with a focus on authori
 
 A notes application lets users open URLs shaped like `/notes/:noteId`. The route handler loads a note by ID and renders it in the browser.
 
+The security question is whether the server proves that the current user owns the requested note before returning it.
+
 ## Review Questions
 
 Ask these questions before trusting the implementation:
