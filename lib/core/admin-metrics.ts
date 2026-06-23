@@ -32,3 +32,39 @@ export async function getAdminMetrics() {
     runningInstances
   };
 }
+
+export async function getRecentAdminAttempts(limit = 10) {
+  const attempts = await prisma.attempt.findMany({
+    take: limit,
+    orderBy: {
+      createdAt: "desc"
+    },
+    include: {
+      user: {
+        select: {
+          email: true,
+          name: true
+        }
+      },
+      challenge: {
+        select: {
+          title: true,
+          type: true,
+          points: true
+        }
+      }
+    }
+  });
+
+  return attempts.map((attempt) => ({
+    id: attempt.id,
+    learnerName: attempt.user.name,
+    learnerEmail: attempt.user.email,
+    challengeTitle: attempt.challenge.title,
+    challengeType: attempt.challenge.type,
+    result: attempt.result,
+    scoreAwarded: attempt.scoreAwarded,
+    points: attempt.challenge.points,
+    createdAt: attempt.createdAt
+  }));
+}

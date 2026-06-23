@@ -1,11 +1,27 @@
 import { AppShell } from "@/components/app-shell";
 import { Card, EmptyState } from "@/components/card";
 import { requireAdmin } from "@/lib/auth/current-user";
-import { getAdminMetrics } from "@/lib/core/admin-metrics";
+import { getAdminMetrics, getRecentAdminAttempts } from "@/lib/core/admin-metrics";
+
+function formatDateTime(date: Date) {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(date);
+}
+
+function formatLabel(value: string) {
+  return value.toLowerCase().replaceAll("_", " ");
+}
 
 export default async function AdminPage() {
   const user = await requireAdmin();
-  const metrics = await getAdminMetrics();
+  const [metrics, recentAttempts] = await Promise.all([
+    getAdminMetrics(),
+    getRecentAdminAttempts()
+  ]);
   const adminCards = [
     {
       title: "Users",
@@ -25,7 +41,7 @@ export default async function AdminPage() {
     {
       title: "Challenges",
       count: metrics.challenges,
-      description: "Challenge metadata is modeled; validation arrives in a later milestone."
+      description: "Static, short-answer, and multiple-choice validation paths are available."
     },
     {
       title: "Assignments",
@@ -56,6 +72,74 @@ export default async function AdminPage() {
             <EmptyState title="Foundation ready" description={card.description} />
           </Card>
         ))}
+      </section>
+      <section className="mt-8">
+        <Card>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">Recent attempts</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Latest learner submissions across supported challenge types.
+              </p>
+            </div>
+            <p className="text-sm font-semibold text-muted-foreground">
+              {recentAttempts.length} shown
+            </p>
+          </div>
+          {recentAttempts.length > 0 ? (
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full min-w-[44rem] border-collapse text-left text-sm">
+                <thead>
+                  <tr className="border-b border-border text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                    <th className="py-3 pr-4 font-semibold">Learner</th>
+                    <th className="py-3 pr-4 font-semibold">Challenge</th>
+                    <th className="py-3 pr-4 font-semibold">Result</th>
+                    <th className="py-3 pr-4 font-semibold">Score</th>
+                    <th className="py-3 font-semibold">Submitted</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentAttempts.map((attempt) => (
+                    <tr className="border-b border-border last:border-0" key={attempt.id}>
+                      <td className="py-3 pr-4 align-top">
+                        <p className="font-semibold">{attempt.learnerName}</p>
+                        <p className="text-xs text-muted-foreground">{attempt.learnerEmail}</p>
+                      </td>
+                      <td className="py-3 pr-4 align-top">
+                        <p className="font-semibold">{attempt.challengeTitle}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatLabel(attempt.challengeType)}
+                        </p>
+                      </td>
+                      <td className="py-3 pr-4 align-top">
+                        <span
+                          className={`rounded-md px-2 py-1 text-xs font-semibold ${
+                            attempt.result === "CORRECT"
+                              ? "bg-teal-100 text-teal-800"
+                              : "bg-amber-100 text-amber-800"
+                          }`}
+                        >
+                          {formatLabel(attempt.result)}
+                        </span>
+                      </td>
+                      <td className="py-3 pr-4 align-top font-semibold">
+                        {attempt.scoreAwarded} / {attempt.points}
+                      </td>
+                      <td className="py-3 align-top text-muted-foreground">
+                        {formatDateTime(attempt.createdAt)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <EmptyState
+              title="No attempts yet"
+              description="Learner submissions will appear here after challenges are attempted."
+            />
+          )}
+        </Card>
       </section>
     </AppShell>
   );

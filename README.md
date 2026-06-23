@@ -2,7 +2,7 @@
 
 hackd is a containerized control plane for hands-on security training modules, challenges, sandboxes, validation, and learner progress.
 
-This repository currently implements Milestone 0 through Milestone 4 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, and a health endpoint.
+This repository currently implements Milestone 0 through early Milestone 5 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, recent attempt visibility for admins, and a health endpoint.
 
 ## Prerequisites
 
@@ -101,7 +101,7 @@ After `docker compose up --build`:
 1. Open [http://localhost:3000](http://localhost:3000).
 2. Sign in as `admin@hackd.local`.
 3. Confirm `/dashboard` shows the admin identity and an `Open admin` action.
-4. Open `/admin` and confirm the admin dashboard loads.
+4. Open `/admin` and confirm the admin dashboard loads with metric cards and recent attempts.
 5. Log out.
 6. Sign in as `learner@hackd.local`.
 7. Confirm `/dashboard` loads for the learner.
@@ -124,6 +124,7 @@ After `docker compose up --build`:
 - Basic admin and learner route separation with database-backed dashboard data
 - Learner module detail pages with Markdown lesson rendering and challenge status sections
 - Static flag, exact-text short-answer, and multiple-choice validation with attempt recording
+- Admin recent-attempt visibility for learner submissions
 - Landing, login, dashboard, and admin pages
 - `/api/healthz` endpoint with database connectivity check
 - Vitest coverage for password hashing and RBAC helpers
