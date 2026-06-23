@@ -59,11 +59,19 @@ export async function getSessionFromCookies() {
   return readSessionToken(cookieStore.get(SESSION_COOKIE_NAME)?.value);
 }
 
+export function sessionCookieSecure() {
+  if (process.env.APP_URL) {
+    return process.env.APP_URL.startsWith("https://");
+  }
+
+  return process.env.NODE_ENV === "production";
+}
+
 export function sessionCookieOptions() {
   return {
     httpOnly: true,
     sameSite: "lax" as const,
-    secure: process.env.NODE_ENV === "production",
+    secure: sessionCookieSecure(),
     path: "/",
     maxAge: 60 * 60 * 24 * 7
   };
