@@ -32,6 +32,12 @@ export type LearnerModuleChallenge = {
     feedback: string | null;
     createdAt: Date;
   } | null;
+  recentAttempts: {
+    result: AttemptResult;
+    feedback: string | null;
+    scoreAwarded: number;
+    createdAt: Date;
+  }[];
   attachments: {
     id: string;
     originalName: string;
@@ -193,6 +199,12 @@ export async function getLearnerModuleDetail({
               createdAt: moduleChallenge.challenge.attempts[0].createdAt
             }
           : null,
+        recentAttempts: moduleChallenge.challenge.attempts.slice(0, 5).map((attempt) => ({
+          result: attempt.result,
+          feedback: attempt.feedback,
+          scoreAwarded: attempt.scoreAwarded,
+          createdAt: attempt.createdAt
+        })),
         attachments: moduleChallenge.challenge.attachments,
         activeInstance: activeInstance
           ? {
