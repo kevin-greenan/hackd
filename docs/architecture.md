@@ -14,7 +14,7 @@ Authentication is local email/password for v1. Successful login creates a signed
 
 ## Deferred Components
 
-Rich authoring editors, advanced admin lifecycle controls, scheduled reporting, and hardened runtime isolation are intentionally deferred. Their database models are present to keep the foundation aligned with the roadmap.
+Rich authoring editors, advanced admin lifecycle controls, scheduled reporting, container vulnerability scanning, release tagging, and hardened runtime isolation are intentionally deferred. Their database models are present to keep the foundation aligned with the roadmap.
 
 ## Core Data Layer
 
@@ -34,3 +34,8 @@ Milestone 2 adds small server-side helpers under `lib/core/`:
 - `content-import.ts` validates YAML/JSON content bundles, imports Markdown lesson bodies, and upserts modules, challenges, and module links.
 - `audit-log.ts` centralizes admin action audit writes and bounded audit-log reads.
 - `completions.ts` calculates progress summaries without coupling UI code to completion math.
+- `logger.ts` writes single-line JSON events for route and auth observability.
+
+## Error Handling
+
+Next.js error boundaries in `app/error.tsx` and `app/global-error.tsx` render controlled retry pages for route-level and application-shell failures. Server route failures that are expected operational events, such as database health-check failures, are logged with structured JSON before returning bounded error responses.

@@ -1574,40 +1574,40 @@ Make the project stable enough for internal testing.
 
 Deliverables
 
-* Improved docs
-* Better tests
-* Security baseline
-* Error handling
-* Operational runbook
-* Demo content
+* [x] Improved docs
+* [x] Better tests
+* [x] Security baseline
+* [x] Error handling
+* [x] Operational runbook
+* [x] Demo content
 * Versioned release
 
 Tasks
 
-* Add architecture documentation.
-* Add security model documentation.
-* Add challenge runtime documentation.
-* Add admin usage documentation.
-* Add learner usage documentation.
-* Add Docker deployment documentation.
-* Add backup/restore notes.
-* Add test coverage for core flows.
-* Add API integration tests.
+* [x] Add architecture documentation.
+* [x] Add security model documentation.
+* [x] Add challenge runtime documentation.
+* [x] Add admin usage documentation.
+* [x] Add learner usage documentation.
+* [x] Add Docker deployment documentation.
+* [x] Add backup/restore notes.
+* [x] Add test coverage for core flows.
+* [x] Add API integration tests.
 * Add UI smoke tests.
-* Add dependency scanning.
+* [x] Add dependency scanning.
 * Add container scanning.
-* Add secret scanning.
-* Add structured logging.
-* Add global error handling.
+* [x] Add secret scanning.
+* [x] Add structured logging.
+* [x] Add global error handling.
 * Add release tagging.
 * Create v0.1.0 release.
 
 Acceptance Criteria
 
-* New developer can run the platform from README instructions.
-* Core flows are covered by tests.
-* Basic security checks run in CI.
-* Platform can be demoed locally with seeded content.
+* [x] New developer can run the platform from README instructions.
+* [x] Core flows are covered by tests.
+* [x] Basic security checks run in CI.
+* [x] Platform can be demoed locally with seeded content.
 * v0.1.0 release is tagged.
 
 12. Future Roadmap

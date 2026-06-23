@@ -69,8 +69,23 @@ As of this pass:
 - `npm audit` reports zero vulnerabilities.
 - `postcss` is pinned through npm `overrides` so nested dependencies use the patched line.
 
+## CI Security Baseline
+
+- CI runs `npm run security:check`.
+- The check runs `npm audit --omit=dev`.
+- The check scans tracked source files for common private key, GitHub token, Slack token, and AWS access key patterns.
+- This avoids paid GitHub Advanced Security features while still giving internal testing a basic automated guardrail.
+
+## Error Handling and Logging
+
+- App routes can write single-line JSON logs through `logger`.
+- Log entries include `level`, `event`, and `timestamp`.
+- Login success, failed login paths, rate limits, and health-check failures emit structured events without logging passwords or session tokens.
+- App-level and global error boundaries render a controlled retry page and log client-side error events.
+
 ## Known Security Limitations
 
 - No CSRF-specific token layer is implemented yet; current auth mutations are narrow form posts with same-site cookies.
 - No MFA, OIDC, SAML, or SCIM support exists yet.
 - Runtime isolation is a local Docker V1 implementation and does not yet include egress controls, image signing, rootless Docker, gVisor, or Firecracker.
+- Container vulnerability scanning is not implemented yet.
