@@ -108,7 +108,7 @@ async function main() {
       title: "Intro to Secure Code Review",
       summary: "Learn a practical review loop for spotting common web security defects.",
       bodyMarkdown:
-        "## Overview\n\nThis sample module introduces structured secure code review for web applications.",
+        "## Overview\n\nThis sample module introduces structured secure code review for web applications.\n\n### Review loop\n\n1. Identify trust boundaries.\n2. Trace user-controlled input.\n3. Confirm authorization checks near sensitive reads and writes.\n\n```ts\nif (invoice.userId !== currentUser.id) {\n  throw new Error(\"not authorized\");\n}\n```\n\n> Secure review is most useful when it is repeatable and specific.",
       difficulty: "beginner",
       estimatedMinutes: 35,
       status: ContentStatus.PUBLISHED,
@@ -120,7 +120,7 @@ async function main() {
       slug: "intro-secure-code-review",
       summary: "Learn a practical review loop for spotting common web security defects.",
       bodyMarkdown:
-        "## Overview\n\nThis sample module introduces structured secure code review for web applications.",
+        "## Overview\n\nThis sample module introduces structured secure code review for web applications.\n\n### Review loop\n\n1. Identify trust boundaries.\n2. Trace user-controlled input.\n3. Confirm authorization checks near sensitive reads and writes.\n\n```ts\nif (invoice.userId !== currentUser.id) {\n  throw new Error(\"not authorized\");\n}\n```\n\n> Secure review is most useful when it is repeatable and specific.",
       difficulty: "beginner",
       estimatedMinutes: 35,
       status: ContentStatus.PUBLISHED,
@@ -135,7 +135,7 @@ async function main() {
       title: "Intro Static Flag",
       summary: "Practice a simple challenge submission workflow with a static flag.",
       bodyMarkdown:
-        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.",
+        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.\n\n### What you will see\n\n- A linked challenge section\n- Attempt history reflected in recent activity\n- Module progress state on the dashboard\n\n```txt\nflag{sample}\n```\n\nThe static challenge validator is implemented in a later milestone.",
       difficulty: "beginner",
       estimatedMinutes: 20,
       status: ContentStatus.PUBLISHED,
@@ -147,7 +147,7 @@ async function main() {
       slug: "intro-static-flag",
       summary: "Practice a simple challenge submission workflow with a static flag.",
       bodyMarkdown:
-        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.",
+        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.\n\n### What you will see\n\n- A linked challenge section\n- Attempt history reflected in recent activity\n- Module progress state on the dashboard\n\n```txt\nflag{sample}\n```\n\nThe static challenge validator is implemented in a later milestone.",
       difficulty: "beginner",
       estimatedMinutes: 20,
       status: ContentStatus.PUBLISHED,
