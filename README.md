@@ -130,7 +130,12 @@ npm run dev
 | `npm run db:migrate` | Apply local Prisma migrations in development. |
 | `npm run db:seed` | Seed local users and sample content. |
 
-`npm run smoke:compose` builds the containers, starts the stack, waits for `/api/healthz`, checks the runner, prints health responses, and stops the stack.
+`npm run smoke:compose` builds the containers, starts the stack, waits for `/api/healthz`, checks `/api/readyz` and the runner, prints health responses, and stops the stack.
+
+Operational endpoints:
+
+- `/api/healthz` checks the app and database.
+- `/api/readyz` checks the app, database, and runtime runner.
 
 ## Documentation
 

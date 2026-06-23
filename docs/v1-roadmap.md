@@ -182,7 +182,7 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 - [ ] Content schema is versioned and documented.
 - [ ] Admin authoring workflows have preview and safe publish states.
 - [x] Backup and restore flow is executable and tested.
-- [ ] Logs and health checks are sufficient for routine operations.
+- [x] Logs and health checks are sufficient for routine operations.
 - [ ] CSV exports are documented and stable.
 - [ ] Docker runtime support boundary is explicit.
 - [ ] Runtime containers remain unprivileged and resource-limited.

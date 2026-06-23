@@ -36,6 +36,12 @@ App and database:
 curl -fsS http://localhost:3000/api/healthz
 ```
 
+Readiness, including database and runner dependencies:
+
+```sh
+curl -fsS http://localhost:3000/api/readyz
+```
+
 Runner, from the Compose network:
 
 ```sh
