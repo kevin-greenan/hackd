@@ -3,6 +3,7 @@ import {
   AttemptResult,
   ChallengeType,
   ContentStatus,
+  Prisma,
   PrismaClient,
   Role,
   UserStatus
@@ -269,6 +270,49 @@ async function main() {
     }
   });
 
+  const dockerWebChallenge = await prisma.challenge.upsert({
+    where: { slug: "launch-sample-web-runtime" },
+    update: {
+      title: "Launch Sample Web Runtime",
+      description: "Start a temporary Dockerized web challenge and open the generated URL.",
+      type: ChallengeType.DOCKER_WEB,
+      difficulty: "beginner",
+      points: 0,
+      tags: ["runtime", "docker"],
+      validationConfig: Prisma.JsonNull,
+      runtimeConfig: {
+        type: "docker_web",
+        image: "nginx:alpine",
+        containerPort: 80,
+        memoryMb: 128,
+        cpuCount: 0.25,
+        ttlMinutes: 30
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "Launch Sample Web Runtime",
+      slug: "launch-sample-web-runtime",
+      description: "Start a temporary Dockerized web challenge and open the generated URL.",
+      type: ChallengeType.DOCKER_WEB,
+      difficulty: "beginner",
+      points: 0,
+      tags: ["runtime", "docker"],
+      validationConfig: Prisma.JsonNull,
+      runtimeConfig: {
+        type: "docker_web",
+        image: "nginx:alpine",
+        containerPort: 80,
+        memoryMb: 128,
+        cpuCount: 0.25,
+        ttlMinutes: 30
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
   await prisma.moduleChallenge.upsert({
     where: {
       moduleId_challengeId: {
@@ -282,6 +326,22 @@ async function main() {
       challengeId: reviewChallenge.id,
       sortOrder: 1,
       required: true
+    }
+  });
+
+  await prisma.moduleChallenge.upsert({
+    where: {
+      moduleId_challengeId: {
+        moduleId: staticFlagModule.id,
+        challengeId: dockerWebChallenge.id
+      }
+    },
+    update: { sortOrder: 2, required: false },
+    create: {
+      moduleId: staticFlagModule.id,
+      challengeId: dockerWebChallenge.id,
+      sortOrder: 2,
+      required: false
     }
   });
 

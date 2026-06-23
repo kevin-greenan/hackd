@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
-import { ButtonLink } from "@/components/button";
+import { Button, ButtonLink } from "@/components/button";
 import { Card, EmptyState } from "@/components/card";
 import { MarkdownContent } from "@/components/learning/markdown-content";
 import { requireUser } from "@/lib/auth/current-user";
 import { getLearnerModuleDetail, type LearnerModuleChallenge } from "@/lib/core/module-detail";
-import { submitChallengeAction } from "./actions";
+import {
+  launchChallengeInstanceAction,
+  stopChallengeInstanceAction,
+  submitChallengeAction
+} from "./actions";
 
 function formatDate(date: Date | null) {
   if (!date) {
@@ -34,6 +38,70 @@ function formatBytes(sizeBytes: number) {
   }
 
   return `${Math.round((sizeBytes / (1024 * 1024)) * 10) / 10} MB`;
+}
+
+function formatRuntimeStatus(value: string) {
+  return value.toLowerCase().replaceAll("_", " ");
+}
+
+function RuntimeControls({
+  challenge,
+  moduleSlug
+}: {
+  challenge: LearnerModuleChallenge;
+  moduleSlug: string;
+}) {
+  if (challenge.type !== "DOCKER_WEB") {
+    return null;
+  }
+
+  const instance = challenge.activeInstance;
+  const isRunning = instance?.status === "RUNNING" && instance.url;
+  const isStarting = instance?.status === "STARTING";
+
+  return (
+    <div className="mt-4 rounded-md border border-border bg-white p-3">
+      <h4 className="text-sm font-semibold">Runtime</h4>
+      {instance ? (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Status: {formatRuntimeStatus(instance.status)}
+          {instance.expiresAt ? ` · expires ${formatDate(instance.expiresAt)}` : ""}
+        </p>
+      ) : (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Launch a temporary Dockerized challenge environment.
+        </p>
+      )}
+      {instance?.statusMessage ? (
+        <p className="mt-2 rounded-md bg-slate-50 px-3 py-2 text-sm text-muted-foreground">
+          {instance.statusMessage}
+        </p>
+      ) : null}
+      <div className="mt-3 flex flex-wrap gap-2">
+        {isRunning ? (
+          <ButtonLink href={instance.url as string} variant="secondary">
+            Open challenge
+          </ButtonLink>
+        ) : null}
+        {isRunning || isStarting ? (
+          <form action={stopChallengeInstanceAction}>
+            <input name="moduleSlug" type="hidden" value={moduleSlug} />
+            <input name="challengeId" type="hidden" value={challenge.id} />
+            <input name="instanceId" type="hidden" value={instance.id} />
+            <Button type="submit" variant="ghost">
+              Stop
+            </Button>
+          </form>
+        ) : (
+          <form action={launchChallengeInstanceAction}>
+            <input name="moduleSlug" type="hidden" value={moduleSlug} />
+            <input name="challengeId" type="hidden" value={challenge.id} />
+            <Button type="submit">Launch</Button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function ChallengeSubmissionForm({
@@ -103,7 +171,7 @@ export default async function ModuleDetailPage({
   searchParams
 }: {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ challenge?: string; submission?: string }>;
+  searchParams?: Promise<{ challenge?: string; runtime?: string; submission?: string }>;
 }) {
   const user = await requireUser();
   const { slug } = await params;
@@ -244,12 +312,32 @@ export default async function ModuleDetailPage({
                             : "The submission could not be processed."}
                       </p>
                     ) : null}
+                    {submissionState?.challenge === challenge.id && submissionState.runtime ? (
+                      <p
+                        className={`mt-3 rounded-md px-3 py-2 text-sm ${
+                          submissionState.runtime === "running"
+                            ? "border border-teal-200 bg-teal-50 text-teal-800"
+                            : submissionState.runtime === "stopped"
+                              ? "border border-slate-200 bg-white text-slate-700"
+                              : "border border-amber-200 bg-amber-50 text-amber-800"
+                        }`}
+                      >
+                        {submissionState.runtime === "running"
+                          ? "Challenge instance is running."
+                          : submissionState.runtime === "stopped"
+                            ? "Challenge instance stopped."
+                            : "The challenge instance could not be updated."}
+                      </p>
+                    ) : null}
+                    {learningModule.assignment.targetType !== "preview" ? (
+                      <RuntimeControls challenge={challenge} moduleSlug={learningModule.slug} />
+                    ) : null}
                     {challenge.supportsSubmission &&
                     !challenge.isComplete &&
                     learningModule.assignment.targetType !== "preview" ? (
                       <ChallengeSubmissionForm challenge={challenge} moduleSlug={learningModule.slug} />
                     ) : null}
-                    {!challenge.supportsSubmission ? (
+                    {!challenge.supportsSubmission && challenge.type !== "DOCKER_WEB" ? (
                       <p className="mt-3 text-sm text-muted-foreground">
                         Submissions for this challenge type are not enabled yet.
                       </p>
