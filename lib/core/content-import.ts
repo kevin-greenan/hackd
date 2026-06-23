@@ -5,6 +5,8 @@ import { parse as parseYaml } from "yaml";
 import { z } from "zod";
 import { prisma } from "../db/prisma";
 
+export const CONTENT_SCHEMA_VERSION = 1;
+
 const slugSchema = z
   .string()
   .trim()
@@ -54,7 +56,11 @@ const moduleImportSchema = z
   });
 
 export const contentImportBundleSchema = z.object({
-  version: z.literal(1),
+  version: z.literal(CONTENT_SCHEMA_VERSION, {
+    errorMap: () => ({
+      message: `Unsupported content schema version. Expected version ${CONTENT_SCHEMA_VERSION}.`
+    })
+  }),
   modules: z.array(moduleImportSchema).min(1),
   challenges: z.array(challengeImportSchema).default([])
 });

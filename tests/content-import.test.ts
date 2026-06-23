@@ -47,6 +47,15 @@ describe("content import validation", () => {
     expect(validateContentImportBundle(validBundle).modules[0].slug).toBe("secure-notes-basics");
   });
 
+  it("rejects unsupported content schema versions", () => {
+    expect(() =>
+      validateContentImportBundle({
+        ...validBundle,
+        version: 2
+      })
+    ).toThrow("Unsupported content schema version. Expected version 1.");
+  });
+
   it("rejects duplicate module slugs", () => {
     expect(() =>
       validateContentImportBundle({
