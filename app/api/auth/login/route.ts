@@ -9,6 +9,7 @@ import {
   sessionCookieOptions
 } from "@/lib/auth/session";
 import { prisma } from "@/lib/db/prisma";
+import { getPublicUrl } from "@/lib/http/public-url";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -16,7 +17,7 @@ const loginSchema = z.object({
 });
 
 function redirectToLogin(request: NextRequest, error: string) {
-  return NextResponse.redirect(new URL(`/login?error=${error}`, request.url), 303);
+  return NextResponse.redirect(getPublicUrl(request, `/login?error=${error}`), 303);
 }
 
 export async function POST(request: NextRequest) {
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
     email: user.email,
     role: user.role
   });
-  const response = NextResponse.redirect(new URL("/dashboard", request.url), 303);
+  const response = NextResponse.redirect(getPublicUrl(request, "/dashboard"), 303);
   response.cookies.set(SESSION_COOKIE_NAME, token, sessionCookieOptions());
 
   return response;
