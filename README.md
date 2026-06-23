@@ -2,7 +2,7 @@
 
 hackd is a containerized control plane for hands-on security training modules, challenges, sandboxes, validation, and learner progress.
 
-This repository currently implements Milestone 0 through Milestone 3 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, module detail pages, Markdown lesson rendering, and a health endpoint.
+This repository currently implements Milestone 0 through Milestone 4 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, module detail pages, Markdown lesson rendering, static challenge submissions, and a health endpoint.
 
 ## Prerequisites
 
@@ -106,8 +106,10 @@ After `docker compose up --build`:
 6. Sign in as `learner@hackd.local`.
 7. Confirm `/dashboard` loads for the learner.
 8. Open an assigned module and confirm Markdown content plus challenge sections render.
-9. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
-10. Log out and confirm `/dashboard` redirects to `/login`.
+9. Submit an incorrect challenge answer and confirm the attempt feedback appears.
+10. Submit the seeded correct static flag `flag{sample}` and confirm progress updates.
+11. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
+12. Log out and confirm `/dashboard` redirects to `/login`.
 
 ## Implemented
 
@@ -120,6 +122,7 @@ After `docker compose up --build`:
 - Server-side `getCurrentUser()`, `requireUser()`, and `requireAdmin()` helpers
 - Basic admin and learner route separation with database-backed dashboard data
 - Learner module detail pages with Markdown lesson rendering and challenge status sections
+- Static flag and exact-text short-answer validation with attempt recording
 - Landing, login, dashboard, and admin pages
 - `/api/healthz` endpoint with database connectivity check
 - Vitest coverage for password hashing and RBAC helpers
@@ -131,7 +134,7 @@ After `docker compose up --build`:
 
 - User creation UI is not implemented yet.
 - Full admin CRUD for users, groups, modules, challenges, assignments, and reporting is not implemented yet.
-- Challenge submission and validation are not implemented yet.
+- Multiple-choice, file-based, and Dockerized challenge submissions are not implemented yet.
 - Dockerized challenge launching is intentionally not implemented in this pass.
 - Content import, OIDC/SAML, multi-tenancy, and marketplace concepts are deferred.
 - Auth rate limiting is in-memory and suitable only for local/dev foundations.
@@ -139,10 +142,10 @@ After `docker compose up --build`:
 
 ## Next Milestone Checklist
 
-Milestone 4 should add the first challenge workflow:
+Next milestones should expand admin management and challenge coverage:
 
-- Static flag submission form and validation API
-- Attempt recording for correct and incorrect submissions
-- Challenge completion updates after correct answers
-- Validation responses that do not leak expected answers
-- Tests for validators, attempt recording, and completion updates
+- Multiple-choice challenge UI and validation
+- Admin CRUD for users, groups, modules, challenges, and assignments
+- Audit logging for admin actions
+- Reporting views and exports
+- File-based challenge support

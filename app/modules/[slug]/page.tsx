@@ -6,6 +6,7 @@ import { Card, EmptyState } from "@/components/card";
 import { MarkdownContent } from "@/components/learning/markdown-content";
 import { requireUser } from "@/lib/auth/current-user";
 import { getLearnerModuleDetail } from "@/lib/core/module-detail";
+import { submitChallengeAction } from "./actions";
 
 function formatDate(date: Date | null) {
   if (!date) {
@@ -24,12 +25,15 @@ function formatLabel(value: string) {
 }
 
 export default async function ModuleDetailPage({
-  params
+  params,
+  searchParams
 }: {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ challenge?: string; submission?: string }>;
 }) {
   const user = await requireUser();
   const { slug } = await params;
+  const submissionState = await searchParams;
   const learningModule = await getLearnerModuleDetail({ userId: user.id, role: user.role, slug });
 
   if (!learningModule) {
@@ -126,6 +130,61 @@ export default async function ModuleDetailPage({
                       {formatLabel(challenge.type)} · {challenge.points} points ·{" "}
                       {challenge.required ? "required" : "optional"}
                     </p>
+                    {challenge.latestAttempt ? (
+                      <p className="mt-3 rounded-md bg-white px-3 py-2 text-sm text-muted-foreground">
+                        Latest attempt: {formatLabel(challenge.latestAttempt.result)}
+                        {challenge.latestAttempt.feedback ? ` · ${challenge.latestAttempt.feedback}` : ""}
+                      </p>
+                    ) : null}
+                    {submissionState?.challenge === challenge.id && submissionState.submission ? (
+                      <p
+                        className={`mt-3 rounded-md px-3 py-2 text-sm ${
+                          submissionState.submission === "correct"
+                            ? "border border-teal-200 bg-teal-50 text-teal-800"
+                            : "border border-amber-200 bg-amber-50 text-amber-800"
+                        }`}
+                      >
+                        {submissionState.submission === "correct"
+                          ? "Correct. Progress has been updated."
+                          : submissionState.submission === "incorrect"
+                            ? "That answer is not correct."
+                            : "The submission could not be processed."}
+                      </p>
+                    ) : null}
+                    {challenge.supportsSubmission &&
+                    !challenge.isComplete &&
+                    learningModule.assignment.targetType !== "preview" ? (
+                      <form action={submitChallengeAction} className="mt-4 grid gap-3">
+                        <input name="moduleSlug" type="hidden" value={learningModule.slug} />
+                        <input name="challengeId" type="hidden" value={challenge.id} />
+                        <label className="text-sm font-medium" htmlFor={`answer-${challenge.id}`}>
+                          Answer
+                        </label>
+                        <input
+                          className="h-10 rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+                          id={`answer-${challenge.id}`}
+                          name="submittedValue"
+                          required
+                          type="text"
+                        />
+                        <button
+                          className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-teal-700"
+                          type="submit"
+                        >
+                          Submit answer
+                        </button>
+                      </form>
+                    ) : null}
+                    {!challenge.supportsSubmission ? (
+                      <p className="mt-3 text-sm text-muted-foreground">
+                        Submissions for this challenge type are not enabled yet.
+                      </p>
+                    ) : null}
+                    {learningModule.assignment.targetType === "preview" && challenge.supportsSubmission ? (
+                      <p className="mt-3 text-sm text-muted-foreground">
+                        Admin preview mode does not record learner attempts.
+                      </p>
+                    ) : null}
                   </div>
                 ))}
               </div>
