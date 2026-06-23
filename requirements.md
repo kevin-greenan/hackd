@@ -1457,44 +1457,44 @@ Support launching simple Dockerized web challenges.
 
 Deliverables
 
-* Challenge runner service
-* Docker challenge definition support
-* Instance lifecycle management
-* Port allocation
-* Challenge URL generation
-* Stop/cleanup process
+- [x] Challenge runner service
+- [x] Docker challenge definition support
+- [x] Instance lifecycle management
+- [x] Port allocation
+- [x] Challenge URL generation
+- [x] Stop/cleanup process
 
 Tasks
 
-* Define Docker runtime configuration schema.
-* Create runner abstraction.
-* Implement Docker runner.
-* Add worker service.
-* Add job queue.
-* Implement challenge launch request.
-* Implement container creation.
-* Implement resource limits.
-* Implement port allocation.
-* Store challenge instance state.
-* Return challenge URL to learner.
-* Implement stop challenge.
-* Implement instance expiration.
-* Implement cleanup job.
-* Add runner logs.
-* Add error states in learner UI.
-* Add admin visibility into running instances.
-* Add sample Dockerized challenge.
+- [x] Define Docker runtime configuration schema.
+- [x] Create runner abstraction.
+- [x] Implement Docker runner.
+- [x] Add worker service.
+- [x] Add job queue.
+- [x] Implement challenge launch request.
+- [x] Implement container creation.
+- [x] Implement resource limits.
+- [x] Implement port allocation.
+- [x] Store challenge instance state.
+- [x] Return challenge URL to learner.
+- [x] Implement stop challenge.
+- [x] Implement instance expiration.
+- [x] Implement cleanup job.
+- [x] Add runner logs.
+- [x] Add error states in learner UI.
+- [x] Add admin visibility into running instances.
+- [x] Add sample Dockerized challenge.
 
 Acceptance Criteria
 
-* Learner can start a Dockerized web challenge.
-* Platform launches a container for the learner.
-* Learner receives working URL.
-* Learner can stop the challenge.
-* Expired challenges are cleaned up.
-* Resource limits are applied.
-* Failed launches produce useful error messages.
-* No privileged containers are launched by default.
+- [x] Learner can start a Dockerized web challenge.
+- [x] Platform launches a container for the learner.
+- [x] Learner receives working URL.
+- [x] Learner can stop the challenge.
+- [x] Expired challenges are cleaned up.
+- [x] Resource limits are applied.
+- [x] Failed launches produce useful error messages.
+- [x] No privileged containers are launched by default.
 
 Milestone 8: Reporting V1
 

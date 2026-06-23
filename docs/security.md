@@ -17,6 +17,7 @@ This document tracks the current security posture.
 - `/admin` requires an authenticated active user with the `ADMIN` role.
 - Admin user, group, module, challenge, attachment, assignment, and reporting actions require the server-side `requireAdmin()` helper.
 - Attachment downloads require an active user and verify admin role or learner assignment before returning file bytes.
+- Dockerized challenge launch/stop actions require an active learner assignment or admin runtime management access.
 - Client-side role checks are treated as presentation only; server-side helpers are the access-control boundary.
 
 ## Admin Audit Logging
@@ -49,6 +50,17 @@ This document tracks the current security posture.
 - Download responses set `X-Content-Type-Options: nosniff`.
 - Local storage is intended for v1 development and single-node deployments; production deployments should use durable storage with backups.
 
+## Docker Runtime
+
+- The web service does not mount the Docker socket.
+- Docker socket access is isolated to the internal `runner` service in Docker Compose.
+- Runtime containers are created without privileged mode.
+- Runtime containers drop all Linux capabilities, set `no-new-privileges`, set a read-only root filesystem, and apply memory, CPU, and PID limits.
+- Runtime containers avoid host filesystem mounts.
+- Runtime containers are labeled with `hackd.runtime=true` and tracked in `ChallengeInstance`.
+- Expired instances can be cleaned from `/admin/instances`; cleanup marks database state and stops/removes the Docker container.
+- This is a local V1 runner and should be further hardened before exposing hostile workloads beyond a trusted development host.
+
 ## Dependency Audit
 
 As of this pass:
@@ -61,4 +73,4 @@ As of this pass:
 
 - No CSRF-specific token layer is implemented yet; current auth mutations are narrow form posts with same-site cookies.
 - No MFA, OIDC, SAML, or SCIM support exists yet.
-- No challenge runtime exists yet, so sandbox isolation controls are not implemented in code.
+- Runtime isolation is a local Docker V1 implementation and does not yet include egress controls, image signing, rootless Docker, gVisor, or Firecracker.

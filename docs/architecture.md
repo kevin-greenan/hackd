@@ -14,7 +14,7 @@ Authentication is local email/password for v1. Successful login creates a signed
 
 ## Deferred Components
 
-Challenge runtime, workers, content import, rich authoring editors, advanced admin lifecycle controls, and scheduled reporting are intentionally deferred. Their database models are present to keep the foundation aligned with the roadmap.
+Content import, rich authoring editors, advanced admin lifecycle controls, scheduled reporting, and hardened runtime isolation are intentionally deferred. Their database models are present to keep the foundation aligned with the roadmap.
 
 ## Core Data Layer
 
@@ -26,6 +26,7 @@ Milestone 2 adds small server-side helpers under `lib/core/`:
 - `challenge-validation.ts` validates supported challenge submissions without leaking expected answers.
 - `challenge-submissions.ts` records attempts and updates module completion.
 - `challenge-attachments.ts` validates uploads, stores local challenge files, enforces attachment download access, and cleans up deleted files.
+- `challenge-runtime.ts` validates Docker web runtime definitions, calls the internal runner service, and stores instance lifecycle state.
 - `admin-metrics.ts` collects basic counts and recent learner attempts for the admin dashboard.
 - `admin-lists.ts` powers read-only admin list views for users, groups, modules, challenges, and assignments.
 - `admin-management.ts` validates admin user/group/module/challenge/assignment mutations, module-challenge associations, and writes audit log records.
