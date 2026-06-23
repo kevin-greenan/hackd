@@ -147,6 +147,7 @@ Operational endpoints:
 - [Challenge workflows](docs/challenges.md)
 - [Content import](docs/content-import.md)
 - [Content schema v1](docs/content-schema/v1.md)
+- [Reporting exports](docs/reporting-exports.md)
 - [Branding and themes](docs/branding.md)
 - [Docker deployment](docs/deployment.md)
 - [Operations runbook](docs/operations-runbook.md)

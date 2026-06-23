@@ -183,7 +183,7 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 - [ ] Admin authoring workflows have preview and safe publish states.
 - [x] Backup and restore flow is executable and tested.
 - [x] Logs and health checks are sufficient for routine operations.
-- [ ] CSV exports are documented and stable.
+- [x] CSV exports are documented and stable.
 - [ ] Docker runtime support boundary is explicit.
 - [ ] Runtime containers remain unprivileged and resource-limited.
 - [ ] Release checklist includes a restore drill.
