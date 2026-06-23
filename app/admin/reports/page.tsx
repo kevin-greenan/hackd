@@ -1,10 +1,19 @@
 import { AdminTable, StatusBadge } from "@/components/admin/admin-table";
 import { AppShell } from "@/components/app-shell";
-import { ButtonLink } from "@/components/button";
+import { Button, ButtonLink } from "@/components/button";
 import { Card, EmptyState } from "@/components/card";
 import { requireAdmin } from "@/lib/auth/current-user";
-import { formatAdminLabel } from "@/lib/core/admin-lists";
-import { getAdminProgressReports } from "@/lib/core/admin-reports";
+import {
+  formatAdminLabel,
+  getAdminGroupOptions,
+  getAdminModuleOptions,
+  getAdminUserOptions
+} from "@/lib/core/admin-lists";
+import {
+  getAdminProgressReports,
+  normalizeAdminReportFilters
+} from "@/lib/core/admin-reports";
+import type { AdminReportFilters } from "@/lib/core/admin-reports";
 
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("en", {
@@ -27,9 +36,42 @@ function percentTone(percent: number): "neutral" | "success" | "warning" {
   return "neutral";
 }
 
-export default async function AdminReportsPage() {
+function reportCsvHref(path: string, filters: AdminReportFilters) {
+  const params = new URLSearchParams();
+
+  if (filters.moduleId) {
+    params.set("moduleId", filters.moduleId);
+  }
+
+  if (filters.learnerId) {
+    params.set("learnerId", filters.learnerId);
+  }
+
+  if (filters.groupId) {
+    params.set("groupId", filters.groupId);
+  }
+
+  const queryString = params.toString();
+
+  return queryString ? `${path}?${queryString}` : path;
+}
+
+export default async function AdminReportsPage({
+  searchParams
+}: {
+  searchParams?: Promise<AdminReportFilters>;
+}) {
   const user = await requireAdmin();
-  const reports = await getAdminProgressReports();
+  const state = (await searchParams) ?? {};
+  const filters = normalizeAdminReportFilters(state);
+  const [reports, modules, learners, groups] = await Promise.all([
+    getAdminProgressReports(filters),
+    getAdminModuleOptions(),
+    getAdminUserOptions(),
+    getAdminGroupOptions()
+  ]);
+  const completionCsvHref = reportCsvHref("/admin/reports/completions.csv", filters);
+  const attemptCsvHref = reportCsvHref("/admin/reports/attempts.csv", filters);
 
   return (
     <AppShell user={user} area="admin">
@@ -44,6 +86,63 @@ export default async function AdminReportsPage() {
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Review learner progress, module completion, challenge performance, and export raw completion or attempt data.
         </p>
+      </section>
+      <section className="mt-8">
+        <Card>
+          <form action="/admin/reports" className="grid gap-4 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-end">
+            <label className="grid gap-2 text-sm font-semibold">
+              Module
+              <select
+                className="h-10 rounded-md border border-border px-3 font-normal"
+                defaultValue={filters.moduleId ?? ""}
+                name="moduleId"
+              >
+                <option value="">All modules</option>
+                {modules.map((module) => (
+                  <option key={module.id} value={module.id}>
+                    {module.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-2 text-sm font-semibold">
+              Learner
+              <select
+                className="h-10 rounded-md border border-border px-3 font-normal"
+                defaultValue={filters.learnerId ?? ""}
+                name="learnerId"
+              >
+                <option value="">All learners</option>
+                {learners.map((learner) => (
+                  <option key={learner.id} value={learner.id}>
+                    {learner.name} ({learner.email})
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-2 text-sm font-semibold">
+              Group
+              <select
+                className="h-10 rounded-md border border-border px-3 font-normal"
+                defaultValue={filters.groupId ?? ""}
+                name="groupId"
+              >
+                <option value="">All groups</option>
+                {groups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="flex flex-wrap gap-2">
+              <Button type="submit">Apply</Button>
+              <ButtonLink href="/admin/reports" variant="secondary">
+                Reset
+              </ButtonLink>
+            </div>
+          </form>
+        </Card>
       </section>
       <section className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         <Card>
@@ -76,7 +175,7 @@ export default async function AdminReportsPage() {
                 Completion status across direct and group-targeted assignments.
               </p>
             </div>
-            <ButtonLink href="/admin/reports/completions.csv" variant="secondary">
+            <ButtonLink href={completionCsvHref} variant="secondary">
               Export completions CSV
             </ButtonLink>
           </div>
@@ -138,7 +237,7 @@ export default async function AdminReportsPage() {
                 Attempt outcomes grouped by challenge.
               </p>
             </div>
-            <ButtonLink href="/admin/reports/attempts.csv" variant="secondary">
+            <ButtonLink href={attemptCsvHref} variant="secondary">
               Export attempts CSV
             </ButtonLink>
           </div>

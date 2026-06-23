@@ -2,7 +2,7 @@
 
 hackd is a containerized control plane for hands-on security training modules, challenges, sandboxes, validation, and learner progress.
 
-This repository currently implements Milestone 0 through Milestone 7 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, admin list views, basic user/group/content/assignment management, admin audit visibility, progress reporting with CSV exports, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, challenge file attachments and downloads, Dockerized web challenge launch/stop flows, recent attempt visibility for admins, and health endpoints.
+This repository currently implements Milestone 0 through Milestone 8 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, admin list views, basic user/group/content/assignment management, admin audit visibility, filtered progress reporting with CSV exports, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, challenge file attachments and downloads, Dockerized web challenge launch/stop flows, recent attempt visibility for admins, and health endpoints.
 
 ## Prerequisites
 
@@ -115,7 +115,7 @@ After `docker compose up --build`:
 9. Create a draft challenge from `/admin/challenges`, then update its metadata.
 10. Upload and delete a small `.txt` attachment from an admin challenge row.
 11. Create, update, and delete a test assignment from `/admin/assignments`.
-12. Open `/admin/reports` and confirm learner progress, module progress, challenge performance, and CSV export links render.
+12. Open `/admin/reports`, apply module/learner/group filters, and confirm learner progress, module progress, challenge performance, and filtered CSV export links render.
 13. Log out.
 14. Sign in as `learner@hackd.local`.
 15. Confirm `/dashboard` loads for the learner.
@@ -143,7 +143,7 @@ After `docker compose up --build`:
 - Admin create/edit workflows for modules and challenges, plus challenge association
 - Admin create/edit/delete workflows for assignments with audit logging
 - Admin audit log visibility for user, group, module, challenge, and assignment changes
-- Admin progress reports for learners, modules, challenge performance, and CSV exports
+- Admin progress reports for learners, modules, challenge performance, module/learner/group filters, and CSV exports
 - Admin challenge attachment upload/delete workflows with local file storage
 - Learner challenge attachment downloads for assigned modules
 - Internal Docker runtime runner service for sample Dockerized web challenges
@@ -161,7 +161,7 @@ After `docker compose up --build`:
 ## Known Limitations
 
 - Password reset and hard user deletion are not implemented yet.
-- Reporting filters and scheduled reports are not implemented yet.
+- Scheduled reports and advanced report delivery are not implemented yet.
 - Rich type-specific challenge config editors are not implemented yet; validation/runtime config is edited as JSON.
 - File-based answer submissions are not implemented yet.
 - Docker runtime hardening beyond local V1 limits is not implemented yet.
@@ -171,8 +171,7 @@ After `docker compose up --build`:
 
 ## Next Milestone Checklist
 
-Next milestones should expand admin management and challenge coverage:
+Next milestones should expand content import and challenge coverage:
 
-- Reporting filters and richer exports
 - Assignment lifecycle refinements, including completion reconciliation after assignment deletion
 - Content import
