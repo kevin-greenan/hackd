@@ -26,4 +26,5 @@ Milestone 2 adds small server-side helpers under `lib/core/`:
 - `challenge-validation.ts` validates supported challenge submissions without leaking expected answers.
 - `challenge-submissions.ts` records attempts and updates module completion.
 - `admin-metrics.ts` collects basic counts and recent learner attempts for the admin dashboard.
+- `admin-lists.ts` powers read-only admin list views for users, groups, modules, challenges, and assignments.
 - `completions.ts` calculates progress summaries without coupling UI code to completion math.

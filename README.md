@@ -2,7 +2,7 @@
 
 hackd is a containerized control plane for hands-on security training modules, challenges, sandboxes, validation, and learner progress.
 
-This repository currently implements Milestone 0 through early Milestone 5 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, recent attempt visibility for admins, and a health endpoint.
+This repository currently implements Milestone 0 through early Milestone 5 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, read-only admin list views, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, recent attempt visibility for admins, and a health endpoint.
 
 ## Prerequisites
 
@@ -102,15 +102,16 @@ After `docker compose up --build`:
 2. Sign in as `admin@hackd.local`.
 3. Confirm `/dashboard` shows the admin identity and an `Open admin` action.
 4. Open `/admin` and confirm the admin dashboard loads with metric cards and recent attempts.
-5. Log out.
-6. Sign in as `learner@hackd.local`.
-7. Confirm `/dashboard` loads for the learner.
-8. Open an assigned module and confirm Markdown content plus challenge sections render.
-9. Submit an incorrect challenge answer and confirm the attempt feedback appears.
-10. Submit the seeded correct static flag `flag{sample}` and confirm progress updates.
-11. Open the secure code review module and confirm the optional multiple-choice challenge renders with selectable answers.
-12. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
-13. Log out and confirm `/dashboard` redirects to `/login`.
+5. Open the admin Users, Groups, Modules, Challenges, and Assignments links and confirm each list renders.
+6. Log out.
+7. Sign in as `learner@hackd.local`.
+8. Confirm `/dashboard` loads for the learner.
+9. Open an assigned module and confirm Markdown content plus challenge sections render.
+10. Submit an incorrect challenge answer and confirm the attempt feedback appears.
+11. Submit the seeded correct static flag `flag{sample}` and confirm progress updates.
+12. Open the secure code review module and confirm the optional multiple-choice challenge renders with selectable answers.
+13. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
+14. Log out and confirm `/dashboard` redirects to `/login`.
 
 ## Implemented
 
@@ -122,6 +123,7 @@ After `docker compose up --build`:
 - Signed HTTP-only session cookie
 - Server-side `getCurrentUser()`, `requireUser()`, and `requireAdmin()` helpers
 - Basic admin and learner route separation with database-backed dashboard data
+- Read-only admin lists for users, groups, modules, challenges, and assignments
 - Learner module detail pages with Markdown lesson rendering and challenge status sections
 - Static flag, exact-text short-answer, and multiple-choice validation with attempt recording
 - Admin recent-attempt visibility for learner submissions
@@ -135,7 +137,7 @@ After `docker compose up --build`:
 ## Known Limitations
 
 - User creation UI is not implemented yet.
-- Full admin CRUD for users, groups, modules, challenges, assignments, and reporting is not implemented yet.
+- Admin create/edit/delete workflows for users, groups, modules, challenges, assignments, and reporting are not implemented yet.
 - File-based and Dockerized challenge submissions are not implemented yet.
 - Dockerized challenge launching is intentionally not implemented in this pass.
 - Content import, OIDC/SAML, multi-tenancy, and marketplace concepts are deferred.
@@ -146,7 +148,7 @@ After `docker compose up --build`:
 
 Next milestones should expand admin management and challenge coverage:
 
-- Admin CRUD for users, groups, modules, challenges, and assignments
+- Admin create/edit workflows for users, groups, modules, challenges, and assignments
 - Audit logging for admin actions
 - Reporting views and exports
 - File-based challenge support
