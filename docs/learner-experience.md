@@ -36,8 +36,8 @@ Admins can also open module pages for preview, but learners only see modules ass
 - Module reading progress is not tracked yet.
 - Module detail pages render Markdown but do not yet support syntax highlighting beyond readable code blocks.
 - Admin authoring and assignment management UI exists for the current basic workflows.
-- Reporting filters and richer exports are not implemented yet.
+- Admin reporting includes module, learner, and group filters with completion and attempt CSV exports.
 
 ## Next Step
 
-Next milestones should expand challenge types, reporting filters, richer exports, and runtime-backed exercises.
+Next milestones should expand challenge types, content import, advanced report delivery, and runtime-backed exercises.

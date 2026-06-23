@@ -1504,30 +1504,30 @@ Provide basic admin visibility into progress and outcomes.
 
 Deliverables
 
-* Completion report
-* Module progress report
-* Challenge attempt report
-* CSV export
+* [x] Completion report
+* [x] Module progress report
+* [x] Challenge attempt report
+* [x] CSV export
 
 Tasks
 
-* Create reports dashboard.
-* Add module completion report.
-* Add learner completion report.
-* Add challenge attempt report.
-* Add filtering by module.
-* Add filtering by learner.
-* Add filtering by group.
-* Add CSV export for completions.
-* Add CSV export for attempts.
+* [x] Create reports dashboard.
+* [x] Add module completion report.
+* [x] Add learner completion report.
+* [x] Add challenge attempt report.
+* [x] Add filtering by module.
+* [x] Add filtering by learner.
+* [x] Add filtering by group.
+* [x] Add CSV export for completions.
+* [x] Add CSV export for attempts.
 
 Acceptance Criteria
 
-* Admin can see who completed each module.
-* Admin can see learner progress across modules.
-* Admin can see challenge success/failure counts.
-* Admin can export completion data to CSV.
-* Admin can export attempt data to CSV.
+* [x] Admin can see who completed each module.
+* [x] Admin can see learner progress across modules.
+* [x] Admin can see challenge success/failure counts.
+* [x] Admin can export completion data to CSV.
+* [x] Admin can export attempt data to CSV.
 
 Milestone 9: Content Import V1
 

@@ -30,6 +30,6 @@ Milestone 2 adds small server-side helpers under `lib/core/`:
 - `admin-metrics.ts` collects basic counts and recent learner attempts for the admin dashboard.
 - `admin-lists.ts` powers read-only admin list views for users, groups, modules, challenges, and assignments.
 - `admin-management.ts` validates admin user/group/module/challenge/assignment mutations, module-challenge associations, and writes audit log records.
-- `admin-reports.ts` powers admin progress reporting and CSV exports for completions and attempts.
+- `admin-reports.ts` powers filtered admin progress reporting and CSV exports for completions and attempts.
 - `audit-log.ts` centralizes admin action audit writes and bounded audit-log reads.
 - `completions.ts` calculates progress summaries without coupling UI code to completion math.
