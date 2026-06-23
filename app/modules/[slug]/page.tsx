@@ -5,7 +5,7 @@ import { ButtonLink } from "@/components/button";
 import { Card, EmptyState } from "@/components/card";
 import { MarkdownContent } from "@/components/learning/markdown-content";
 import { requireUser } from "@/lib/auth/current-user";
-import { getLearnerModuleDetail } from "@/lib/core/module-detail";
+import { getLearnerModuleDetail, type LearnerModuleChallenge } from "@/lib/core/module-detail";
 import { submitChallengeAction } from "./actions";
 
 function formatDate(date: Date | null) {
@@ -22,6 +22,68 @@ function formatDate(date: Date | null) {
 
 function formatLabel(value: string) {
   return value.toLowerCase().replaceAll("_", " ");
+}
+
+function ChallengeSubmissionForm({
+  challenge,
+  moduleSlug
+}: {
+  challenge: LearnerModuleChallenge;
+  moduleSlug: string;
+}) {
+  if (!challenge.submissionConfig) {
+    return null;
+  }
+
+  const submissionConfig = challenge.submissionConfig;
+
+  return (
+    <form action={submitChallengeAction} className="mt-4 grid gap-3">
+      <input name="moduleSlug" type="hidden" value={moduleSlug} />
+      <input name="challengeId" type="hidden" value={challenge.id} />
+      {submissionConfig.type === "text" ? (
+        <>
+          <label className="text-sm font-medium" htmlFor={`answer-${challenge.id}`}>
+            Answer
+          </label>
+          <input
+            className="h-10 rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+            id={`answer-${challenge.id}`}
+            name="submittedValue"
+            required
+            type="text"
+          />
+        </>
+      ) : (
+        <fieldset className="grid gap-2">
+          <legend className="text-sm font-medium">
+            {submissionConfig.allowMultiple ? "Select all that apply" : "Select one answer"}
+          </legend>
+          {submissionConfig.options.map((option) => (
+            <label
+              className="flex items-start gap-2 rounded-md border border-border bg-white px-3 py-2 text-sm"
+              key={option.id}
+            >
+              <input
+                className="mt-1 h-4 w-4 accent-teal-700"
+                name="submittedValue"
+                required={!submissionConfig.allowMultiple}
+                type={submissionConfig.allowMultiple ? "checkbox" : "radio"}
+                value={option.id}
+              />
+              <span>{option.label}</span>
+            </label>
+          ))}
+        </fieldset>
+      )}
+      <button
+        className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-teal-700"
+        type="submit"
+      >
+        Submit answer
+      </button>
+    </form>
+  );
 }
 
 export default async function ModuleDetailPage({
@@ -154,26 +216,7 @@ export default async function ModuleDetailPage({
                     {challenge.supportsSubmission &&
                     !challenge.isComplete &&
                     learningModule.assignment.targetType !== "preview" ? (
-                      <form action={submitChallengeAction} className="mt-4 grid gap-3">
-                        <input name="moduleSlug" type="hidden" value={learningModule.slug} />
-                        <input name="challengeId" type="hidden" value={challenge.id} />
-                        <label className="text-sm font-medium" htmlFor={`answer-${challenge.id}`}>
-                          Answer
-                        </label>
-                        <input
-                          className="h-10 rounded-md border border-border bg-white px-3 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
-                          id={`answer-${challenge.id}`}
-                          name="submittedValue"
-                          required
-                          type="text"
-                        />
-                        <button
-                          className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:bg-teal-700"
-                          type="submit"
-                        >
-                          Submit answer
-                        </button>
-                      </form>
+                      <ChallengeSubmissionForm challenge={challenge} moduleSlug={learningModule.slug} />
                     ) : null}
                     {!challenge.supportsSubmission ? (
                       <p className="mt-3 text-sm text-muted-foreground">

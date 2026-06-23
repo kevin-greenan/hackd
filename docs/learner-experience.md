@@ -27,7 +27,7 @@ Admins can also open module pages for preview, but learners only see modules ass
 
 ## Current Limits
 
-- Static flag and exact-text short-answer submissions are implemented.
+- Static flag, exact-text short-answer, and multiple-choice submissions are implemented.
 - Challenge completion reflects correct attempts recorded by the submission flow.
 - Module reading progress is not tracked yet.
 - Module detail pages render Markdown but do not yet support syntax highlighting beyond readable code blocks.

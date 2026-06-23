@@ -8,6 +8,7 @@ Current validators:
 
 - Static flag: exact string comparison after trimming whitespace
 - Short answer: exact text match against configured accepted answers, with optional case-insensitive matching
+- Multiple choice: single-answer radio selection or multi-answer checkbox selection against configured option IDs
 
 Unsupported challenge types return a generic disabled response and do not reveal expected answers.
 
@@ -29,7 +30,6 @@ When an answer is submitted, hackd checks all required challenges for the module
 
 ## Current Limits
 
-- Multiple-choice UI and validation are not implemented yet.
 - File-based and Dockerized challenge submissions are not implemented yet.
 - Expected static flags are stored in `validationConfig` for this early local version.
 - There is no per-challenge attempt limit yet.

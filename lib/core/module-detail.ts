@@ -1,5 +1,9 @@
 import { AttemptResult, ContentStatus, Role, type AssignmentStatus, type ChallengeType } from "@prisma/client";
 import { prisma } from "../db/prisma";
+import {
+  getChallengeSubmissionConfig,
+  type ChallengeSubmissionConfig
+} from "./challenge-validation";
 
 export type LearnerModuleChallenge = {
   id: string;
@@ -15,6 +19,7 @@ export type LearnerModuleChallenge = {
   attemptCount: number;
   isComplete: boolean;
   supportsSubmission: boolean;
+  submissionConfig: ChallengeSubmissionConfig | null;
   latestAttempt: {
     result: AttemptResult;
     feedback: string | null;
@@ -125,29 +130,35 @@ export async function getLearnerModuleDetail({
           targetType: "preview"
         },
     completionStatus: learningModule.completions[0]?.status ?? "NOT_STARTED",
-    challenges: learningModule.challenges.map((moduleChallenge) => ({
-      id: moduleChallenge.challenge.id,
-      title: moduleChallenge.challenge.title,
-      slug: moduleChallenge.challenge.slug,
-      description: moduleChallenge.challenge.description,
-      type: moduleChallenge.challenge.type,
-      difficulty: moduleChallenge.challenge.difficulty,
-      points: moduleChallenge.challenge.points,
-      required: moduleChallenge.required,
-      sortOrder: moduleChallenge.sortOrder,
-      tags: moduleChallenge.challenge.tags,
-      attemptCount: moduleChallenge.challenge.attempts.length,
-      isComplete: getChallengeCompletionState(moduleChallenge.challenge.attempts),
-      supportsSubmission:
-        moduleChallenge.challenge.type === "STATIC_FLAG" ||
-        moduleChallenge.challenge.type === "SHORT_ANSWER",
-      latestAttempt: moduleChallenge.challenge.attempts[0]
-        ? {
-            result: moduleChallenge.challenge.attempts[0].result,
-            feedback: moduleChallenge.challenge.attempts[0].feedback,
-            createdAt: moduleChallenge.challenge.attempts[0].createdAt
-          }
-        : null
-    }))
+    challenges: learningModule.challenges.map((moduleChallenge) => {
+      const submissionConfig = getChallengeSubmissionConfig({
+        challengeType: moduleChallenge.challenge.type,
+        validationConfig: moduleChallenge.challenge.validationConfig
+      });
+
+      return {
+        id: moduleChallenge.challenge.id,
+        title: moduleChallenge.challenge.title,
+        slug: moduleChallenge.challenge.slug,
+        description: moduleChallenge.challenge.description,
+        type: moduleChallenge.challenge.type,
+        difficulty: moduleChallenge.challenge.difficulty,
+        points: moduleChallenge.challenge.points,
+        required: moduleChallenge.required,
+        sortOrder: moduleChallenge.sortOrder,
+        tags: moduleChallenge.challenge.tags,
+        attemptCount: moduleChallenge.challenge.attempts.length,
+        isComplete: getChallengeCompletionState(moduleChallenge.challenge.attempts),
+        supportsSubmission: submissionConfig !== null,
+        submissionConfig,
+        latestAttempt: moduleChallenge.challenge.attempts[0]
+          ? {
+              result: moduleChallenge.challenge.attempts[0].result,
+              feedback: moduleChallenge.challenge.attempts[0].feedback,
+              createdAt: moduleChallenge.challenge.attempts[0].createdAt
+            }
+          : null
+      };
+    })
   };
 }
