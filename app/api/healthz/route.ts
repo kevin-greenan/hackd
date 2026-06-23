@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
+import { logger } from "@/lib/logging/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,10 @@ export async function GET() {
       timestamp: checkedAt
     });
   } catch (error) {
+    logger.error("healthz.database_check_failed", {
+      message: error instanceof Error ? error.message : "unknown"
+    });
+
     return NextResponse.json(
       {
         app: "ok",
