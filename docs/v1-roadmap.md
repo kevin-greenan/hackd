@@ -61,7 +61,7 @@ Out of scope for `v1.0` unless explicitly reprioritized:
 
 - Add CSRF-specific protection for state-changing routes.
 - Move login rate limiting out of in-memory process state, likely to Redis or an edge control.
-- Add submission throttling or attempt limits for challenge submissions.
+- Move challenge submission throttling out of in-memory process state, likely to Redis or an edge control.
 - Revisit static expected answer storage and consider hashing or encrypting static flags.
 - Add Docker runtime image allowlisting.
 - Improve runner lifecycle reconciliation and scheduled cleanup.

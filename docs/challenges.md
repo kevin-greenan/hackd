@@ -58,4 +58,5 @@ When an answer is submitted, hackd checks all required challenges for the module
 - File-based answer submissions are planned.
 - Expected static flags are stored in `validationConfig` for this local foundation.
 - There is no per-challenge attempt limit yet.
-- There is no advanced anti-automation or durable rate limiting for submissions yet.
+- Submission throttling is in-memory and should move to durable infrastructure before production use.
+- There is no advanced anti-automation for submissions yet.

@@ -1,4 +1,5 @@
 import { AssignmentStatus, AttemptResult, ContentStatus, Role } from "@prisma/client";
+import { checkRateLimit } from "@/lib/auth/rate-limit";
 import { prisma } from "../db/prisma";
 import { getLearnerModuleDetail } from "./module-detail";
 import { validateChallengeSubmission } from "./challenge-validation";
@@ -63,6 +64,12 @@ async function updateModuleCompletion({
   return allRequiredComplete;
 }
 
+function positiveIntegerEnv(name: string, fallback: number) {
+  const parsed = Number(process.env[name]);
+
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
 export async function submitChallengeAnswer({
   userId,
   role,
@@ -101,6 +108,14 @@ export async function submitChallengeAnswer({
 
   if (!moduleChallenge) {
     throw new Error("Challenge not found for this module.");
+  }
+
+  const limit = positiveIntegerEnv("CHALLENGE_SUBMISSION_LIMIT", 10);
+  const windowMs = positiveIntegerEnv("CHALLENGE_SUBMISSION_WINDOW_SECONDS", 60) * 1000;
+  const rateLimit = checkRateLimit(`challenge-submission:${userId}:${challengeId}`, limit, windowMs);
+
+  if (!rateLimit.allowed) {
+    throw new Error("Too many submissions. Wait a minute and try again.");
   }
 
   const validation = validateChallengeSubmission({

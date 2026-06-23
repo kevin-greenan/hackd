@@ -39,6 +39,7 @@ This document summarizes the current security posture for local and single-host 
 ## Rate Limiting
 
 - Login attempts use an in-memory limiter keyed by forwarded IP.
+- Challenge submissions use an in-memory limiter keyed by learner and challenge.
 - This is suitable for the local foundation only.
 - Production deployments should move rate limiting to durable infrastructure such as Redis or an edge layer.
 
