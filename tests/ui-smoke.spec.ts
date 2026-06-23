@@ -1,17 +1,40 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const adminEmail = process.env.PLAYWRIGHT_ADMIN_EMAIL ?? "admin@hackd.local";
 const adminPassword = process.env.PLAYWRIGHT_ADMIN_PASSWORD ?? "change-me-in-development";
 const learnerEmail = process.env.PLAYWRIGHT_LEARNER_EMAIL ?? "learner@hackd.local";
 const learnerPassword = process.env.PLAYWRIGHT_LEARNER_PASSWORD ?? "change-me-in-development";
+const appUrl = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000";
 
-async function login(page: import("@playwright/test").Page, email: string, password: string) {
-  await page.goto("/login");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
-  await page.getByRole("button", { name: "Login" }).click();
-  await expect(page.getByText("The email or password is incorrect.")).toBeHidden();
-  await expect(page.getByText("Too many login attempts. Wait a minute and try again.")).toBeHidden();
+function sessionCookieValue(setCookieHeader: string | null) {
+  const match = setCookieHeader?.match(/(?:^|,\s*)hackd_session=([^;]+)/);
+  return match?.[1];
+}
+
+async function login(page: Page, email: string, password: string) {
+  const response = await page.request.post(`${appUrl}/api/auth/login`, {
+    form: {
+      email,
+      password
+    },
+    maxRedirects: 0
+  });
+  const sessionValue = sessionCookieValue(response.headers()["set-cookie"] ?? null);
+
+  expect(response.status()).toBe(303);
+  expect(sessionValue, `Login did not return a hackd_session cookie for ${email}`).toBeTruthy();
+
+  await page.context().addCookies([
+    {
+      name: "hackd_session",
+      value: sessionValue ?? "",
+      url: appUrl,
+      httpOnly: true,
+      sameSite: "Lax",
+      secure: appUrl.startsWith("https://")
+    }
+  ]);
+  await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/dashboard/);
 }
 

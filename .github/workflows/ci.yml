@@ -47,6 +47,7 @@ jobs:
             exit 1
           }
         env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
           PLAYWRIGHT_ADMIN_EMAIL: admin@hackd.local
           PLAYWRIGHT_ADMIN_PASSWORD: change-me-in-development
           PLAYWRIGHT_LEARNER_EMAIL: learner@hackd.local
