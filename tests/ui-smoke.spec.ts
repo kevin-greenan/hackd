@@ -1,15 +1,17 @@
 import { expect, test } from "@playwright/test";
 
-const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@hackd.local";
-const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "change-me-in-development";
-const learnerEmail = process.env.SEED_LEARNER_EMAIL ?? "learner@hackd.local";
-const learnerPassword = process.env.SEED_LEARNER_PASSWORD ?? "change-me-in-development";
+const adminEmail = process.env.PLAYWRIGHT_ADMIN_EMAIL ?? "admin@hackd.local";
+const adminPassword = process.env.PLAYWRIGHT_ADMIN_PASSWORD ?? "change-me-in-development";
+const learnerEmail = process.env.PLAYWRIGHT_LEARNER_EMAIL ?? "learner@hackd.local";
+const learnerPassword = process.env.PLAYWRIGHT_LEARNER_PASSWORD ?? "change-me-in-development";
 
 async function login(page: import("@playwright/test").Page, email: string, password: string) {
   await page.goto("/login");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Login" }).click();
+  await expect(page.getByText("The email or password is incorrect.")).toBeHidden();
+  await expect(page.getByText("Too many login attempts. Wait a minute and try again.")).toBeHidden();
   await expect(page).toHaveURL(/\/dashboard/);
 }
 
