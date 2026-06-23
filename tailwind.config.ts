@@ -11,6 +11,7 @@ const config: Config = {
       colors: {
         border: "hsl(var(--border))",
         background: "hsl(var(--background))",
+        surface: "hsl(var(--surface))",
         foreground: "hsl(var(--foreground))",
         muted: "hsl(var(--muted))",
         "muted-foreground": "hsl(var(--muted-foreground))",

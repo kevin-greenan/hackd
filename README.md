@@ -46,10 +46,16 @@ Required variables:
 - `MAX_ATTACHMENT_BYTES`
 - `RUNTIME_RUNNER_URL`
 - `CHALLENGE_PUBLIC_HOST`
+- `HACKD_BRAND_NAME`
+- `HACKD_BRAND_TAGLINE`
+- `HACKD_BRAND_LOGO_URL`
+- `HACKD_THEME_PRIMARY`
 
 Do not commit real secrets. `SESSION_SECRET` must be at least 32 characters.
 
 `FILE_STORAGE_DIR` stores admin-uploaded challenge attachments and should point to durable local storage or a mounted volume. `RUNTIME_RUNNER_URL` is the internal Docker runner service URL. `CHALLENGE_PUBLIC_HOST` is the browser-visible host used when formatting mapped challenge URLs.
+
+Branding and theme variables are optional; see [Branding and themes](docs/branding.md).
 
 ## Quick Start
 
@@ -130,9 +136,11 @@ npm run dev
 - [Learner experience](docs/learner-experience.md)
 - [Challenge workflows](docs/challenges.md)
 - [Content import](docs/content-import.md)
+- [Branding and themes](docs/branding.md)
 - [Docker deployment](docs/deployment.md)
 - [Operations runbook](docs/operations-runbook.md)
 - [Release checklist](docs/release.md)
+- [V1 release roadmap](docs/v1-roadmap.md)
 - [Requirements and roadmap](requirements.md)
 
 ## Manual Smoke Test
@@ -171,4 +179,4 @@ After `docker compose up --build`:
 - OIDC/SAML, MFA, SCIM, multi-tenancy, and marketplace concepts are deferred.
 - Auth rate limiting is in-memory and suitable only for local development.
 - CSRF-specific token handling is planned.
-- The `v0.1.0` release tag is not created yet.
+- The `v1.0` release remains planned; see the [V1 release roadmap](docs/v1-roadmap.md).

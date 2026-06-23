@@ -76,7 +76,7 @@ export default async function AdminAssignmentsPage({
         </ButtonLink>
       </div>
       <section>
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Assignments</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Assignments</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Assignment queue</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Create, update, and remove module assignments for learner and group targets.
@@ -143,7 +143,7 @@ export default async function AdminAssignmentsPage({
             rows={assignments.map((assignment) => [
               <div key="module">
                 <Link
-                  className="font-semibold text-teal-700 hover:text-teal-900"
+                  className="font-semibold text-primary hover:opacity-80"
                   href={`/modules/${assignment.module.slug}`}
                 >
                   {assignment.module.title}

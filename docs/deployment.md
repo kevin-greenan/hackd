@@ -18,6 +18,8 @@ Copy `.env.example` to `.env` and provide:
 - `RUNTIME_RUNNER_URL`
 - `CHALLENGE_PUBLIC_HOST`
 
+Optional branding and theme variables are documented in [Branding and themes](branding.md).
+
 Use a unique `SESSION_SECRET` of at least 32 characters. Do not reuse the default local seed passwords outside a private development machine.
 
 ## Start

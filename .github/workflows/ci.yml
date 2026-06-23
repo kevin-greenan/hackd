@@ -31,7 +31,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: docker compose up -d --build
+      - run: sh scripts/compose-up-build-retry.sh
       - run: |
           for attempt in {1..30}; do
             if curl -fsS http://localhost:3000/api/healthz; then

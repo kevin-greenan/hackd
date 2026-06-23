@@ -51,7 +51,7 @@ export default async function AdminUsersPage({
         </ButtonLink>
       </div>
       <section>
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Users</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Users</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">User directory</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Review local accounts, roles, group membership, and learner activity counts.

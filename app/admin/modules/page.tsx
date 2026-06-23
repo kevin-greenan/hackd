@@ -64,7 +64,7 @@ export default async function AdminModulesPage({
         </ButtonLink>
       </div>
       <section>
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Modules</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Modules</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Module catalog</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Review module metadata, publication state, challenge links, and assignment coverage.
@@ -167,7 +167,7 @@ export default async function AdminModulesPage({
             emptyDescription="Module records will appear here after modules are created."
             rows={modules.map((module) => [
               <div key="module">
-                <Link className="font-semibold text-teal-700 hover:text-teal-900" href={`/modules/${module.slug}`}>
+                <Link className="font-semibold text-primary hover:opacity-80" href={`/modules/${module.slug}`}>
                   {module.title}
                 </Link>
                 <p className="text-xs text-muted-foreground">{module.slug}</p>

@@ -82,7 +82,7 @@ export default async function AdminPage() {
   return (
     <AppShell user={user} area="admin">
       <section>
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Admin</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Admin</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Control plane foundation</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           This admin-only area is server-protected and ready for the management workflows in later milestones.
@@ -144,7 +144,7 @@ export default async function AdminPage() {
                         <span
                           className={`rounded-md px-2 py-1 text-xs font-semibold ${
                             attempt.result === "CORRECT"
-                              ? "bg-teal-100 text-teal-800"
+                              ? "bg-primary/10 text-primary"
                               : "bg-amber-100 text-amber-800"
                           }`}
                         >

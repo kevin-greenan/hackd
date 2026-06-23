@@ -8,7 +8,7 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-docker compose up -d --build
+sh scripts/compose-up-build-retry.sh
 
 attempt=1
 while [ "$attempt" -le 30 ]; do

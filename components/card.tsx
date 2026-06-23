@@ -22,7 +22,7 @@ export function EmptyState({
   description: string;
 }) {
   return (
-    <div className="rounded-md border border-dashed border-border bg-slate-50 p-5">
+    <div className="rounded-md border border-dashed border-border bg-surface p-5">
       <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
     </div>

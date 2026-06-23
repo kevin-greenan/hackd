@@ -7,8 +7,8 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variants = {
-  primary: "bg-primary text-primary-foreground hover:bg-teal-700",
-  secondary: "border border-border bg-card text-foreground hover:bg-slate-50",
+  primary: "bg-primary text-primary-foreground hover:opacity-90",
+  secondary: "border border-border bg-card text-foreground hover:bg-surface",
   ghost: "text-muted-foreground hover:bg-muted"
 };
 

@@ -35,7 +35,7 @@ export default async function AdminAuditPage() {
         </ButtonLink>
       </div>
       <section>
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-teal-700">Audit</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Audit</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Admin audit log</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Review recent admin mutations and their target records.
@@ -61,7 +61,7 @@ export default async function AdminAuditPage() {
                 </p>
                 <p className="text-xs text-muted-foreground">{log.targetId ?? "missing-target"}</p>
               </div>,
-              <code className="block max-w-md whitespace-pre-wrap break-words rounded-md bg-slate-50 px-2 py-1 text-xs" key="metadata">
+              <code className="block max-w-md whitespace-pre-wrap break-words rounded-md bg-surface px-2 py-1 text-xs" key="metadata">
                 {formatMetadata(log.metadata)}
               </code>,
               <span key="created">{formatDateTime(log.createdAt)}</span>
