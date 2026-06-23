@@ -2,7 +2,7 @@
 
 hackd is a containerized control plane for hands-on security training modules, challenges, sandboxes, validation, and learner progress.
 
-This repository currently implements Milestone 0 through Milestone 2 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, and a health endpoint.
+This repository currently implements Milestone 0 through Milestone 3 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, module detail pages, Markdown lesson rendering, and a health endpoint.
 
 ## Prerequisites
 
@@ -92,6 +92,8 @@ npm run smoke:compose
 
 `npm run smoke:compose` builds the containers, starts the stack, waits for `/api/healthz`, prints the health response, and stops the stack.
 
+[Learner experience notes](docs/learner-experience.md) describe the current `/dashboard` to `/modules/[slug]` flow.
+
 ## Manual Smoke Test
 
 After `docker compose up --build`:
@@ -103,8 +105,9 @@ After `docker compose up --build`:
 5. Log out.
 6. Sign in as `learner@hackd.local`.
 7. Confirm `/dashboard` loads for the learner.
-8. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
-9. Log out and confirm `/dashboard` redirects to `/login`.
+8. Open an assigned module and confirm Markdown content plus challenge sections render.
+9. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
+10. Log out and confirm `/dashboard` redirects to `/login`.
 
 ## Implemented
 
@@ -116,6 +119,7 @@ After `docker compose up --build`:
 - Signed HTTP-only session cookie
 - Server-side `getCurrentUser()`, `requireUser()`, and `requireAdmin()` helpers
 - Basic admin and learner route separation with database-backed dashboard data
+- Learner module detail pages with Markdown lesson rendering and challenge status sections
 - Landing, login, dashboard, and admin pages
 - `/api/healthz` endpoint with database connectivity check
 - Vitest coverage for password hashing and RBAC helpers
@@ -127,6 +131,7 @@ After `docker compose up --build`:
 
 - User creation UI is not implemented yet.
 - Full admin CRUD for users, groups, modules, challenges, assignments, and reporting is not implemented yet.
+- Challenge submission and validation are not implemented yet.
 - Dockerized challenge launching is intentionally not implemented in this pass.
 - Content import, OIDC/SAML, multi-tenancy, and marketplace concepts are deferred.
 - Auth rate limiting is in-memory and suitable only for local/dev foundations.
@@ -134,11 +139,10 @@ After `docker compose up --build`:
 
 ## Next Milestone Checklist
 
-Milestone 3 should turn the data foundation into a richer learner experience:
+Milestone 4 should add the first challenge workflow:
 
-- Add module detail pages
-- Render module Markdown content
-- Show challenge sections within modules
-- Track challenge completion state within each module
-- Add richer empty/loading/error states for assigned module lists
-- Keep admin CRUD and audit-log write flows queued for the admin milestone
+- Static flag submission form and validation API
+- Attempt recording for correct and incorrect submissions
+- Challenge completion updates after correct answers
+- Validation responses that do not leak expected answers
+- Tests for validators, attempt recording, and completion updates

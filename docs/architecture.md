@@ -22,5 +22,6 @@ Milestone 2 adds small server-side helpers under `lib/core/`:
 
 - `assignments.ts` enforces user-or-group assignment targeting and wraps assignment creation.
 - `learner-dashboard.ts` resolves direct and group assignments for the current learner.
+- `module-detail.ts` resolves an assigned learner module, Markdown body, linked challenges, and challenge completion state.
 - `admin-metrics.ts` collects basic counts for the admin dashboard.
 - `completions.ts` calculates progress summaries without coupling UI code to completion math.

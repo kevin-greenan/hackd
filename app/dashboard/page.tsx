@@ -50,6 +50,11 @@ export default async function DashboardPage({
                     {assignment.module.difficulty} · {assignment.module.challengeCount} challenge
                     {assignment.module.challengeCount === 1 ? "" : "s"} · {assignment.targetType}
                   </p>
+                  <div className="mt-3">
+                    <ButtonLink href={`/modules/${assignment.module.slug}`} variant="secondary">
+                      Open module
+                    </ButtonLink>
+                  </div>
                 </div>
               ))}
             </div>
