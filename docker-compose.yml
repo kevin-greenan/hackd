@@ -28,6 +28,8 @@ services:
       SEED_LEARNER_PASSWORD: change-me-in-development
       FILE_STORAGE_DIR: /app/data/uploads
       MAX_ATTACHMENT_BYTES: "5242880"
+      RUNTIME_RUNNER_URL: http://runner:4010
+      CHALLENGE_PUBLIC_HOST: http://localhost
     ports:
       - "3000:3000"
     volumes:
@@ -35,7 +37,19 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      runner:
+        condition: service_started
     command: sh -c "npx prisma migrate deploy && npx tsx prisma/seed.ts && node server.js"
+
+  runner:
+    build:
+      context: .
+    environment:
+      RUNTIME_RUNNER_PORT: "4010"
+      RUNTIME_NETWORK: hackd-runtime
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: node scripts/runtime-runner.mjs
 
 volumes:
   hackd-postgres-data:
