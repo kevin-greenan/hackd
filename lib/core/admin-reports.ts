@@ -1,10 +1,16 @@
-import { AttemptResult, Role } from "@prisma/client";
+import { AttemptResult, Prisma, Role } from "@prisma/client";
 import { prisma } from "../db/prisma";
 import { summarizeCompletionStatus } from "./completions";
 
 const REPORT_LIMIT = 100;
 
 type CsvValue = string | number | boolean | Date | null | undefined;
+
+export type AdminReportFilters = {
+  groupId?: string;
+  learnerId?: string;
+  moduleId?: string;
+};
 
 export function formatCsvRows(headers: string[], rows: CsvValue[][]) {
   const formatValue = (value: CsvValue) => {
@@ -20,10 +26,149 @@ export function formatCsvRows(headers: string[], rows: CsvValue[][]) {
   ].join("\n");
 }
 
-export async function getAdminProgressReports() {
+export function normalizeAdminReportFilters(filters: AdminReportFilters = {}) {
+  return {
+    groupId: filters.groupId?.trim() || undefined,
+    learnerId: filters.learnerId?.trim() || undefined,
+    moduleId: filters.moduleId?.trim() || undefined
+  };
+}
+
+function assignmentMatchesFilters(
+  assignment: { groupId: string | null; moduleId: string; userId: string | null },
+  user: { id: string; groupMemberships: { groupId: string }[] },
+  filters: AdminReportFilters
+) {
+  if (filters.moduleId && assignment.moduleId !== filters.moduleId) {
+    return false;
+  }
+
+  if (filters.learnerId && user.id !== filters.learnerId) {
+    return false;
+  }
+
+  const userGroupIds = new Set(user.groupMemberships.map((membership) => membership.groupId));
+  const assignmentTargetsUser = assignment.userId === user.id;
+  const assignmentTargetsUserGroup = Boolean(assignment.groupId && userGroupIds.has(assignment.groupId));
+
+  if (!assignmentTargetsUser && !assignmentTargetsUserGroup) {
+    return false;
+  }
+
+  if (filters.groupId) {
+    return assignmentTargetsUser || assignment.groupId === filters.groupId;
+  }
+
+  return true;
+}
+
+function completionWhere(filters: AdminReportFilters): Prisma.CompletionWhereInput {
+  return {
+    ...(filters.learnerId ? { userId: filters.learnerId } : {}),
+    ...(filters.moduleId ? { moduleId: filters.moduleId } : {}),
+    ...(filters.groupId
+      ? {
+          user: {
+            groupMemberships: {
+              some: {
+                groupId: filters.groupId
+              }
+            }
+          }
+        }
+      : {})
+  };
+}
+
+function attemptWhere(filters: AdminReportFilters): Prisma.AttemptWhereInput {
+  return {
+    ...(filters.learnerId ? { userId: filters.learnerId } : {}),
+    ...(filters.moduleId
+      ? {
+          challenge: {
+            modules: {
+              some: {
+                moduleId: filters.moduleId
+              }
+            }
+          }
+        }
+      : {}),
+    ...(filters.groupId
+      ? {
+          user: {
+            groupMemberships: {
+              some: {
+                groupId: filters.groupId
+              }
+            }
+          }
+        }
+      : {})
+  };
+}
+
+function assignmentWhere(filters: AdminReportFilters): Prisma.AssignmentWhereInput {
+  const conditions: Prisma.AssignmentWhereInput[] = [];
+
+  if (filters.moduleId) {
+    conditions.push({ moduleId: filters.moduleId });
+  }
+
+  if (filters.groupId) {
+    conditions.push({
+      OR: [
+        { groupId: filters.groupId },
+        {
+          user: {
+            groupMemberships: {
+              some: {
+                groupId: filters.groupId
+              }
+            }
+          }
+        }
+      ]
+    });
+  }
+
+  if (filters.learnerId) {
+    conditions.push({
+      OR: [
+        { userId: filters.learnerId },
+        {
+          group: {
+            memberships: {
+              some: {
+                userId: filters.learnerId
+              }
+            }
+          }
+        }
+      ]
+    });
+  }
+
+  return conditions.length > 0 ? { AND: conditions } : {};
+}
+
+export async function getAdminProgressReports(filters: AdminReportFilters = {}) {
+  const cleanedFilters = normalizeAdminReportFilters(filters);
   const [users, assignments, modules, challenges, recentAttempts] = await Promise.all([
     prisma.user.findMany({
-      where: { role: Role.LEARNER },
+      where: {
+        role: Role.LEARNER,
+        ...(cleanedFilters.learnerId ? { id: cleanedFilters.learnerId } : {}),
+        ...(cleanedFilters.groupId
+          ? {
+              groupMemberships: {
+                some: {
+                  groupId: cleanedFilters.groupId
+                }
+              }
+            }
+          : {})
+      },
       take: REPORT_LIMIT,
       orderBy: { email: "asc" },
       include: {
@@ -36,6 +181,7 @@ export async function getAdminProgressReports() {
       }
     }),
     prisma.assignment.findMany({
+      where: assignmentWhere(cleanedFilters),
       select: {
         id: true,
         moduleId: true,
@@ -44,6 +190,9 @@ export async function getAdminProgressReports() {
       }
     }),
     prisma.module.findMany({
+      where: {
+        ...(cleanedFilters.moduleId ? { id: cleanedFilters.moduleId } : {})
+      },
       take: REPORT_LIMIT,
       orderBy: [{ status: "asc" }, { title: "asc" }],
       include: {
@@ -57,10 +206,22 @@ export async function getAdminProgressReports() {
       }
     }),
     prisma.challenge.findMany({
+      where: {
+        ...(cleanedFilters.moduleId
+          ? {
+              modules: {
+                some: {
+                  moduleId: cleanedFilters.moduleId
+                }
+              }
+            }
+          : {})
+      },
       take: REPORT_LIMIT,
       orderBy: [{ type: "asc" }, { title: "asc" }],
       include: {
         attempts: {
+          where: attemptWhere(cleanedFilters),
           select: {
             result: true,
             scoreAwarded: true
@@ -69,6 +230,7 @@ export async function getAdminProgressReports() {
       }
     }),
     prisma.attempt.findMany({
+      where: attemptWhere(cleanedFilters),
       take: 20,
       orderBy: { createdAt: "desc" },
       include: {
@@ -91,12 +253,9 @@ export async function getAdminProgressReports() {
   ]);
 
   const learnerProgress = users.map((user) => {
-    const groupIds = new Set(user.groupMemberships.map((membership) => membership.groupId));
     const assignedModuleIds = new Set(
       assignments
-        .filter((assignment) => {
-          return assignment.userId === user.id || Boolean(assignment.groupId && groupIds.has(assignment.groupId));
-        })
+        .filter((assignment) => assignmentMatchesFilters(assignment, user, cleanedFilters))
         .map((assignment) => assignment.moduleId)
     );
     const relevantCompletions = user.completions.filter((completion) =>
@@ -114,14 +273,27 @@ export async function getAdminProgressReports() {
   });
 
   const moduleProgress = modules.map((module) => {
-    const summary = summarizeCompletionStatus(module.completions, module._count.assignments);
+    const filteredAssignments = assignments.filter((assignment) => assignment.moduleId === module.id);
+    const filteredCompletions = module.completions.filter((completion) => {
+      return (
+        (!cleanedFilters.learnerId || completion.userId === cleanedFilters.learnerId) &&
+        (!cleanedFilters.groupId ||
+          users.some((user) => {
+            return (
+              user.id === completion.userId &&
+              user.groupMemberships.some((membership) => membership.groupId === cleanedFilters.groupId)
+            );
+          }))
+      );
+    });
+    const summary = summarizeCompletionStatus(filteredCompletions, filteredAssignments.length);
 
     return {
       id: module.id,
       title: module.title,
       slug: module.slug,
       status: module.status,
-      assignedTargets: module._count.assignments,
+      assignedTargets: filteredAssignments.length,
       challenges: module._count.challenges,
       ...summary
     };
@@ -188,8 +360,10 @@ export async function getAdminProgressReports() {
   };
 }
 
-export async function getCompletionCsv() {
+export async function getCompletionCsv(filters: AdminReportFilters = {}) {
+  const cleanedFilters = normalizeAdminReportFilters(filters);
   const completions = await prisma.completion.findMany({
+    where: completionWhere(cleanedFilters),
     take: 1000,
     orderBy: [{ updatedAt: "desc" }],
     include: {
@@ -222,8 +396,10 @@ export async function getCompletionCsv() {
   );
 }
 
-export async function getAttemptCsv() {
+export async function getAttemptCsv(filters: AdminReportFilters = {}) {
+  const cleanedFilters = normalizeAdminReportFilters(filters);
   const attempts = await prisma.attempt.findMany({
+    where: attemptWhere(cleanedFilters),
     take: 1000,
     orderBy: [{ createdAt: "desc" }],
     include: {
