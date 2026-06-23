@@ -55,7 +55,8 @@ export async function readSessionToken(token?: string): Promise<SessionPayload |
 }
 
 export async function getSessionFromCookies() {
-  return readSessionToken(cookies().get(SESSION_COOKIE_NAME)?.value);
+  const cookieStore = await cookies();
+  return readSessionToken(cookieStore.get(SESSION_COOKIE_NAME)?.value);
 }
 
 export function sessionCookieOptions() {
