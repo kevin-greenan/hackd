@@ -12,6 +12,14 @@ export function AppShell({
   user: { name: string; email: string; role: Role };
   area: "learner" | "admin";
 }) {
+  const adminLinks = [
+    { href: "/admin/users", label: "Users" },
+    { href: "/admin/groups", label: "Groups" },
+    { href: "/admin/modules", label: "Modules" },
+    { href: "/admin/challenges", label: "Challenges" },
+    { href: "/admin/assignments", label: "Assignments" }
+  ];
+
   return (
     <div className="min-h-screen">
       <header className="border-b border-border bg-white/86 backdrop-blur">
@@ -29,9 +37,22 @@ export function AppShell({
               Dashboard
             </Link>
             {user.role === "ADMIN" ? (
-              <Link className="rounded-md px-3 py-2 text-muted-foreground hover:bg-muted" href="/admin">
-                Admin
-              </Link>
+              <>
+                <Link className="rounded-md px-3 py-2 text-muted-foreground hover:bg-muted" href="/admin">
+                  Admin
+                </Link>
+                {area === "admin"
+                  ? adminLinks.map((link) => (
+                      <Link
+                        className="rounded-md px-3 py-2 text-muted-foreground hover:bg-muted"
+                        href={link.href}
+                        key={link.href}
+                      >
+                        {link.label}
+                      </Link>
+                    ))
+                  : null}
+              </>
             ) : null}
             <form action="/api/auth/logout" method="post">
               <Button type="submit" variant="secondary">

@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/app-shell";
+import { ButtonLink } from "@/components/button";
 import { Card, EmptyState } from "@/components/card";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { getAdminMetrics, getRecentAdminAttempts } from "@/lib/core/admin-metrics";
@@ -22,29 +23,39 @@ export default async function AdminPage() {
     getAdminMetrics(),
     getRecentAdminAttempts()
   ]);
-  const adminCards = [
+  const adminCards: {
+    title: string;
+    href?: string;
+    count: number;
+    description: string;
+  }[] = [
     {
       title: "Users",
+      href: "/admin/users",
       count: metrics.users,
       description: "Seeded admin and learner accounts are available for local testing."
     },
     {
       title: "Groups",
+      href: "/admin/groups",
       count: metrics.groups,
       description: "Groups can target assignments and are seeded for sample learner data."
     },
     {
       title: "Modules",
+      href: "/admin/modules",
       count: metrics.modules,
       description: "Module records now back the learner dashboard assignment list."
     },
     {
       title: "Challenges",
+      href: "/admin/challenges",
       count: metrics.challenges,
       description: "Static, short-answer, and multiple-choice validation paths are available."
     },
     {
       title: "Assignments",
+      href: "/admin/assignments",
       count: metrics.assignments,
       description: "Assignments can target exactly one user or group."
     },
@@ -70,6 +81,11 @@ export default async function AdminPage() {
             <h2 className="text-lg font-semibold">{card.title}</h2>
             <p className="mt-2 text-3xl font-bold">{card.count}</p>
             <EmptyState title="Foundation ready" description={card.description} />
+            {card.href ? (
+              <ButtonLink className="mt-4 w-full" href={card.href} variant="secondary">
+                View {card.title.toLowerCase()}
+              </ButtonLink>
+            ) : null}
           </Card>
         ))}
       </section>
