@@ -158,6 +158,121 @@ async function replaceUserGroups(userId: string, groupIds: string[]) {
   ]);
 }
 
+async function userIdsForAssignmentTarget({
+  groupId,
+  userId
+}: {
+  groupId: string | null;
+  userId: string | null;
+}) {
+  if (userId) {
+    return [userId];
+  }
+
+  if (!groupId) {
+    return [];
+  }
+
+  const memberships = await prisma.groupMembership.findMany({
+    where: { groupId },
+    select: { userId: true }
+  });
+
+  return memberships.map((membership) => membership.userId);
+}
+
+async function reconcileCompletionsForRemovedAssignment({
+  moduleId,
+  targetUserIds
+}: {
+  moduleId: string;
+  targetUserIds: string[];
+}) {
+  const uniqueUserIds = [...new Set(targetUserIds)];
+
+  if (uniqueUserIds.length === 0) {
+    return 0;
+  }
+
+  const memberships = await prisma.groupMembership.findMany({
+    where: {
+      userId: {
+        in: uniqueUserIds
+      }
+    },
+    select: {
+      groupId: true,
+      userId: true
+    }
+  });
+  const groupIdsByUserId = new Map<string, Set<string>>();
+  const groupIds = [...new Set(memberships.map((membership) => membership.groupId))];
+
+  memberships.forEach((membership) => {
+    const groupIdsForUser = groupIdsByUserId.get(membership.userId) ?? new Set<string>();
+    groupIdsForUser.add(membership.groupId);
+    groupIdsByUserId.set(membership.userId, groupIdsForUser);
+  });
+
+  const remainingAssignments = await prisma.assignment.findMany({
+    where: {
+      moduleId,
+      OR: [
+        {
+          userId: {
+            in: uniqueUserIds
+          }
+        },
+        ...(groupIds.length > 0
+          ? [
+              {
+                groupId: {
+                  in: groupIds
+                }
+              }
+            ]
+          : [])
+      ]
+    },
+    select: {
+      groupId: true,
+      userId: true
+    }
+  });
+  const stillAssignedUserIds = new Set<string>();
+
+  remainingAssignments.forEach((assignment) => {
+    if (assignment.userId && uniqueUserIds.includes(assignment.userId)) {
+      stillAssignedUserIds.add(assignment.userId);
+    }
+
+    if (assignment.groupId) {
+      uniqueUserIds.forEach((userId) => {
+        if (groupIdsByUserId.get(userId)?.has(assignment.groupId as string)) {
+          stillAssignedUserIds.add(userId);
+        }
+      });
+    }
+  });
+
+  const staleUserIds = uniqueUserIds.filter((userId) => !stillAssignedUserIds.has(userId));
+
+  if (staleUserIds.length === 0) {
+    return 0;
+  }
+
+  const result = await prisma.completion.deleteMany({
+    where: {
+      moduleId,
+      userId: {
+        in: staleUserIds
+      }
+    }
+  });
+
+  return result.count;
+}
+
 export async function createAdminUser({
   actorUserId,
   input
@@ -609,6 +724,14 @@ export async function updateAdminAssignment({
     throw new Error("This module is already assigned to that target.");
   }
 
+  const previousAssignment = await prisma.assignment.findUnique({
+    where: { id: data.assignmentId }
+  });
+
+  if (!previousAssignment) {
+    throw new Error("Assignment not found.");
+  }
+
   const assignment = await prisma.assignment.update({
     where: { id: data.assignmentId },
     data: {
@@ -619,6 +742,16 @@ export async function updateAdminAssignment({
       required: data.required
     }
   });
+  const targetChanged =
+    previousAssignment.moduleId !== assignment.moduleId ||
+    previousAssignment.userId !== assignment.userId ||
+    previousAssignment.groupId !== assignment.groupId;
+  const staleCompletionCount = targetChanged
+    ? await reconcileCompletionsForRemovedAssignment({
+        moduleId: previousAssignment.moduleId,
+        targetUserIds: await userIdsForAssignmentTarget(previousAssignment)
+      })
+    : 0;
 
   await logAdminAction({
     actorUserId,
@@ -630,7 +763,8 @@ export async function updateAdminAssignment({
       userId: assignment.userId,
       groupId: assignment.groupId,
       dueAt: assignment.dueAt?.toISOString() ?? null,
-      required: assignment.required
+      required: assignment.required,
+      staleCompletionCount
     }
   });
 
@@ -655,6 +789,10 @@ export async function deleteAdminAssignment({
   await prisma.assignment.delete({
     where: { id: assignment.id }
   });
+  const staleCompletionCount = await reconcileCompletionsForRemovedAssignment({
+    moduleId: assignment.moduleId,
+    targetUserIds: await userIdsForAssignmentTarget(assignment)
+  });
 
   await logAdminAction({
     actorUserId,
@@ -664,7 +802,8 @@ export async function deleteAdminAssignment({
     metadata: {
       moduleId: assignment.moduleId,
       userId: assignment.userId,
-      groupId: assignment.groupId
+      groupId: assignment.groupId,
+      staleCompletionCount
     }
   });
 }

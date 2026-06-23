@@ -20,7 +20,7 @@ Default Docker Compose credentials are documented in the README and are for loca
 ## Content
 
 - `/admin/modules` creates modules, edits Markdown lesson bodies, and links challenges.
-- `/admin/challenges` creates challenges, edits validation/runtime JSON, and manages downloadable attachments.
+- `/admin/challenges` creates challenges, edits type-specific validation/runtime settings, and manages downloadable attachments.
 - The content import CLI can upsert modules and challenges from YAML/JSON bundles:
 
 ```sh
@@ -31,7 +31,7 @@ npm run content:import -- --file examples/content/secure-notes.yaml --dry-run
 
 - `/admin/assignments` assigns modules to exactly one learner or group.
 - Direct learner assignments and group assignments both appear on learner dashboards.
-- Assignment delete currently removes the assignment record only; completion reconciliation is still a future lifecycle refinement.
+- Assignment update and delete reconcile learner completions when a learner no longer has a direct or group assignment for the affected module.
 
 ## Runtime Instances
 
