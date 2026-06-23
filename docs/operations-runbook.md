@@ -22,6 +22,12 @@ Run the automated compose smoke test:
 npm run smoke:compose
 ```
 
+Run browser UI smoke tests against a running stack:
+
+```sh
+npm run ui:smoke
+```
+
 ## Health Checks
 
 App and database:
@@ -75,6 +81,14 @@ npm run security:check
 ```
 
 The current check runs `npm audit --omit=dev` and scans tracked source files for common secret patterns. It is intentionally local and free of paid GitHub security features.
+
+Run container scanning after images are built:
+
+```sh
+npm run container:scan
+```
+
+The container scan uses Trivy against the local `hackd-web:latest` and `hackd-runner:latest` images.
 
 ## Demo Checklist
 

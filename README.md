@@ -91,7 +91,10 @@ npm run dev
 npm run build
 npm run lint
 npm run test
+npm run ui:smoke
 npm run security:check
+npm run container:scan
+npm run release:check
 npm run content:import -- --file examples/content/secure-notes.yaml --dry-run
 npm run db:migrate
 npm run db:seed
@@ -102,7 +105,7 @@ npm run smoke:compose
 
 [Learner experience notes](docs/learner-experience.md) describe the current `/dashboard` to `/modules/[slug]` flow.
 [Content import notes](docs/content-import.md) describe the YAML/JSON module and challenge bundle format.
-[Admin usage notes](docs/admin-usage.md), [Docker deployment notes](docs/deployment.md), and the [operations runbook](docs/operations-runbook.md) cover internal testing workflows.
+[Admin usage notes](docs/admin-usage.md), [Docker deployment notes](docs/deployment.md), the [operations runbook](docs/operations-runbook.md), and the [release checklist](docs/release.md) cover internal testing workflows.
 
 ## Manual Smoke Test
 
@@ -161,6 +164,8 @@ After `docker compose up --build`:
 - Vitest coverage for password hashing and RBAC helpers
 - GitHub Actions workflow for install, Prisma generate, lint, test, and build
 - Local security check for production dependency audit and common secret patterns
+- Playwright UI smoke tests for admin and learner flows
+- Trivy container scan script for local Docker images
 - Dependency lockfile and clean `npm audit` result
 - Docker Compose smoke-test script
 
@@ -168,13 +173,12 @@ After `docker compose up --build`:
 
 - Password reset and hard user deletion are not implemented yet.
 - Scheduled reports and advanced report delivery are not implemented yet.
-- Rich type-specific challenge config editors are not implemented yet; validation/runtime config is edited as JSON.
 - File-based answer submissions are not implemented yet.
 - Docker runtime hardening beyond local V1 limits is not implemented yet.
 - OIDC/SAML, multi-tenancy, and marketplace concepts are deferred.
 - Auth rate limiting is in-memory and suitable only for local/dev foundations.
 - CSRF-specific token handling is not implemented yet.
-- Container vulnerability scanning and release tagging are not implemented yet.
+- The `v0.1.0` release tag is not created yet.
 
 ## Next Milestone Checklist
 

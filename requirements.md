@@ -1593,13 +1593,13 @@ Tasks
 * [x] Add backup/restore notes.
 * [x] Add test coverage for core flows.
 * [x] Add API integration tests.
-* Add UI smoke tests.
+* [x] Add UI smoke tests.
 * [x] Add dependency scanning.
-* Add container scanning.
+* [x] Add container scanning.
 * [x] Add secret scanning.
 * [x] Add structured logging.
 * [x] Add global error handling.
-* Add release tagging.
+* [x] Add release tagging.
 * Create v0.1.0 release.
 
 Acceptance Criteria

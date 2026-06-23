@@ -9,7 +9,10 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "ui:smoke": "playwright test tests/ui-smoke.spec.ts",
     "security:check": "./scripts/security-check.sh",
+    "container:scan": "./scripts/container-scan.sh",
+    "release:check": "./scripts/release-check.sh",
     "content:import": "tsx scripts/import-content.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -22,10 +25,12 @@
     "bcryptjs": "^2.4.3",
     "jose": "^5.9.6",
     "next": "^16.2.9",
+    "prisma": "^5.22.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
+    "tsx": "^4.22.4",
     "yaml": "^2.9.0",
     "zod": "^3.23.8"
   },
@@ -33,6 +38,7 @@
     "postcss": "^8.5.15"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.9.0",
     "@types/react": "^18.3.12",
@@ -41,9 +47,7 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.9",
     "postcss": "^8.5.15",
-    "prisma": "^5.22.0",
     "tailwindcss": "^3.4.15",
-    "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "vitest": "^4.1.9"
   },
