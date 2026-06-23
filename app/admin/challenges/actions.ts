@@ -21,11 +21,96 @@ function requiredValue(value: FormDataEntryValue | null, fallback = "") {
   return String(value ?? fallback);
 }
 
+function optionalLines(value: FormDataEntryValue | null) {
+  return requiredValue(value)
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function checkedValue(value: FormDataEntryValue | null) {
+  return value === "on";
+}
+
+function optionRows(value: FormDataEntryValue | null) {
+  return requiredValue(value)
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [id, ...labelParts] = line.split("|");
+
+      return {
+        id: id.trim(),
+        label: labelParts.join("|").trim()
+      };
+    })
+    .filter((option) => option.id && option.label);
+}
+
+function challengeConfigs(formData: FormData) {
+  const type = requiredValue(formData.get("type"), ChallengeType.STATIC_FLAG);
+
+  if (type === ChallengeType.STATIC_FLAG) {
+    return {
+      runtimeConfig: "",
+      validationConfig: JSON.stringify({
+        type: "static_flag",
+        flag: requiredValue(formData.get("staticFlag"))
+      })
+    };
+  }
+
+  if (type === ChallengeType.SHORT_ANSWER) {
+    return {
+      runtimeConfig: "",
+      validationConfig: JSON.stringify({
+        type: "exact_text",
+        acceptedAnswers: optionalLines(formData.get("acceptedAnswers")),
+        caseInsensitive: checkedValue(formData.get("caseInsensitive"))
+      })
+    };
+  }
+
+  if (type === ChallengeType.MULTIPLE_CHOICE) {
+    return {
+      runtimeConfig: "",
+      validationConfig: JSON.stringify({
+        type: "multiple_choice",
+        allowMultiple: checkedValue(formData.get("allowMultiple")),
+        options: optionRows(formData.get("choiceOptions")),
+        correctOptionIds: optionalLines(formData.get("correctOptionIds"))
+      })
+    };
+  }
+
+  if (type === ChallengeType.DOCKER_WEB) {
+    return {
+      validationConfig: "",
+      runtimeConfig: JSON.stringify({
+        type: "docker_web",
+        image: requiredValue(formData.get("dockerImage")),
+        containerPort: Number(requiredValue(formData.get("containerPort"), "80")),
+        memoryMb: Number(requiredValue(formData.get("memoryMb"), "128")),
+        cpuCount: Number(requiredValue(formData.get("cpuCount"), "0.25")),
+        ttlMinutes: Number(requiredValue(formData.get("ttlMinutes"), "30"))
+      })
+    };
+  }
+
+  return {
+    runtimeConfig: "",
+    validationConfig: ""
+  };
+}
+
 export async function createChallengeAction(formData: FormData) {
   const admin = await requireAdmin();
   let status = "created";
 
   try {
+    const configs = challengeConfigs(formData);
+
     await createAdminChallenge({
       actorUserId: admin.id,
       input: {
@@ -37,8 +122,8 @@ export async function createChallengeAction(formData: FormData) {
         points: requiredValue(formData.get("points"), "0"),
         status: requiredValue(formData.get("status"), ContentStatus.DRAFT),
         tags: requiredValue(formData.get("tags")),
-        validationConfig: requiredValue(formData.get("validationConfig")),
-        runtimeConfig: requiredValue(formData.get("runtimeConfig"))
+        validationConfig: configs.validationConfig,
+        runtimeConfig: configs.runtimeConfig
       }
     });
     revalidatePath("/admin/challenges");
@@ -95,6 +180,8 @@ export async function updateChallengeAction(formData: FormData) {
   let status = "updated";
 
   try {
+    const configs = challengeConfigs(formData);
+
     await updateAdminChallenge({
       actorUserId: admin.id,
       input: {
@@ -107,8 +194,8 @@ export async function updateChallengeAction(formData: FormData) {
         points: requiredValue(formData.get("points"), "0"),
         status: requiredValue(formData.get("status"), ContentStatus.DRAFT),
         tags: requiredValue(formData.get("tags")),
-        validationConfig: requiredValue(formData.get("validationConfig")),
-        runtimeConfig: requiredValue(formData.get("runtimeConfig"))
+        validationConfig: configs.validationConfig,
+        runtimeConfig: configs.runtimeConfig
       }
     });
     revalidatePath("/admin/challenges");

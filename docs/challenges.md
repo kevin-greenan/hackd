@@ -10,6 +10,8 @@ Current validators:
 - Short answer: exact text match against configured accepted answers, with optional case-insensitive matching
 - Multiple choice: single-answer radio selection or multi-answer checkbox selection against configured option IDs
 
+Admins configure these supported validators with type-specific fields in `/admin/challenges`. The form writes the underlying `validationConfig` and `runtimeConfig` JSON for portability and content import compatibility.
+
 Unsupported challenge types return a generic disabled response and do not reveal expected answers.
 
 ## Learner Flow
