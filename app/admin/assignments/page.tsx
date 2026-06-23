@@ -3,6 +3,7 @@ import { AdminTable, StatusBadge } from "@/components/admin/admin-table";
 import { AppShell } from "@/components/app-shell";
 import { Button, ButtonLink } from "@/components/button";
 import { Card } from "@/components/card";
+import { CsrfField } from "@/components/csrf-field";
 import { requireAdmin } from "@/lib/auth/current-user";
 import {
   formatAdminLabel,
@@ -91,6 +92,7 @@ export default async function AdminAssignmentsPage({
         <Card>
           <h2 className="text-lg font-semibold">Create assignment</h2>
           <form action={createAssignmentAction} className="mt-4 grid gap-4 lg:grid-cols-[1fr_1fr_10rem_8rem_auto]">
+          <CsrfField />
             <label className="grid gap-1 text-sm font-medium">
               Module
               <select className="h-10 rounded-md border border-border px-3" name="moduleId" required>
@@ -173,6 +175,7 @@ export default async function AdminAssignmentsPage({
               ),
               <span key="created">{formatDate(assignment.createdAt)}</span>,
               <form action={updateAssignmentAction} className="grid min-w-[18rem] gap-2" key="update">
+          <CsrfField />
                 <input name="assignmentId" type="hidden" value={assignment.id} />
                 <select className="h-9 rounded-md border border-border px-2 text-sm" name="moduleId" defaultValue={assignment.moduleId}>
                   {modules.map((module) => (
@@ -225,6 +228,7 @@ export default async function AdminAssignmentsPage({
                 </Button>
               </form>,
               <form action={deleteAssignmentAction} key="delete">
+          <CsrfField />
                 <input name="assignmentId" type="hidden" value={assignment.id} />
                 <Button className="h-9" type="submit" variant="ghost">
                   Delete

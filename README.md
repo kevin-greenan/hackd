@@ -178,5 +178,5 @@ After `docker compose up --build`:
 - Docker runtime hardening beyond local V1 limits is planned.
 - OIDC/SAML, MFA, SCIM, multi-tenancy, and marketplace concepts are deferred.
 - Auth rate limiting is in-memory and suitable only for local development.
-- CSRF-specific token handling is planned.
+- CSRF-specific token handling is implemented for state-changing forms.
 - The `v1.0` release remains planned; see the [V1 release roadmap](docs/v1-roadmap.md).

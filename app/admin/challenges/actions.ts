@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ChallengeType, ContentStatus } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth/current-user";
+import { assertValidCsrfToken } from "@/lib/auth/csrf";
 import {
   createChallengeAttachment,
   deleteChallengeAttachment
@@ -105,6 +106,7 @@ function challengeConfigs(formData: FormData) {
 }
 
 export async function createChallengeAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "created";
 
@@ -135,6 +137,7 @@ export async function createChallengeAction(formData: FormData) {
 }
 
 export async function uploadChallengeAttachmentAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "attached";
 
@@ -159,6 +162,7 @@ export async function uploadChallengeAttachmentAction(formData: FormData) {
 }
 
 export async function deleteChallengeAttachmentAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "attachment-deleted";
 
@@ -176,6 +180,7 @@ export async function deleteChallengeAttachmentAction(formData: FormData) {
 }
 
 export async function updateChallengeAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "updated";
 

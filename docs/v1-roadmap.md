@@ -176,7 +176,7 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 - [ ] Required commands pass in CI and on a clean local checkout.
 - [ ] Docker Compose deployment path is documented and tested.
 - [ ] Secrets and local-only defaults are clearly separated.
-- [ ] CSRF protection is implemented for state-changing routes.
+- [x] CSRF protection is implemented for state-changing routes.
 - [ ] Login and challenge submission throttling are production-appropriate.
 - [ ] OIDC decision is made and documented.
 - [ ] Content schema is versioned and documented.

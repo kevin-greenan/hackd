@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { UserStatus } from "@prisma/client";
 import { z } from "zod";
+import { verifyCsrfToken } from "@/lib/auth/csrf";
 import { verifyPassword } from "@/lib/auth/password";
 import { checkRateLimit } from "@/lib/auth/rate-limit";
 import {
@@ -31,6 +32,12 @@ export async function POST(request: NextRequest) {
   }
 
   const formData = await request.formData();
+
+  if (!(await verifyCsrfToken(formData.get("csrfToken")))) {
+    logger.warn("auth.login_invalid_csrf", { ipAddress });
+    return redirectToLogin(request, "invalid");
+  }
+
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password")

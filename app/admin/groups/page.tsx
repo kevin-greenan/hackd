@@ -2,6 +2,7 @@ import { AdminTable } from "@/components/admin/admin-table";
 import { AppShell } from "@/components/app-shell";
 import { Button, ButtonLink } from "@/components/button";
 import { Card } from "@/components/card";
+import { CsrfField } from "@/components/csrf-field";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { getAdminGroups } from "@/lib/core/admin-lists";
 import { createGroupAction, deleteGroupAction, updateGroupAction } from "./actions";
@@ -66,6 +67,7 @@ export default async function AdminGroupsPage({
         <Card>
           <h2 className="text-lg font-semibold">Create group</h2>
           <form action={createGroupAction} className="mt-4 grid gap-4 lg:grid-cols-[1fr_1fr_auto]">
+          <CsrfField />
             <label className="grid gap-1 text-sm font-medium">
               Name
               <input className="h-10 rounded-md border border-border px-3" name="name" required />
@@ -111,6 +113,7 @@ export default async function AdminGroupsPage({
               <span key="created">{formatDate(group.createdAt)}</span>,
               <div className="grid min-w-[16rem] gap-2" key="update">
                 <form action={updateGroupAction} className="grid gap-2">
+          <CsrfField />
                   <input name="groupId" type="hidden" value={group.id} />
                   <input className="h-9 rounded-md border border-border px-2 text-sm" name="name" defaultValue={group.name} required />
                   <input className="h-9 rounded-md border border-border px-2 text-sm" name="slug" defaultValue={group.slug} pattern="[a-z0-9]+(-[a-z0-9]+)*" required />
@@ -120,6 +123,7 @@ export default async function AdminGroupsPage({
                   </Button>
                 </form>
                 <form action={deleteGroupAction}>
+          <CsrfField />
                   <input name="groupId" type="hidden" value={group.id} />
                   <Button
                     className="h-9 w-full"

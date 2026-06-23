@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/current-user";
+import { assertValidCsrfToken } from "@/lib/auth/csrf";
 import {
   createAdminGroup,
   deleteAdminGroup,
@@ -14,6 +15,7 @@ function adminGroupsRedirect(status: string) {
 }
 
 export async function createGroupAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "created";
 
@@ -35,6 +37,7 @@ export async function createGroupAction(formData: FormData) {
 }
 
 export async function updateGroupAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "updated";
 
@@ -57,6 +60,7 @@ export async function updateGroupAction(formData: FormData) {
 }
 
 export async function deleteGroupAction(formData: FormData) {
+  await assertValidCsrfToken(formData);
   const admin = await requireAdmin();
   let status = "deleted";
 

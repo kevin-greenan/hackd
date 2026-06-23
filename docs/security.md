@@ -42,6 +42,14 @@ This document summarizes the current security posture for local and single-host 
 - This is suitable for the local foundation only.
 - Production deployments should move rate limiting to durable infrastructure such as Redis or an edge layer.
 
+## CSRF Protection
+
+- State-changing forms include a signed CSRF token.
+- Login uses an anonymous pre-session token.
+- Authenticated forms bind the token to the active session user.
+- Server actions and POST route handlers verify the token before applying mutations.
+- Tokens expire after two hours and are signed with `SESSION_SECRET`.
+
 ## File Attachments
 
 - Attachment uploads enforce a default 5 MB size limit through `MAX_ATTACHMENT_BYTES`.

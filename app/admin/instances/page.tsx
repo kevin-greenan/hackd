@@ -3,6 +3,7 @@ import { AdminTable, StatusBadge } from "@/components/admin/admin-table";
 import { AppShell } from "@/components/app-shell";
 import { Button, ButtonLink } from "@/components/button";
 import { Card } from "@/components/card";
+import { CsrfField } from "@/components/csrf-field";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { formatAdminLabel } from "@/lib/core/admin-lists";
 import { getAdminChallengeInstances } from "@/lib/core/challenge-runtime";
@@ -90,6 +91,7 @@ export default async function AdminInstancesPage({
               </p>
             </div>
             <form action={cleanupExpiredInstancesAction}>
+          <CsrfField />
               <Button type="submit" variant="secondary">
                 Cleanup expired
               </Button>
@@ -131,6 +133,7 @@ export default async function AdminInstancesPage({
                 </code>,
                 instance.status === InstanceStatus.RUNNING || instance.status === InstanceStatus.STARTING ? (
                   <form action={stopAdminChallengeInstanceAction} key="action">
+          <CsrfField />
                     <input name="instanceId" type="hidden" value={instance.id} />
                     <Button className="h-9" type="submit" variant="ghost">
                       Stop

@@ -2,6 +2,7 @@ import { AdminTable, StatusBadge } from "@/components/admin/admin-table";
 import { AppShell } from "@/components/app-shell";
 import { Button, ButtonLink } from "@/components/button";
 import { Card } from "@/components/card";
+import { CsrfField } from "@/components/csrf-field";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { formatAdminLabel, getAdminGroups, getAdminUsers } from "@/lib/core/admin-lists";
 import { createUserAction, updateUserAction } from "./actions";
@@ -66,6 +67,7 @@ export default async function AdminUsersPage({
         <Card>
           <h2 className="text-lg font-semibold">Create user</h2>
           <form action={createUserAction} className="mt-4 grid gap-4 lg:grid-cols-2">
+          <CsrfField />
             <label className="grid gap-1 text-sm font-medium">
               Name
               <input className="h-10 rounded-md border border-border px-3" name="name" required />
@@ -145,6 +147,7 @@ export default async function AdminUsersPage({
               </div>,
               <span key="created">{formatDate(adminUser.createdAt)}</span>,
               <form action={updateUserAction} className="grid min-w-[16rem] gap-2" key="update">
+          <CsrfField />
                 <input name="userId" type="hidden" value={adminUser.id} />
                 <input className="h-9 rounded-md border border-border px-2 text-sm" name="name" defaultValue={adminUser.name} required />
                 <div className="grid gap-2 sm:grid-cols-2">
