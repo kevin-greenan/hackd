@@ -1,5 +1,14 @@
-import { PrismaClient, Role, UserStatus } from "@prisma/client";
+import {
+  AssignmentStatus,
+  AttemptResult,
+  ChallengeType,
+  ContentStatus,
+  PrismaClient,
+  Role,
+  UserStatus
+} from "@prisma/client";
 import { hashPassword } from "../lib/auth/password";
+import { upsertSeedAssignment } from "../lib/core/assignments";
 
 const prisma = new PrismaClient();
 
@@ -66,8 +75,245 @@ async function main() {
     role: Role.LEARNER
   });
 
+  const appsecGroup = await prisma.group.upsert({
+    where: { slug: "appsec-learners" },
+    update: {
+      name: "AppSec Learners",
+      description: "Sample learner group for local development."
+    },
+    create: {
+      name: "AppSec Learners",
+      slug: "appsec-learners",
+      description: "Sample learner group for local development."
+    }
+  });
+
+  await prisma.groupMembership.upsert({
+    where: {
+      userId_groupId: {
+        userId: learner.id,
+        groupId: appsecGroup.id
+      }
+    },
+    update: {},
+    create: {
+      userId: learner.id,
+      groupId: appsecGroup.id
+    }
+  });
+
+  const secureCodeReview = await prisma.module.upsert({
+    where: { slug: "intro-secure-code-review" },
+    update: {
+      title: "Intro to Secure Code Review",
+      summary: "Learn a practical review loop for spotting common web security defects.",
+      bodyMarkdown:
+        "## Overview\n\nThis sample module introduces structured secure code review for web applications.",
+      difficulty: "beginner",
+      estimatedMinutes: 35,
+      status: ContentStatus.PUBLISHED,
+      tags: ["appsec", "code-review"],
+      createdById: admin.id
+    },
+    create: {
+      title: "Intro to Secure Code Review",
+      slug: "intro-secure-code-review",
+      summary: "Learn a practical review loop for spotting common web security defects.",
+      bodyMarkdown:
+        "## Overview\n\nThis sample module introduces structured secure code review for web applications.",
+      difficulty: "beginner",
+      estimatedMinutes: 35,
+      status: ContentStatus.PUBLISHED,
+      tags: ["appsec", "code-review"],
+      createdById: admin.id
+    }
+  });
+
+  const staticFlagModule = await prisma.module.upsert({
+    where: { slug: "intro-static-flag" },
+    update: {
+      title: "Intro Static Flag",
+      summary: "Practice a simple challenge submission workflow with a static flag.",
+      bodyMarkdown:
+        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.",
+      difficulty: "beginner",
+      estimatedMinutes: 20,
+      status: ContentStatus.PUBLISHED,
+      tags: ["platform", "challenge-basics"],
+      createdById: admin.id
+    },
+    create: {
+      title: "Intro Static Flag",
+      slug: "intro-static-flag",
+      summary: "Practice a simple challenge submission workflow with a static flag.",
+      bodyMarkdown:
+        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.",
+      difficulty: "beginner",
+      estimatedMinutes: 20,
+      status: ContentStatus.PUBLISHED,
+      tags: ["platform", "challenge-basics"],
+      createdById: admin.id
+    }
+  });
+
+  const reviewChallenge = await prisma.challenge.upsert({
+    where: { slug: "spot-insecure-direct-object-reference" },
+    update: {
+      title: "Spot an IDOR",
+      description: "Review a short scenario and identify the authorization flaw.",
+      type: ChallengeType.SHORT_ANSWER,
+      difficulty: "beginner",
+      points: 50,
+      tags: ["appsec", "authorization"],
+      validationConfig: {
+        type: "exact_text",
+        acceptedAnswers: ["idor", "insecure direct object reference"],
+        caseInsensitive: true
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "Spot an IDOR",
+      slug: "spot-insecure-direct-object-reference",
+      description: "Review a short scenario and identify the authorization flaw.",
+      type: ChallengeType.SHORT_ANSWER,
+      difficulty: "beginner",
+      points: 50,
+      tags: ["appsec", "authorization"],
+      validationConfig: {
+        type: "exact_text",
+        acceptedAnswers: ["idor", "insecure direct object reference"],
+        caseInsensitive: true
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
+  const flagChallenge = await prisma.challenge.upsert({
+    where: { slug: "submit-your-first-flag" },
+    update: {
+      title: "Submit Your First Flag",
+      description: "Use the platform flow to submit a sample static flag.",
+      type: ChallengeType.STATIC_FLAG,
+      difficulty: "beginner",
+      points: 25,
+      tags: ["platform"],
+      validationConfig: {
+        type: "static_flag",
+        flag: "flag{sample}"
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "Submit Your First Flag",
+      slug: "submit-your-first-flag",
+      description: "Use the platform flow to submit a sample static flag.",
+      type: ChallengeType.STATIC_FLAG,
+      difficulty: "beginner",
+      points: 25,
+      tags: ["platform"],
+      validationConfig: {
+        type: "static_flag",
+        flag: "flag{sample}"
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
+  await prisma.moduleChallenge.upsert({
+    where: {
+      moduleId_challengeId: {
+        moduleId: secureCodeReview.id,
+        challengeId: reviewChallenge.id
+      }
+    },
+    update: { sortOrder: 1, required: true },
+    create: {
+      moduleId: secureCodeReview.id,
+      challengeId: reviewChallenge.id,
+      sortOrder: 1,
+      required: true
+    }
+  });
+
+  await prisma.moduleChallenge.upsert({
+    where: {
+      moduleId_challengeId: {
+        moduleId: staticFlagModule.id,
+        challengeId: flagChallenge.id
+      }
+    },
+    update: { sortOrder: 1, required: true },
+    create: {
+      moduleId: staticFlagModule.id,
+      challengeId: flagChallenge.id,
+      sortOrder: 1,
+      required: true
+    }
+  });
+
+  await upsertSeedAssignment({
+    moduleId: secureCodeReview.id,
+    assignedById: admin.id,
+    target: { groupId: appsecGroup.id },
+    dueAt: new Date("2026-08-01T05:00:00.000Z"),
+    required: true
+  });
+
+  await upsertSeedAssignment({
+    moduleId: staticFlagModule.id,
+    assignedById: admin.id,
+    target: { userId: learner.id },
+    dueAt: new Date("2026-07-15T05:00:00.000Z"),
+    required: true
+  });
+
+  await prisma.completion.upsert({
+    where: {
+      userId_moduleId: {
+        userId: learner.id,
+        moduleId: staticFlagModule.id
+      }
+    },
+    update: {
+      status: AssignmentStatus.IN_PROGRESS,
+      completedAt: null
+    },
+    create: {
+      userId: learner.id,
+      moduleId: staticFlagModule.id,
+      status: AssignmentStatus.IN_PROGRESS
+    }
+  });
+
+  const existingAttempt = await prisma.attempt.findFirst({
+    where: {
+      userId: learner.id,
+      challengeId: flagChallenge.id,
+      submittedValue: "flag{example}"
+    }
+  });
+
+  if (!existingAttempt) {
+    await prisma.attempt.create({
+      data: {
+        userId: learner.id,
+        challengeId: flagChallenge.id,
+        submittedValue: "flag{example}",
+        result: AttemptResult.INCORRECT,
+        scoreAwarded: 0,
+        feedback: "Sample incorrect attempt for local reporting data."
+      }
+    });
+  }
+
   console.log(`Seeded admin user: ${admin.email}`);
   console.log(`Seeded learner user: ${learner.email}`);
+  console.log("Seeded sample group, modules, challenges, assignments, completion, and attempt.");
 }
 
 main()

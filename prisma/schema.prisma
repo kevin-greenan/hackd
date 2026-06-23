@@ -178,6 +178,9 @@ model Assignment {
   @@index([userId])
   @@index([groupId])
   @@index([assignedById])
+  @@index([dueAt])
+  @@index([userId, moduleId])
+  @@index([groupId, moduleId])
 }
 
 model Attempt {
@@ -194,6 +197,7 @@ model Attempt {
 
   @@index([userId])
   @@index([challengeId])
+  @@index([userId, challengeId])
   @@index([result])
 }
 
@@ -211,6 +215,7 @@ model Completion {
   @@unique([userId, moduleId])
   @@index([moduleId])
   @@index([status])
+  @@index([userId, status])
 }
 
 model ChallengeInstance {

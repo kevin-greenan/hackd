@@ -1,6 +1,6 @@
 # hackd Architecture Notes
 
-This first implementation pass uses a single full-stack Next.js application backed by Postgres through Prisma.
+hackd uses a single full-stack Next.js application backed by Postgres through Prisma.
 
 ## Current Components
 
@@ -14,4 +14,13 @@ Authentication is local email/password for v1. Successful login creates a signed
 
 ## Deferred Components
 
-Challenge runtime, workers, content import, authoring, assignments, and reporting are intentionally deferred beyond Milestone 1. Their database models are present to keep the foundation aligned with the roadmap.
+Challenge runtime, workers, content import, authoring, full admin CRUD, and reporting exports are intentionally deferred. Their database models are present to keep the foundation aligned with the roadmap.
+
+## Core Data Layer
+
+Milestone 2 adds small server-side helpers under `lib/core/`:
+
+- `assignments.ts` enforces user-or-group assignment targeting and wraps assignment creation.
+- `learner-dashboard.ts` resolves direct and group assignments for the current learner.
+- `admin-metrics.ts` collects basic counts for the admin dashboard.
+- `completions.ts` calculates progress summaries without coupling UI code to completion math.
