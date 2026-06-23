@@ -11,9 +11,22 @@ function sessionCookieValue(setCookieHeader: string | null) {
   return match?.[1];
 }
 
+async function loginCsrfToken(page: Page) {
+  const response = await page.request.get(`${appUrl}/login`);
+  const body = await response.text();
+  const match = body.match(/name="csrfToken" value="([^"]+)"/);
+
+  expect(response.status()).toBe(200);
+  expect(match?.[1], "Login page did not render a CSRF token").toBeTruthy();
+
+  return match?.[1] ?? "";
+}
+
 async function login(page: Page, email: string, password: string) {
+  const csrfToken = await loginCsrfToken(page);
   const response = await page.request.post(`${appUrl}/api/auth/login`, {
     form: {
+      csrfToken,
       email,
       password
     },
