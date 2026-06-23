@@ -221,7 +221,7 @@ export default async function AdminModulesPage({
         </Card>
       </section>
       <p className="mt-4 text-sm text-muted-foreground">
-        Assignment workflow remains planned for the next Milestone 5 slice.
+        Use Assignments to target modules to learners or groups.
       </p>
     </AppShell>
   );
