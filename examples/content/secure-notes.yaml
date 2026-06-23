@@ -1,0 +1,58 @@
+version: 1
+modules:
+  - title: Secure Notes Basics
+    slug: secure-notes-basics
+    summary: Practice reviewing a small notes feature for common authorization and trust-boundary flaws.
+    bodyFile: secure-notes.md
+    difficulty: beginner
+    estimatedMinutes: 30
+    status: PUBLISHED
+    tags:
+      - appsec
+      - authorization
+    challenges:
+      - slug: secure-notes-static-flag
+        sortOrder: 1
+        required: true
+      - slug: secure-notes-review-check
+        sortOrder: 2
+        required: false
+challenges:
+  - title: Secure Notes Static Flag
+    slug: secure-notes-static-flag
+    description: Submit the sample flag shown in the lesson.
+    type: STATIC_FLAG
+    difficulty: beginner
+    points: 25
+    status: PUBLISHED
+    tags:
+      - platform
+      - flag
+    validationConfig:
+      type: static_flag
+      flag: flag{secure-notes}
+    runtimeConfig: null
+  - title: Secure Notes Review Check
+    slug: secure-notes-review-check
+    description: Identify which user-controlled values should be treated as untrusted.
+    type: MULTIPLE_CHOICE
+    difficulty: beginner
+    points: 25
+    status: PUBLISHED
+    tags:
+      - appsec
+      - review
+    validationConfig:
+      type: multiple_choice
+      allowMultiple: true
+      options:
+        - id: note-id
+          label: Note ID from the URL
+        - id: cookie-user
+          label: User ID stored in a client-side cookie
+        - id: server-secret
+          label: Server-side encryption key
+      correctOptionIds:
+        - note-id
+        - cookie-user
+    runtimeConfig: null

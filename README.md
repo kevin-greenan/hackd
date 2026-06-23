@@ -2,7 +2,7 @@
 
 hackd is a containerized control plane for hands-on security training modules, challenges, sandboxes, validation, and learner progress.
 
-This repository currently implements Milestone 0 through Milestone 8 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, admin list views, basic user/group/content/assignment management, admin audit visibility, filtered progress reporting with CSV exports, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, challenge file attachments and downloads, Dockerized web challenge launch/stop flows, recent attempt visibility for admins, and health endpoints.
+This repository currently implements Milestone 0 through Milestone 9 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, admin list views, basic user/group/content/assignment management, admin audit visibility, filtered progress reporting with CSV exports, content import from YAML/JSON bundles, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, challenge file attachments and downloads, Dockerized web challenge launch/stop flows, recent attempt visibility for admins, and health endpoints.
 
 ## Prerequisites
 
@@ -91,6 +91,7 @@ npm run dev
 npm run build
 npm run lint
 npm run test
+npm run content:import -- --file examples/content/secure-notes.yaml --dry-run
 npm run db:migrate
 npm run db:seed
 npm run smoke:compose
@@ -99,6 +100,7 @@ npm run smoke:compose
 `npm run smoke:compose` builds the containers, starts the stack, waits for `/api/healthz`, prints the health response, and stops the stack.
 
 [Learner experience notes](docs/learner-experience.md) describe the current `/dashboard` to `/modules/[slug]` flow.
+[Content import notes](docs/content-import.md) describe the YAML/JSON module and challenge bundle format.
 
 ## Manual Smoke Test
 
@@ -144,6 +146,7 @@ After `docker compose up --build`:
 - Admin create/edit/delete workflows for assignments with audit logging
 - Admin audit log visibility for user, group, module, challenge, and assignment changes
 - Admin progress reports for learners, modules, challenge performance, module/learner/group filters, and CSV exports
+- Content import CLI for YAML/JSON module and challenge bundles with dry-run validation
 - Admin challenge attachment upload/delete workflows with local file storage
 - Learner challenge attachment downloads for assigned modules
 - Internal Docker runtime runner service for sample Dockerized web challenges
@@ -165,13 +168,13 @@ After `docker compose up --build`:
 - Rich type-specific challenge config editors are not implemented yet; validation/runtime config is edited as JSON.
 - File-based answer submissions are not implemented yet.
 - Docker runtime hardening beyond local V1 limits is not implemented yet.
-- Content import, OIDC/SAML, multi-tenancy, and marketplace concepts are deferred.
+- OIDC/SAML, multi-tenancy, and marketplace concepts are deferred.
 - Auth rate limiting is in-memory and suitable only for local/dev foundations.
 - CSRF-specific token handling is not implemented yet.
 
 ## Next Milestone Checklist
 
-Next milestones should expand content import and challenge coverage:
+Next milestones should expand hardening and challenge coverage:
 
 - Assignment lifecycle refinements, including completion reconciliation after assignment deletion
-- Content import
+- Rich type-specific challenge config editors

@@ -14,7 +14,7 @@ Authentication is local email/password for v1. Successful login creates a signed
 
 ## Deferred Components
 
-Content import, rich authoring editors, advanced admin lifecycle controls, scheduled reporting, and hardened runtime isolation are intentionally deferred. Their database models are present to keep the foundation aligned with the roadmap.
+Rich authoring editors, advanced admin lifecycle controls, scheduled reporting, and hardened runtime isolation are intentionally deferred. Their database models are present to keep the foundation aligned with the roadmap.
 
 ## Core Data Layer
 
@@ -31,5 +31,6 @@ Milestone 2 adds small server-side helpers under `lib/core/`:
 - `admin-lists.ts` powers read-only admin list views for users, groups, modules, challenges, and assignments.
 - `admin-management.ts` validates admin user/group/module/challenge/assignment mutations, module-challenge associations, and writes audit log records.
 - `admin-reports.ts` powers filtered admin progress reporting and CSV exports for completions and attempts.
+- `content-import.ts` validates YAML/JSON content bundles, imports Markdown lesson bodies, and upserts modules, challenges, and module links.
 - `audit-log.ts` centralizes admin action audit writes and bounded audit-log reads.
 - `completions.ts` calculates progress summaries without coupling UI code to completion math.
