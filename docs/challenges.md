@@ -41,10 +41,13 @@ Attachment storage is local:
 - `runtimeConfig.image` names the Docker image to pull and launch.
 - `runtimeConfig.containerPort` defaults to `80`.
 - `runtimeConfig.memoryMb`, `runtimeConfig.cpuCount`, and `runtimeConfig.ttlMinutes` are bounded by server-side validation.
+- `runtimeConfig.image` must match `RUNTIME_ALLOWED_IMAGES`.
 - Learners assigned to the containing published module can launch, open, and stop an instance.
 - Admins can review, stop, and clean up instances from `/admin/instances`.
 
 Docker Compose runs the runner as a separate service with access to `/var/run/docker.sock`; the web service talks to it through `RUNTIME_RUNNER_URL`.
+
+`RUNTIME_ALLOWED_IMAGES` accepts exact image references and prefix patterns ending in `*`, separated by commas. The local default allows the seeded `nginx:alpine` demo challenge.
 
 ## Completion Behavior
 

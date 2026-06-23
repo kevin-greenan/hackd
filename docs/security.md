@@ -64,6 +64,7 @@ This document summarizes the current security posture for local and single-host 
 - The web service does not mount the Docker socket.
 - Docker socket access is isolated to the internal `runner` service in Docker Compose.
 - Runtime containers are created without privileged mode.
+- Runtime images must match `RUNTIME_ALLOWED_IMAGES` before the runner is called.
 - Runtime containers drop all Linux capabilities, set `no-new-privileges`, set a read-only root filesystem, and apply memory, CPU, and PID limits.
 - Runtime containers avoid host filesystem mounts.
 - Runtime containers are labeled with `hackd.runtime=true` and tracked in `ChallengeInstance`.

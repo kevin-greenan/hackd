@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../db/prisma";
 
 const DEFAULT_TTL_MINUTES = 30;
+const DEFAULT_ALLOWED_IMAGES = "nginx:alpine";
 
 const dockerRuntimeConfigSchema = z.object({
   type: z.literal("docker_web"),
@@ -38,6 +39,23 @@ export function parseDockerRuntimeConfig(value: unknown): DockerRuntimeConfig | 
   const parsed = dockerRuntimeConfigSchema.safeParse(value);
 
   return parsed.success ? parsed.data : null;
+}
+
+function allowedRuntimeImagePatterns() {
+  return (process.env.RUNTIME_ALLOWED_IMAGES || DEFAULT_ALLOWED_IMAGES)
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+export function isRuntimeImageAllowed(image: string, patterns = allowedRuntimeImagePatterns()) {
+  return patterns.some((pattern) => {
+    if (pattern.endsWith("*")) {
+      return image.startsWith(pattern.slice(0, -1));
+    }
+
+    return image === pattern;
+  });
 }
 
 export function publicChallengeUrl(hostPort: number) {
@@ -122,6 +140,10 @@ export async function launchChallengeInstance({
 
   if (!config) {
     throw new Error("Challenge runtime is not configured.");
+  }
+
+  if (!isRuntimeImageAllowed(config.image)) {
+    throw new Error("Challenge runtime image is not allowed.");
   }
 
   const existing = await prisma.challengeInstance.findFirst({

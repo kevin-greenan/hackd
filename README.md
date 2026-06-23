@@ -47,6 +47,7 @@ Required variables:
 - `CHALLENGE_SUBMISSION_LIMIT`
 - `CHALLENGE_SUBMISSION_WINDOW_SECONDS`
 - `RUNTIME_RUNNER_URL`
+- `RUNTIME_ALLOWED_IMAGES`
 - `CHALLENGE_PUBLIC_HOST`
 - `HACKD_BRAND_NAME`
 - `HACKD_BRAND_TAGLINE`
@@ -55,7 +56,7 @@ Required variables:
 
 Do not commit real secrets. `SESSION_SECRET` must be at least 32 characters.
 
-`FILE_STORAGE_DIR` stores admin-uploaded challenge attachments and should point to durable local storage or a mounted volume. `RUNTIME_RUNNER_URL` is the internal Docker runner service URL. `CHALLENGE_PUBLIC_HOST` is the browser-visible host used when formatting mapped challenge URLs.
+`FILE_STORAGE_DIR` stores admin-uploaded challenge attachments and should point to durable local storage or a mounted volume. `RUNTIME_RUNNER_URL` is the internal Docker runner service URL. `RUNTIME_ALLOWED_IMAGES` is a comma-separated allowlist for Dockerized challenge images. `CHALLENGE_PUBLIC_HOST` is the browser-visible host used when formatting mapped challenge URLs.
 
 Branding and theme variables are optional; see [Branding and themes](docs/branding.md).
 

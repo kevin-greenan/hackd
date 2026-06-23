@@ -148,7 +148,7 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 
 ### v0.4: Runtime Hardening
 
-- Docker image allowlisting.
+- Docker image allowlisting. (Implemented for exact image references and prefix patterns.)
 - Runner lifecycle reconciliation.
 - Scheduled cleanup.
 - Stronger runtime failure handling.
