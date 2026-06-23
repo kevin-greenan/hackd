@@ -1,0 +1,35 @@
+version: 1
+modules:
+  - title: Short Answer Example
+    slug: short-answer-example
+    summary: Minimal schema v1 module for an exact-match short answer.
+    bodyMarkdown: |
+      # Short Answer Example
+
+      Name a safe SQL query construction pattern.
+    difficulty: beginner
+    estimatedMinutes: 10
+    status: DRAFT
+    tags:
+      - sample
+    challenges:
+      - slug: short-answer-example-challenge
+        sortOrder: 1
+        required: true
+challenges:
+  - title: Short Answer Example Challenge
+    slug: short-answer-example-challenge
+    description: Submit one accepted answer.
+    type: SHORT_ANSWER
+    difficulty: beginner
+    points: 10
+    status: DRAFT
+    tags:
+      - sample
+    validationConfig:
+      type: short_answer
+      acceptedAnswers:
+        - prepared statement
+        - parameterized query
+      caseSensitive: false
+    runtimeConfig: null

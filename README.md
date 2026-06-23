@@ -146,6 +146,7 @@ Operational endpoints:
 - [Learner experience](docs/learner-experience.md)
 - [Challenge workflows](docs/challenges.md)
 - [Content import](docs/content-import.md)
+- [Content schema v1](docs/content-schema/v1.md)
 - [Branding and themes](docs/branding.md)
 - [Docker deployment](docs/deployment.md)
 - [Operations runbook](docs/operations-runbook.md)
