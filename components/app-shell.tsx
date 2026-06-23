@@ -17,7 +17,8 @@ export function AppShell({
     { href: "/admin/groups", label: "Groups" },
     { href: "/admin/modules", label: "Modules" },
     { href: "/admin/challenges", label: "Challenges" },
-    { href: "/admin/assignments", label: "Assignments" }
+    { href: "/admin/assignments", label: "Assignments" },
+    { href: "/admin/audit", label: "Audit" }
   ];
 
   return (

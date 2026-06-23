@@ -21,6 +21,7 @@ This document tracks the current security posture.
 ## Admin Audit Logging
 
 - Admin user and group create/update/delete actions write `AuditLog` records.
+- Admin audit-log reads require the same server-side admin authorization boundary as other admin pages.
 - User creation audit metadata excludes plaintext passwords and password hashes.
 - Group deletion is allowed only for groups without members and assignments.
 - Admins cannot disable their own active session account through the user update form.

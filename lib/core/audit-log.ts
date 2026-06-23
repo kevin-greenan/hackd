@@ -24,3 +24,31 @@ export async function logAdminAction({
     }
   });
 }
+
+export async function getAdminAuditLogs(limit = 100) {
+  const auditLogs = await prisma.auditLog.findMany({
+    take: limit,
+    orderBy: {
+      createdAt: "desc"
+    },
+    include: {
+      actor: {
+        select: {
+          name: true,
+          email: true
+        }
+      }
+    }
+  });
+
+  return auditLogs.map((log) => ({
+    id: log.id,
+    action: log.action,
+    targetType: log.targetType,
+    targetId: log.targetId,
+    metadata: log.metadata,
+    actorName: log.actor?.name ?? "Unknown actor",
+    actorEmail: log.actor?.email ?? null,
+    createdAt: log.createdAt
+  }));
+}
