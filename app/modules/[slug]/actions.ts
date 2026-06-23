@@ -3,10 +3,15 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth/current-user";
+import { launchChallengeInstance, stopChallengeInstance } from "@/lib/core/challenge-runtime";
 import { submitChallengeAnswer } from "@/lib/core/challenge-submissions";
 
 function submissionRedirect(moduleSlug: string, challengeId: string, status: string) {
   redirect(`/modules/${moduleSlug}?challenge=${challengeId}&submission=${status}`);
+}
+
+function runtimeRedirect(moduleSlug: string, challengeId: string, status: string) {
+  redirect(`/modules/${moduleSlug}?challenge=${challengeId}&runtime=${status}`);
 }
 
 export async function submitChallengeAction(formData: FormData) {
@@ -38,5 +43,53 @@ export async function submitChallengeAction(formData: FormData) {
     submissionRedirect(moduleSlug, challengeId, result.result === "CORRECT" ? "correct" : "incorrect");
   } catch {
     submissionRedirect(moduleSlug, challengeId, "error");
+  }
+}
+
+export async function launchChallengeInstanceAction(formData: FormData) {
+  const user = await requireUser();
+  const moduleSlug = String(formData.get("moduleSlug") ?? "");
+  const challengeId = String(formData.get("challengeId") ?? "");
+
+  if (!moduleSlug || !challengeId) {
+    runtimeRedirect(moduleSlug || "unknown", challengeId || "unknown", "invalid");
+  }
+
+  try {
+    await launchChallengeInstance({
+      userId: user.id,
+      role: user.role,
+      moduleSlug,
+      challengeId
+    });
+
+    revalidatePath(`/modules/${moduleSlug}`);
+    runtimeRedirect(moduleSlug, challengeId, "running");
+  } catch {
+    runtimeRedirect(moduleSlug, challengeId, "error");
+  }
+}
+
+export async function stopChallengeInstanceAction(formData: FormData) {
+  const user = await requireUser();
+  const moduleSlug = String(formData.get("moduleSlug") ?? "");
+  const challengeId = String(formData.get("challengeId") ?? "");
+  const instanceId = String(formData.get("instanceId") ?? "");
+
+  if (!moduleSlug || !challengeId || !instanceId) {
+    runtimeRedirect(moduleSlug || "unknown", challengeId || "unknown", "invalid");
+  }
+
+  try {
+    await stopChallengeInstance({
+      userId: user.id,
+      role: user.role,
+      instanceId
+    });
+
+    revalidatePath(`/modules/${moduleSlug}`);
+    runtimeRedirect(moduleSlug, challengeId, "stopped");
+  } catch {
+    runtimeRedirect(moduleSlug, challengeId, "error");
   }
 }

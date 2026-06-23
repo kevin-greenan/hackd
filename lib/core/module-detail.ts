@@ -1,4 +1,11 @@
-import { AttemptResult, ContentStatus, Role, type AssignmentStatus, type ChallengeType } from "@prisma/client";
+import {
+  AttemptResult,
+  ContentStatus,
+  Role,
+  type AssignmentStatus,
+  type ChallengeType,
+  type InstanceStatus
+} from "@prisma/client";
 import { prisma } from "../db/prisma";
 import {
   getChallengeSubmissionConfig,
@@ -31,6 +38,13 @@ export type LearnerModuleChallenge = {
     mimeType: string;
     sizeBytes: number;
   }[];
+  activeInstance: {
+    id: string;
+    status: InstanceStatus;
+    url: string | null;
+    expiresAt: Date | null;
+    statusMessage: string | null;
+  } | null;
 };
 
 export type LearnerModuleDetail = {
@@ -90,6 +104,11 @@ export async function getLearnerModuleDetail({
               attempts: {
                 where: { userId },
                 orderBy: { createdAt: "desc" }
+              },
+              challengeInstances: {
+                where: { userId },
+                orderBy: { createdAt: "desc" },
+                take: 1
               }
             }
           }
@@ -150,6 +169,7 @@ export async function getLearnerModuleDetail({
         challengeType: moduleChallenge.challenge.type,
         validationConfig: moduleChallenge.challenge.validationConfig
       });
+      const activeInstance = moduleChallenge.challenge.challengeInstances[0];
 
       return {
         id: moduleChallenge.challenge.id,
@@ -173,7 +193,16 @@ export async function getLearnerModuleDetail({
               createdAt: moduleChallenge.challenge.attempts[0].createdAt
             }
           : null,
-        attachments: moduleChallenge.challenge.attachments
+        attachments: moduleChallenge.challenge.attachments,
+        activeInstance: activeInstance
+          ? {
+              id: activeInstance.id,
+              status: activeInstance.status,
+              url: activeInstance.url,
+              expiresAt: activeInstance.expiresAt,
+              statusMessage: activeInstance.statusMessage
+            }
+          : null
       };
     })
   };

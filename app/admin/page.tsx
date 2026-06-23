@@ -60,6 +60,12 @@ export default async function AdminPage() {
       description: "Assignments can target exactly one user or group."
     },
     {
+      title: "Instances",
+      href: "/admin/instances",
+      count: metrics.runningInstances,
+      description: "Running Dockerized challenge environments are visible for cleanup."
+    },
+    {
       title: "Reports",
       href: "/admin/reports",
       count: metrics.attempts,

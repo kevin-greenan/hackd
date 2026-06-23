@@ -245,6 +245,8 @@ model ChallengeInstance {
   image       String?
   url         String?
   port        Int?
+  statusMessage String?
+  runnerLog   String?
   startedAt   DateTime?
   expiresAt   DateTime?
   stoppedAt   DateTime?

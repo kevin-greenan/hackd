@@ -33,6 +33,19 @@ Attachment storage is local for v1:
 - `MAX_ATTACHMENT_BYTES` controls the upload size limit.
 - Docker Compose mounts `hackd-file-uploads` at `/app/data/uploads`.
 
+## Dockerized Web Challenges
+
+Milestone 7 adds a local Docker runtime runner service for `DOCKER_WEB` challenges.
+
+- `runtimeConfig.type` must be `docker_web`.
+- `runtimeConfig.image` names the Docker image to pull and launch.
+- `runtimeConfig.containerPort` defaults to `80`.
+- `runtimeConfig.memoryMb`, `runtimeConfig.cpuCount`, and `runtimeConfig.ttlMinutes` are bounded by server-side validation.
+- Learners assigned to the containing published module can launch, open, and stop an instance.
+- Admins can review, stop, and clean up instances from `/admin/instances`.
+
+Docker Compose runs the runner as a separate service with access to `/var/run/docker.sock`; the web service talks to it through `RUNTIME_RUNNER_URL`.
+
 ## Completion Behavior
 
 When an answer is submitted, hackd checks all required challenges for the module.
@@ -42,7 +55,7 @@ When an answer is submitted, hackd checks all required challenges for the module
 
 ## Current Limits
 
-- File-based answer submissions and Dockerized challenge submissions are not implemented yet.
+- File-based answer submissions are not implemented yet.
 - Expected static flags are stored in `validationConfig` for this early local version.
 - There is no per-challenge attempt limit yet.
 - There is no advanced anti-automation or durable rate limiting for submissions yet.
