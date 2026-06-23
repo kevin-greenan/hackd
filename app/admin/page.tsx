@@ -61,6 +61,7 @@ export default async function AdminPage() {
     },
     {
       title: "Reports",
+      href: "/admin/reports",
       count: metrics.attempts,
       description: "Attempt and completion records are available for reporting foundations."
     },
@@ -68,7 +69,7 @@ export default async function AdminPage() {
       title: "Audit",
       href: "/admin/audit",
       count: metrics.auditLogs,
-      description: "Admin user and group changes are recorded for review."
+      description: "Admin management changes are recorded for review."
     }
   ];
 

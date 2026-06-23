@@ -1375,45 +1375,45 @@ Deliver basic admin management for modules, challenges, users, groups, and assig
 
 Deliverables
 
-* Admin dashboard
-* User list
-* Group list
-* Module list
-* Challenge list
-* Assignment workflow
-* Attempt visibility
+- [x] Admin dashboard
+- [x] User list
+- [x] Group list
+- [x] Module list
+- [x] Challenge list
+- [x] Assignment workflow
+- [x] Attempt visibility
 
 Tasks
 
-* Create admin dashboard route.
-* Create admin navigation.
-* Create user list view.
-* Create user creation form.
-* Create user role edit form.
-* Create group list view.
-* Create group creation form.
-* Create group membership management.
-* Create module list view.
-* Create module create/edit form.
-* Add Markdown editor or textarea for module body.
-* Create challenge list view.
-* Create challenge create/edit form.
-* Associate challenges with modules.
-* Create assignment form.
-* Assign module to user.
-* Assign module to group.
-* View attempts by challenge.
-* Add audit logging for admin actions.
+- [x] Create admin dashboard route.
+- [x] Create admin navigation.
+- [x] Create user list view.
+- [x] Create user creation form.
+- [x] Create user role edit form.
+- [x] Create group list view.
+- [x] Create group creation form.
+- [x] Create group membership management.
+- [x] Create module list view.
+- [x] Create module create/edit form.
+- [x] Add Markdown editor or textarea for module body.
+- [x] Create challenge list view.
+- [x] Create challenge create/edit form.
+- [x] Associate challenges with modules.
+- [x] Create assignment form.
+- [x] Assign module to user.
+- [x] Assign module to group.
+- [x] View attempts by challenge.
+- [x] Add audit logging for admin actions.
 
 Acceptance Criteria
 
-* Admin can create a module.
-* Admin can create a challenge.
-* Admin can associate challenge with module.
-* Admin can assign module to learner.
-* Admin can assign module to group.
-* Admin can view learner attempts.
-* Admin actions are recorded in audit log.
+- [x] Admin can create a module.
+- [x] Admin can create a challenge.
+- [x] Admin can associate challenge with module.
+- [x] Admin can assign module to learner.
+- [x] Admin can assign module to group.
+- [x] Admin can view learner attempts.
+- [x] Admin actions are recorded in audit log.
 
 Milestone 6: File-Based Challenge Support
 

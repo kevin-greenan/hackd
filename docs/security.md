@@ -15,13 +15,14 @@ This document tracks the current security posture.
 - Protected pages call server-side helpers before rendering.
 - `/dashboard` requires an authenticated active user.
 - `/admin` requires an authenticated active user with the `ADMIN` role.
-- Admin user, group, module, and challenge mutation actions require the server-side `requireAdmin()` helper.
+- Admin user, group, module, challenge, assignment, and reporting actions require the server-side `requireAdmin()` helper.
 - Client-side role checks are treated as presentation only; server-side helpers are the access-control boundary.
 
 ## Admin Audit Logging
 
-- Admin user, group, module, and challenge create/update actions write `AuditLog` records.
+- Admin user, group, module, challenge, and assignment create/update/delete actions write `AuditLog` records.
 - Admin audit-log reads require the same server-side admin authorization boundary as other admin pages.
+- Admin report pages and CSV exports require the same server-side admin authorization boundary as other admin pages.
 - User creation audit metadata excludes plaintext passwords and password hashes.
 - Group deletion is allowed only for groups without members and assignments.
 - Admins cannot disable their own active session account through the user update form.
