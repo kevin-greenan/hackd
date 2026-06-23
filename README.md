@@ -92,6 +92,8 @@ npm run smoke:compose
 
 `npm run smoke:compose` builds the containers, starts the stack, waits for `/api/healthz`, prints the health response, and stops the stack.
 
+[Learner experience notes](docs/learner-experience.md) describe the current `/dashboard` to `/modules/[slug]` flow.
+
 ## Manual Smoke Test
 
 After `docker compose up --build`:
