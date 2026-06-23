@@ -1,9 +1,10 @@
 import { AdminTable, StatusBadge } from "@/components/admin/admin-table";
 import { AppShell } from "@/components/app-shell";
-import { ButtonLink } from "@/components/button";
+import { Button, ButtonLink } from "@/components/button";
 import { Card } from "@/components/card";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { formatAdminLabel, getAdminChallenges } from "@/lib/core/admin-lists";
+import { createChallengeAction, updateChallengeAction } from "./actions";
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("en", {
@@ -17,9 +18,34 @@ function statusTone(status: string): "neutral" | "success" | "warning" {
   return status === "PUBLISHED" ? "success" : status === "DRAFT" ? "warning" : "neutral";
 }
 
-export default async function AdminChallengesPage() {
+function formatJson(value: unknown) {
+  return value ? JSON.stringify(value, null, 2) : "";
+}
+
+function statusMessage(status?: string) {
+  if (status === "created") {
+    return "Challenge created.";
+  }
+
+  if (status === "updated") {
+    return "Challenge updated.";
+  }
+
+  if (status === "error") {
+    return "The challenge change could not be saved. Check required fields, slug uniqueness, and JSON config.";
+  }
+
+  return null;
+}
+
+export default async function AdminChallengesPage({
+  searchParams
+}: {
+  searchParams?: Promise<{ status?: string }>;
+}) {
   const user = await requireAdmin();
-  const challenges = await getAdminChallenges();
+  const [challenges, state] = await Promise.all([getAdminChallenges(), searchParams]);
+  const message = statusMessage(state?.status);
 
   return (
     <AppShell user={user} area="admin">
@@ -35,10 +61,77 @@ export default async function AdminChallengesPage() {
           Review challenge metadata, supported validation types, linked modules, and attempt volume.
         </p>
       </section>
+      {message ? (
+        <p className="mt-5 rounded-md border border-border bg-white px-4 py-3 text-sm font-semibold">
+          {message}
+        </p>
+      ) : null}
+      <section className="mt-8">
+        <Card>
+          <h2 className="text-lg font-semibold">Create challenge</h2>
+          <form action={createChallengeAction} className="mt-4 grid gap-4 lg:grid-cols-2">
+            <label className="grid gap-1 text-sm font-medium">
+              Title
+              <input className="h-10 rounded-md border border-border px-3" name="title" required />
+            </label>
+            <label className="grid gap-1 text-sm font-medium">
+              Slug
+              <input className="h-10 rounded-md border border-border px-3" name="slug" pattern="[a-z0-9]+(-[a-z0-9]+)*" required />
+            </label>
+            <label className="grid gap-1 text-sm font-medium lg:col-span-2">
+              Description
+              <input className="h-10 rounded-md border border-border px-3" name="description" required />
+            </label>
+            <div className="grid gap-4 sm:grid-cols-3 lg:col-span-2">
+              <label className="grid gap-1 text-sm font-medium">
+                Type
+                <select className="h-10 rounded-md border border-border px-3" name="type" defaultValue="STATIC_FLAG">
+                  <option value="STATIC_FLAG">Static flag</option>
+                  <option value="MULTIPLE_CHOICE">Multiple choice</option>
+                  <option value="SHORT_ANSWER">Short answer</option>
+                  <option value="FILE_BASED">File based</option>
+                  <option value="DOCKER_WEB">Docker web</option>
+                </select>
+              </label>
+              <label className="grid gap-1 text-sm font-medium">
+                Status
+                <select className="h-10 rounded-md border border-border px-3" name="status" defaultValue="DRAFT">
+                  <option value="DRAFT">Draft</option>
+                  <option value="PUBLISHED">Published</option>
+                  <option value="ARCHIVED">Archived</option>
+                </select>
+              </label>
+              <label className="grid gap-1 text-sm font-medium">
+                Points
+                <input className="h-10 rounded-md border border-border px-3" defaultValue={0} min={0} name="points" type="number" />
+              </label>
+            </div>
+            <label className="grid gap-1 text-sm font-medium">
+              Difficulty
+              <input className="h-10 rounded-md border border-border px-3" name="difficulty" required />
+            </label>
+            <label className="grid gap-1 text-sm font-medium">
+              Tags
+              <input className="h-10 rounded-md border border-border px-3" name="tags" placeholder="appsec, fundamentals" />
+            </label>
+            <label className="grid gap-1 text-sm font-medium">
+              Validation config JSON
+              <textarea className="min-h-40 rounded-md border border-border px-3 py-2 font-mono text-sm" name="validationConfig" />
+            </label>
+            <label className="grid gap-1 text-sm font-medium">
+              Runtime config JSON
+              <textarea className="min-h-40 rounded-md border border-border px-3 py-2 font-mono text-sm" name="runtimeConfig" />
+            </label>
+            <div className="lg:col-span-2">
+              <Button type="submit">Create challenge</Button>
+            </div>
+          </form>
+        </Card>
+      </section>
       <section className="mt-8">
         <Card>
           <AdminTable
-            columns={["Challenge", "Type", "Status", "Points", "Tags", "Usage", "Updated"]}
+            columns={["Challenge", "Type", "Status", "Points", "Tags", "Usage", "Updated", "Update"]}
             emptyTitle="No challenges"
             emptyDescription="Challenge records will appear here after challenges are created."
             rows={challenges.map((challenge) => [
@@ -67,13 +160,41 @@ export default async function AdminChallengesPage() {
                   {challenge.attempts} attempts, {challenge.runningInstances} instances
                 </p>
               </div>,
-              <span key="updated">{formatDate(challenge.updatedAt)}</span>
+              <span key="updated">{formatDate(challenge.updatedAt)}</span>,
+              <form action={updateChallengeAction} className="grid min-w-[22rem] gap-2" key="update">
+                <input name="challengeId" type="hidden" value={challenge.id} />
+                <input className="h-9 rounded-md border border-border px-2 text-sm" name="title" defaultValue={challenge.title} required />
+                <input className="h-9 rounded-md border border-border px-2 text-sm" name="slug" defaultValue={challenge.slug} pattern="[a-z0-9]+(-[a-z0-9]+)*" required />
+                <input className="h-9 rounded-md border border-border px-2 text-sm" name="description" defaultValue={challenge.description} required />
+                <div className="grid gap-2 sm:grid-cols-3">
+                  <select className="h-9 rounded-md border border-border px-2 text-sm" name="type" defaultValue={challenge.type}>
+                    <option value="STATIC_FLAG">Static flag</option>
+                    <option value="MULTIPLE_CHOICE">Multiple choice</option>
+                    <option value="SHORT_ANSWER">Short answer</option>
+                    <option value="FILE_BASED">File based</option>
+                    <option value="DOCKER_WEB">Docker web</option>
+                  </select>
+                  <select className="h-9 rounded-md border border-border px-2 text-sm" name="status" defaultValue={challenge.status}>
+                    <option value="DRAFT">Draft</option>
+                    <option value="PUBLISHED">Published</option>
+                    <option value="ARCHIVED">Archived</option>
+                  </select>
+                  <input className="h-9 rounded-md border border-border px-2 text-sm" min={0} name="points" defaultValue={challenge.points} type="number" />
+                </div>
+                <input className="h-9 rounded-md border border-border px-2 text-sm" name="difficulty" defaultValue={challenge.difficulty} required />
+                <input className="h-9 rounded-md border border-border px-2 text-sm" name="tags" defaultValue={challenge.tags.join(", ")} />
+                <textarea className="min-h-28 rounded-md border border-border px-2 py-1 font-mono text-xs" name="validationConfig" defaultValue={formatJson(challenge.validationConfig)} />
+                <textarea className="min-h-28 rounded-md border border-border px-2 py-1 font-mono text-xs" name="runtimeConfig" defaultValue={formatJson(challenge.runtimeConfig)} />
+                <Button className="h-9" type="submit" variant="secondary">
+                  Save
+                </Button>
+              </form>
             ])}
           />
         </Card>
       </section>
       <p className="mt-4 text-sm text-muted-foreground">
-        Challenge create/edit forms and module association controls are planned for the next Milestone 5 slice.
+        Validation config is edited as JSON until richer type-specific editors are added.
       </p>
     </AppShell>
   );
