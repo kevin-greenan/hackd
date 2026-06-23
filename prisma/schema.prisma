@@ -63,6 +63,7 @@ model User {
   groupMemberships  GroupMembership[]
   createdModules    Module[]            @relation("ModuleCreator")
   createdChallenges Challenge[]         @relation("ChallengeCreator")
+  createdAttachments ChallengeAttachment[] @relation("AttachmentCreator")
   assignedBy        Assignment[]        @relation("AssignmentAssigner")
   assignments       Assignment[]        @relation("UserAssignments")
   attempts          Attempt[]
@@ -138,9 +139,26 @@ model Challenge {
   modules            ModuleChallenge[]
   attempts           Attempt[]
   challengeInstances ChallengeInstance[]
+  attachments        ChallengeAttachment[]
 
   @@index([type])
   @@index([status])
+  @@index([createdById])
+}
+
+model ChallengeAttachment {
+  id           String    @id @default(cuid())
+  challengeId  String
+  originalName String
+  storagePath  String
+  mimeType     String
+  sizeBytes    Int
+  createdById  String?
+  createdAt    DateTime  @default(now())
+  challenge    Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  createdBy    User?     @relation("AttachmentCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([challengeId])
   @@index([createdById])
 }
 

@@ -25,6 +25,12 @@ export type LearnerModuleChallenge = {
     feedback: string | null;
     createdAt: Date;
   } | null;
+  attachments: {
+    id: string;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+  }[];
 };
 
 export type LearnerModuleDetail = {
@@ -72,6 +78,15 @@ export async function getLearnerModuleDetail({
         include: {
           challenge: {
             include: {
+              attachments: {
+                orderBy: { createdAt: "desc" },
+                select: {
+                  id: true,
+                  originalName: true,
+                  mimeType: true,
+                  sizeBytes: true
+                }
+              },
               attempts: {
                 where: { userId },
                 orderBy: { createdAt: "desc" }
@@ -157,7 +172,8 @@ export async function getLearnerModuleDetail({
               feedback: moduleChallenge.challenge.attempts[0].feedback,
               createdAt: moduleChallenge.challenge.attempts[0].createdAt
             }
-          : null
+          : null,
+        attachments: moduleChallenge.challenge.attachments
       };
     })
   };

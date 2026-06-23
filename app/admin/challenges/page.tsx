@@ -4,7 +4,12 @@ import { Button, ButtonLink } from "@/components/button";
 import { Card } from "@/components/card";
 import { requireAdmin } from "@/lib/auth/current-user";
 import { formatAdminLabel, getAdminChallenges } from "@/lib/core/admin-lists";
-import { createChallengeAction, updateChallengeAction } from "./actions";
+import {
+  createChallengeAction,
+  deleteChallengeAttachmentAction,
+  updateChallengeAction,
+  uploadChallengeAttachmentAction
+} from "./actions";
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("en", {
@@ -22,6 +27,18 @@ function formatJson(value: unknown) {
   return value ? JSON.stringify(value, null, 2) : "";
 }
 
+function formatBytes(sizeBytes: number) {
+  if (sizeBytes < 1024) {
+    return `${sizeBytes} B`;
+  }
+
+  if (sizeBytes < 1024 * 1024) {
+    return `${Math.round(sizeBytes / 1024)} KB`;
+  }
+
+  return `${Math.round((sizeBytes / (1024 * 1024)) * 10) / 10} MB`;
+}
+
 function statusMessage(status?: string) {
   if (status === "created") {
     return "Challenge created.";
@@ -31,8 +48,16 @@ function statusMessage(status?: string) {
     return "Challenge updated.";
   }
 
+  if (status === "attached") {
+    return "Challenge attachment uploaded.";
+  }
+
+  if (status === "attachment-deleted") {
+    return "Challenge attachment deleted.";
+  }
+
   if (status === "error") {
-    return "The challenge change could not be saved. Check required fields, slug uniqueness, and JSON config.";
+    return "The challenge change could not be saved. Check required fields, slug uniqueness, JSON config, and attachment limits.";
   }
 
   return null;
@@ -131,7 +156,7 @@ export default async function AdminChallengesPage({
       <section className="mt-8">
         <Card>
           <AdminTable
-            columns={["Challenge", "Type", "Status", "Points", "Tags", "Usage", "Updated", "Update"]}
+            columns={["Challenge", "Type", "Status", "Points", "Tags", "Usage", "Attachments", "Updated", "Update"]}
             emptyTitle="No challenges"
             emptyDescription="Challenge records will appear here after challenges are created."
             rows={challenges.map((challenge) => [
@@ -157,8 +182,42 @@ export default async function AdminChallengesPage({
               <div key="usage">
                 <p>{challenge.modules} modules</p>
                 <p className="text-xs text-muted-foreground">
-                  {challenge.attempts} attempts, {challenge.runningInstances} instances
+                  {challenge.attempts} attempts, {challenge.attachmentCount} files
                 </p>
+              </div>,
+              <div className="grid min-w-[16rem] gap-3" key="attachments">
+                {challenge.attachments.length > 0 ? (
+                  <div className="grid gap-2">
+                    {challenge.attachments.map((attachment) => (
+                      <div className="rounded-md border border-border bg-slate-50 p-2" key={attachment.id}>
+                        <p className="font-semibold">{attachment.originalName}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {attachment.mimeType} · {formatBytes(attachment.sizeBytes)}
+                        </p>
+                        <form action={deleteChallengeAttachmentAction} className="mt-2">
+                          <input name="attachmentId" type="hidden" value={attachment.id} />
+                          <Button className="h-8 px-2" type="submit" variant="ghost">
+                            Delete
+                          </Button>
+                        </form>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground">No files</span>
+                )}
+                <form action={uploadChallengeAttachmentAction} className="grid gap-2" encType="multipart/form-data">
+                  <input name="challengeId" type="hidden" value={challenge.id} />
+                  <input
+                    className="rounded-md border border-border px-2 py-1 text-sm"
+                    name="file"
+                    required
+                    type="file"
+                  />
+                  <Button className="h-8" type="submit" variant="secondary">
+                    Upload
+                  </Button>
+                </form>
               </div>,
               <span key="updated">{formatDate(challenge.updatedAt)}</span>,
               <form action={updateChallengeAction} className="grid min-w-[22rem] gap-2" key="update">

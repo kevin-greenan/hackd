@@ -1423,31 +1423,31 @@ Support challenge attachments for code review, document review, and downloadable
 
 Deliverables
 
-* File upload support
-* File attachment model
-* Learner file download
-* Admin attachment management
-* File size/type validation
+- [x] File upload support
+- [x] File attachment model
+- [x] Learner file download
+- [x] Admin attachment management
+- [x] File size/type validation
 
 Tasks
 
-* Create file attachment model.
-* Add local file storage for v1.
-* Add file upload API.
-* Add file validation.
-* Add admin file attachment UI.
-* Add learner download UI.
-* Add file cleanup behavior.
-* Add security checks for file access.
-* Document storage configuration.
+- [x] Create file attachment model.
+- [x] Add local file storage for v1.
+- [x] Add file upload API.
+- [x] Add file validation.
+- [x] Add admin file attachment UI.
+- [x] Add learner download UI.
+- [x] Add file cleanup behavior.
+- [x] Add security checks for file access.
+- [x] Document storage configuration.
 
 Acceptance Criteria
 
-* Admin can attach a file to a challenge.
-* Learner can download files for assigned/available challenges.
-* Unauthorized users cannot download restricted files.
-* File size limits are enforced.
-* Unsafe file paths are rejected.
+- [x] Admin can attach a file to a challenge.
+- [x] Learner can download files for assigned/available challenges.
+- [x] Unauthorized users cannot download restricted files.
+- [x] File size limits are enforced.
+- [x] Unsafe file paths are rejected.
 
 Milestone 7: Dockerized Challenge Runtime V1
 

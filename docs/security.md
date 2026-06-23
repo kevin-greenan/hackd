@@ -15,12 +15,13 @@ This document tracks the current security posture.
 - Protected pages call server-side helpers before rendering.
 - `/dashboard` requires an authenticated active user.
 - `/admin` requires an authenticated active user with the `ADMIN` role.
-- Admin user, group, module, challenge, assignment, and reporting actions require the server-side `requireAdmin()` helper.
+- Admin user, group, module, challenge, attachment, assignment, and reporting actions require the server-side `requireAdmin()` helper.
+- Attachment downloads require an active user and verify admin role or learner assignment before returning file bytes.
 - Client-side role checks are treated as presentation only; server-side helpers are the access-control boundary.
 
 ## Admin Audit Logging
 
-- Admin user, group, module, challenge, and assignment create/update/delete actions write `AuditLog` records.
+- Admin user, group, module, challenge, attachment, and assignment create/update/delete actions write `AuditLog` records.
 - Admin audit-log reads require the same server-side admin authorization boundary as other admin pages.
 - Admin report pages and CSV exports require the same server-side admin authorization boundary as other admin pages.
 - User creation audit metadata excludes plaintext passwords and password hashes.
@@ -39,6 +40,14 @@ This document tracks the current security posture.
 - Login attempts use an in-memory limiter keyed by forwarded IP.
 - This is suitable for the local foundation only.
 - Production deployments should move rate limiting to durable infrastructure such as Redis or an edge layer.
+
+## File Attachments
+
+- Attachment uploads enforce a default 5 MB size limit through `MAX_ATTACHMENT_BYTES`.
+- Attachment uploads allow only a narrow set of document, source, log, archive, and text-like file extensions.
+- Attachment filenames are normalized with `path.basename()` and rejected when they contain path traversal.
+- Download responses set `X-Content-Type-Options: nosniff`.
+- Local storage is intended for v1 development and single-node deployments; production deployments should use durable storage with backups.
 
 ## Dependency Audit
 

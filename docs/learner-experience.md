@@ -11,6 +11,7 @@ Milestone 3 adds the first real learner flow on top of the seeded data model.
    - Module summary, tags, difficulty, estimate, and due date
    - Markdown lesson content
    - Linked challenge sections
+   - Challenge attachment download links
    - Challenge completion state based on correct attempts
    - Submission forms for supported challenge types
    - Module completion status from the `Completion` record
@@ -28,6 +29,7 @@ Admins can also open module pages for preview, but learners only see modules ass
 ## Current Limits
 
 - Static flag, exact-text short-answer, and multiple-choice submissions are implemented.
+- Challenge attachment downloads are implemented for assigned published modules.
 - Challenge completion reflects correct attempts recorded by the submission flow.
 - Module reading progress is not tracked yet.
 - Module detail pages render Markdown but do not yet support syntax highlighting beyond readable code blocks.

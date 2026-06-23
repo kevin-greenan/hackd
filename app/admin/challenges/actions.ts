@@ -5,6 +5,10 @@ import { redirect } from "next/navigation";
 import { ChallengeType, ContentStatus } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth/current-user";
 import {
+  createChallengeAttachment,
+  deleteChallengeAttachment
+} from "@/lib/core/challenge-attachments";
+import {
   createAdminChallenge,
   updateAdminChallenge
 } from "@/lib/core/admin-management";
@@ -36,6 +40,47 @@ export async function createChallengeAction(formData: FormData) {
         validationConfig: requiredValue(formData.get("validationConfig")),
         runtimeConfig: requiredValue(formData.get("runtimeConfig"))
       }
+    });
+    revalidatePath("/admin/challenges");
+  } catch {
+    status = "error";
+  }
+
+  challengeRedirect(status);
+}
+
+export async function uploadChallengeAttachmentAction(formData: FormData) {
+  const admin = await requireAdmin();
+  let status = "attached";
+
+  try {
+    const file = formData.get("file");
+
+    if (!(file instanceof File)) {
+      throw new Error("Attachment file is required.");
+    }
+
+    await createChallengeAttachment({
+      actorUserId: admin.id,
+      challengeId: requiredValue(formData.get("challengeId")),
+      file
+    });
+    revalidatePath("/admin/challenges");
+  } catch {
+    status = "error";
+  }
+
+  challengeRedirect(status);
+}
+
+export async function deleteChallengeAttachmentAction(formData: FormData) {
+  const admin = await requireAdmin();
+  let status = "attachment-deleted";
+
+  try {
+    await deleteChallengeAttachment({
+      actorUserId: admin.id,
+      attachmentId: requiredValue(formData.get("attachmentId"))
     });
     revalidatePath("/admin/challenges");
   } catch {
