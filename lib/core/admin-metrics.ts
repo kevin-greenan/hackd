@@ -9,6 +9,7 @@ export async function getAdminMetrics() {
     assignments,
     attempts,
     completions,
+    auditLogs,
     runningInstances
   ] = await Promise.all([
     prisma.user.count(),
@@ -18,6 +19,7 @@ export async function getAdminMetrics() {
     prisma.assignment.count(),
     prisma.attempt.count(),
     prisma.completion.count(),
+    prisma.auditLog.count(),
     prisma.challengeInstance.count({ where: { status: { in: ["STARTING", "RUNNING"] } } })
   ]);
 
@@ -29,6 +31,7 @@ export async function getAdminMetrics() {
     assignments,
     attempts,
     completions,
+    auditLogs,
     runningInstances
   };
 }

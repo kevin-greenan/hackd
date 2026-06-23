@@ -15,6 +15,7 @@ export async function getAdminUsers(limit = DEFAULT_LIMIT) {
         include: {
           group: {
             select: {
+              id: true,
               name: true
             }
           }
@@ -41,7 +42,10 @@ export async function getAdminUsers(limit = DEFAULT_LIMIT) {
     email: user.email,
     role: user.role,
     status: user.status,
-    groups: user.groupMemberships.map((membership) => membership.group.name),
+    groups: user.groupMemberships.map((membership) => ({
+      id: membership.group.id,
+      name: membership.group.name
+    })),
     assignments: user._count.assignments,
     attempts: user._count.attempts,
     completions: user._count.completions,
