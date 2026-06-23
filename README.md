@@ -2,7 +2,7 @@
 
 hackd is a containerized control plane for hands-on security training modules, challenges, sandboxes, validation, and learner progress.
 
-This repository currently implements Milestone 0 and Milestone 1 foundations only: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin access, a basic learner dashboard, a basic admin dashboard, and a health endpoint.
+This repository currently implements Milestone 0 through Milestone 2 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, and a health endpoint.
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ docker compose up --build
 
 The app will be available at [http://localhost:3000](http://localhost:3000).
 
-On startup, the web service runs Prisma migrations and seeds the admin user from the environment variables in `docker-compose.yml`.
+On startup, the web service runs Prisma migrations and seeds local users plus sample core data from the environment variables in `docker-compose.yml`.
 
 Default local admin credentials:
 
@@ -65,7 +65,7 @@ Start Postgres:
 docker compose up db
 ```
 
-Run migrations and seed the admin:
+Run migrations and seed local users plus sample data:
 
 ```sh
 npm run db:migrate
@@ -111,11 +111,11 @@ After `docker compose up --build`:
 - Next.js App Router with TypeScript and Tailwind CSS
 - Postgres via Docker Compose with persistent named volume
 - Prisma schema and initial migration for the roadmap entities
-- Idempotent admin and learner seed script with bcrypt password hashing
+- Idempotent admin, learner, group, module, challenge, assignment, completion, and attempt seed data
 - Local login/logout flow
 - Signed HTTP-only session cookie
 - Server-side `getCurrentUser()`, `requireUser()`, and `requireAdmin()` helpers
-- Basic admin and learner route separation
+- Basic admin and learner route separation with database-backed dashboard data
 - Landing, login, dashboard, and admin pages
 - `/api/healthz` endpoint with database connectivity check
 - Vitest coverage for password hashing and RBAC helpers
@@ -126,7 +126,7 @@ After `docker compose up --build`:
 ## Known Limitations
 
 - User creation UI is not implemented yet.
-- Module, challenge, assignment, attempt, completion, and reporting UI are placeholders.
+- Full admin CRUD for users, groups, modules, challenges, assignments, and reporting is not implemented yet.
 - Dockerized challenge launching is intentionally not implemented in this pass.
 - Content import, OIDC/SAML, multi-tenancy, and marketplace concepts are deferred.
 - Auth rate limiting is in-memory and suitable only for local/dev foundations.
@@ -134,11 +134,11 @@ After `docker compose up --build`:
 
 ## Next Milestone Checklist
 
-Milestone 2 should turn the schema foundation into usable data flows:
+Milestone 3 should turn the data foundation into a richer learner experience:
 
-- Add CRUD foundations for users, groups, modules, challenges, and assignments
-- Add sample learner seed data
-- Add model-level tests for assignment and completion behavior
-- Add admin user management basics
-- Add audit logging for admin actions
-- Add indexes or constraints discovered while implementing real query paths
+- Add module detail pages
+- Render module Markdown content
+- Show challenge sections within modules
+- Track challenge completion state within each module
+- Add richer empty/loading/error states for assigned module lists
+- Keep admin CRUD and audit-log write flows queued for the admin milestone
