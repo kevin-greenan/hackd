@@ -45,4 +45,5 @@ npm run content:import -- --file examples/content/secure-notes.yaml --dry-run
 - `/admin/reports` shows learner progress, module progress, challenge performance, and recent attempts.
 - Reports can be filtered by module, learner, or group.
 - Completion and attempt CSV exports preserve selected filters.
+- CSV column contracts are documented in [Reporting exports](reporting-exports.md).
 - `/admin/audit` shows recent admin mutations for user, group, module, challenge, attachment, and assignment workflows.

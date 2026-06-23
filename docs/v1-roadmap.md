@@ -179,11 +179,11 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 - [x] CSRF protection is implemented for state-changing routes.
 - [ ] Login and challenge submission throttling are production-appropriate.
 - [ ] OIDC decision is made and documented.
-- [ ] Content schema is versioned and documented.
+- [x] Content schema is versioned and documented.
 - [ ] Admin authoring workflows have preview and safe publish states.
 - [x] Backup and restore flow is executable and tested.
 - [x] Logs and health checks are sufficient for routine operations.
-- [ ] CSV exports are documented and stable.
+- [x] CSV exports are documented and stable.
 - [ ] Docker runtime support boundary is explicit.
 - [ ] Runtime containers remain unprivileged and resource-limited.
 - [ ] Release checklist includes a restore drill.

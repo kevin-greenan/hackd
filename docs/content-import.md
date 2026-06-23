@@ -26,6 +26,8 @@ npm run content:import -- --file examples/content/secure-notes.yaml --actor-emai
 
 Bundles must use `version: 1` and may be `.yaml`, `.yml`, or `.json`.
 
+See the full [Content Schema V1 reference](content-schema/v1.md) for field constraints, supported validation configs, runtime configs, and import semantics.
+
 ```yaml
 version: 1
 modules:
@@ -78,3 +80,13 @@ The importer fails before writing when:
 ## Import Behavior
 
 The importer upserts modules and challenges by slug, then upserts module-to-challenge links. It does not delete omitted links or content, so existing local work is not removed by a partial bundle.
+
+## Examples
+
+Schema V1 examples are available in `examples/content/schema-v1/`:
+
+- `static-flag.yaml`
+- `short-answer.yaml`
+- `multiple-choice.yaml`
+- `file-based.yaml`
+- `docker-web.yaml`

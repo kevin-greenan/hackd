@@ -1,0 +1,39 @@
+version: 1
+modules:
+  - title: Multiple Choice Example
+    slug: multiple-choice-example
+    summary: Minimal schema v1 module for a multiple-choice check.
+    bodyMarkdown: |
+      # Multiple Choice Example
+
+      Select the user-controlled values.
+    difficulty: beginner
+    estimatedMinutes: 10
+    status: DRAFT
+    tags:
+      - sample
+    challenges:
+      - slug: multiple-choice-example-challenge
+        sortOrder: 1
+        required: true
+challenges:
+  - title: Multiple Choice Example Challenge
+    slug: multiple-choice-example-challenge
+    description: Identify untrusted values.
+    type: MULTIPLE_CHOICE
+    difficulty: beginner
+    points: 10
+    status: DRAFT
+    tags:
+      - sample
+    validationConfig:
+      type: multiple_choice
+      allowMultiple: true
+      options:
+        - id: query-param
+          label: Query parameter from the browser
+        - id: server-secret
+          label: Server-side secret
+      correctOptionIds:
+        - query-param
+    runtimeConfig: null

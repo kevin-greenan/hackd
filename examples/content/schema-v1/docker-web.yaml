@@ -1,0 +1,39 @@
+version: 1
+modules:
+  - title: Docker Web Example
+    slug: docker-web-example
+    summary: Minimal schema v1 module for a Dockerized web challenge.
+    bodyMarkdown: |
+      # Docker Web Example
+
+      Launch the temporary web runtime and inspect the page.
+    difficulty: beginner
+    estimatedMinutes: 15
+    status: DRAFT
+    tags:
+      - sample
+    challenges:
+      - slug: docker-web-example-challenge
+        sortOrder: 1
+        required: true
+challenges:
+  - title: Docker Web Example Challenge
+    slug: docker-web-example-challenge
+    description: Launch a web container and submit the sample flag.
+    type: DOCKER_WEB
+    difficulty: beginner
+    points: 10
+    status: DRAFT
+    tags:
+      - sample
+    validationConfig:
+      type: static_flag
+      flag: flag{docker-web}
+    runtimeConfig:
+      type: docker_web
+      image: nginx:alpine
+      containerPort: 80
+      memoryMb: 128
+      cpuCount: 0.25
+      ttlMinutes: 30
+      env: {}

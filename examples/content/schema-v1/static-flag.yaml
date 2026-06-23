@@ -1,0 +1,32 @@
+version: 1
+modules:
+  - title: Static Flag Example
+    slug: static-flag-example
+    summary: Minimal schema v1 module for a static flag challenge.
+    bodyMarkdown: |
+      # Static Flag Example
+
+      Submit the sample flag to complete the challenge.
+    difficulty: beginner
+    estimatedMinutes: 10
+    status: DRAFT
+    tags:
+      - sample
+    challenges:
+      - slug: static-flag-example-challenge
+        sortOrder: 1
+        required: true
+challenges:
+  - title: Static Flag Example Challenge
+    slug: static-flag-example-challenge
+    description: Submit the configured sample flag.
+    type: STATIC_FLAG
+    difficulty: beginner
+    points: 10
+    status: DRAFT
+    tags:
+      - sample
+    validationConfig:
+      type: static_flag
+      flag: flag{schema-v1}
+    runtimeConfig: null

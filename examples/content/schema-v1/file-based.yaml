@@ -1,0 +1,32 @@
+version: 1
+modules:
+  - title: File-Based Example
+    slug: file-based-example
+    summary: Minimal schema v1 module for file-based challenge metadata.
+    bodyMarkdown: |
+      # File-Based Example
+
+      Attach review artifacts from the admin UI after import.
+    difficulty: beginner
+    estimatedMinutes: 15
+    status: DRAFT
+    tags:
+      - sample
+    challenges:
+      - slug: file-based-example-challenge
+        sortOrder: 1
+        required: true
+challenges:
+  - title: File-Based Example Challenge
+    slug: file-based-example-challenge
+    description: Review an attached artifact and submit the completion flag.
+    type: FILE_BASED
+    difficulty: beginner
+    points: 10
+    status: DRAFT
+    tags:
+      - sample
+    validationConfig:
+      type: static_flag
+      flag: flag{file-review}
+    runtimeConfig: null
