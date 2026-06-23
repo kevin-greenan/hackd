@@ -106,6 +106,7 @@ export async function getAdminModules(limit = DEFAULT_LIMIT) {
     title: module.title,
     slug: module.slug,
     summary: module.summary,
+    bodyMarkdown: module.bodyMarkdown,
     status: module.status,
     difficulty: module.difficulty,
     estimatedMinutes: module.estimatedMinutes,
@@ -149,12 +150,39 @@ export async function getAdminChallenges(limit = DEFAULT_LIMIT) {
     difficulty: challenge.difficulty,
     points: challenge.points,
     tags: challenge.tags,
+    validationConfig: challenge.validationConfig,
+    runtimeConfig: challenge.runtimeConfig,
     createdBy: challenge.createdBy,
     modules: challenge._count.modules,
     attempts: challenge._count.attempts,
     runningInstances: challenge._count.challengeInstances,
     updatedAt: challenge.updatedAt
   }));
+}
+
+export async function getAdminModuleOptions(limit = DEFAULT_LIMIT) {
+  return prisma.module.findMany({
+    take: limit,
+    orderBy: { title: "asc" },
+    select: {
+      id: true,
+      title: true,
+      slug: true
+    }
+  });
+}
+
+export async function getAdminChallengeOptions(limit = DEFAULT_LIMIT) {
+  return prisma.challenge.findMany({
+    take: limit,
+    orderBy: { title: "asc" },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      type: true
+    }
+  });
 }
 
 export async function getAdminAssignments(limit = DEFAULT_LIMIT) {

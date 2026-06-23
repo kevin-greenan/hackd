@@ -2,7 +2,7 @@
 
 hackd is a containerized control plane for hands-on security training modules, challenges, sandboxes, validation, and learner progress.
 
-This repository currently implements Milestone 0 through early Milestone 5 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, admin list views, basic user/group management, admin audit visibility, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, recent attempt visibility for admins, and a health endpoint.
+This repository currently implements Milestone 0 through early Milestone 5 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, admin list views, basic user/group/content management, admin audit visibility, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, recent attempt visibility for admins, and a health endpoint.
 
 ## Prerequisites
 
@@ -105,15 +105,17 @@ After `docker compose up --build`:
 5. Open the admin Users, Groups, Modules, Challenges, Assignments, and Audit links and confirm each list renders.
 6. Create a test group from `/admin/groups`, then update it and delete it before adding members or assignments.
 7. Create a test learner from `/admin/users`, assign it to a group, then disable it.
-8. Log out.
-9. Sign in as `learner@hackd.local`.
-10. Confirm `/dashboard` loads for the learner.
-11. Open an assigned module and confirm Markdown content plus challenge sections render.
-12. Submit an incorrect challenge answer and confirm the attempt feedback appears.
-13. Submit the seeded correct static flag `flag{sample}` and confirm progress updates.
-14. Open the secure code review module and confirm the optional multiple-choice challenge renders with selectable answers.
-15. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
-16. Log out and confirm `/dashboard` redirects to `/login`.
+8. Create a draft module from `/admin/modules`, update it, and link an existing challenge.
+9. Create a draft challenge from `/admin/challenges`, then update its metadata.
+10. Log out.
+11. Sign in as `learner@hackd.local`.
+12. Confirm `/dashboard` loads for the learner.
+13. Open an assigned module and confirm Markdown content plus challenge sections render.
+14. Submit an incorrect challenge answer and confirm the attempt feedback appears.
+15. Submit the seeded correct static flag `flag{sample}` and confirm progress updates.
+16. Open the secure code review module and confirm the optional multiple-choice challenge renders with selectable answers.
+17. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
+18. Log out and confirm `/dashboard` redirects to `/login`.
 
 ## Implemented
 
@@ -127,6 +129,7 @@ After `docker compose up --build`:
 - Basic admin and learner route separation with database-backed dashboard data
 - Admin lists for users, groups, modules, challenges, and assignments
 - Admin create/edit workflows for users and groups with audit logging
+- Admin create/edit workflows for modules and challenges, plus challenge association
 - Admin audit log visibility for user and group changes
 - Learner module detail pages with Markdown lesson rendering and challenge status sections
 - Static flag, exact-text short-answer, and multiple-choice validation with attempt recording
@@ -141,7 +144,8 @@ After `docker compose up --build`:
 ## Known Limitations
 
 - Password reset and hard user deletion are not implemented yet.
-- Admin create/edit/delete workflows for modules, challenges, assignments, and reporting are not implemented yet.
+- Admin assignment creation and reporting workflows are not implemented yet.
+- Rich type-specific challenge config editors are not implemented yet; validation/runtime config is edited as JSON.
 - File-based and Dockerized challenge submissions are not implemented yet.
 - Dockerized challenge launching is intentionally not implemented in this pass.
 - Content import, OIDC/SAML, multi-tenancy, and marketplace concepts are deferred.
@@ -152,7 +156,7 @@ After `docker compose up --build`:
 
 Next milestones should expand admin management and challenge coverage:
 
-- Admin create/edit workflows for modules, challenges, and assignments
+- Admin assignment creation and reporting workflows
 - Audit logging for admin actions
 - Reporting views and exports
 - File-based challenge support
