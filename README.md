@@ -130,7 +130,7 @@ After `docker compose up --build`:
 - Admin lists for users, groups, modules, challenges, and assignments
 - Admin create/edit workflows for users and groups with audit logging
 - Admin create/edit workflows for modules and challenges, plus challenge association
-- Admin audit log visibility for user and group changes
+- Admin audit log visibility for user, group, module, and challenge changes
 - Learner module detail pages with Markdown lesson rendering and challenge status sections
 - Static flag, exact-text short-answer, and multiple-choice validation with attempt recording
 - Admin recent-attempt visibility for learner submissions
@@ -157,6 +157,6 @@ After `docker compose up --build`:
 Next milestones should expand admin management and challenge coverage:
 
 - Admin assignment creation and reporting workflows
-- Audit logging for admin actions
+- Assignment audit coverage and reporting workflows
 - Reporting views and exports
 - File-based challenge support
