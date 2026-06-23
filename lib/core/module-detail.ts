@@ -14,6 +14,12 @@ export type LearnerModuleChallenge = {
   tags: string[];
   attemptCount: number;
   isComplete: boolean;
+  supportsSubmission: boolean;
+  latestAttempt: {
+    result: AttemptResult;
+    feedback: string | null;
+    createdAt: Date;
+  } | null;
 };
 
 export type LearnerModuleDetail = {
@@ -131,7 +137,17 @@ export async function getLearnerModuleDetail({
       sortOrder: moduleChallenge.sortOrder,
       tags: moduleChallenge.challenge.tags,
       attemptCount: moduleChallenge.challenge.attempts.length,
-      isComplete: getChallengeCompletionState(moduleChallenge.challenge.attempts)
+      isComplete: getChallengeCompletionState(moduleChallenge.challenge.attempts),
+      supportsSubmission:
+        moduleChallenge.challenge.type === "STATIC_FLAG" ||
+        moduleChallenge.challenge.type === "SHORT_ANSWER",
+      latestAttempt: moduleChallenge.challenge.attempts[0]
+        ? {
+            result: moduleChallenge.challenge.attempts[0].result,
+            feedback: moduleChallenge.challenge.attempts[0].feedback,
+            createdAt: moduleChallenge.challenge.attempts[0].createdAt
+          }
+        : null
     }))
   };
 }
