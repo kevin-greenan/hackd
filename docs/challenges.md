@@ -21,6 +21,18 @@ Unsupported challenge types return a generic disabled response and do not reveal
 5. Correct attempts update module completion if all required challenges are complete.
 6. Incorrect attempts are recorded without exposing the expected answer.
 
+## Attachments
+
+Admins can upload downloadable files to challenges from `/admin/challenges`.
+Learners see attachment download links on assigned module challenge cards.
+The download route requires an active session and allows access only to admins or learners assigned to a published module containing the challenge.
+
+Attachment storage is local for v1:
+
+- `FILE_STORAGE_DIR` controls the storage root.
+- `MAX_ATTACHMENT_BYTES` controls the upload size limit.
+- Docker Compose mounts `hackd-file-uploads` at `/app/data/uploads`.
+
 ## Completion Behavior
 
 When an answer is submitted, hackd checks all required challenges for the module.
@@ -30,7 +42,7 @@ When an answer is submitted, hackd checks all required challenges for the module
 
 ## Current Limits
 
-- File-based and Dockerized challenge submissions are not implemented yet.
+- File-based answer submissions and Dockerized challenge submissions are not implemented yet.
 - Expected static flags are stored in `validationConfig` for this early local version.
 - There is no per-challenge attempt limit yet.
 - There is no advanced anti-automation or durable rate limiting for submissions yet.

@@ -24,6 +24,18 @@ function formatLabel(value: string) {
   return value.toLowerCase().replaceAll("_", " ");
 }
 
+function formatBytes(sizeBytes: number) {
+  if (sizeBytes < 1024) {
+    return `${sizeBytes} B`;
+  }
+
+  if (sizeBytes < 1024 * 1024) {
+    return `${Math.round(sizeBytes / 1024)} KB`;
+  }
+
+  return `${Math.round((sizeBytes / (1024 * 1024)) * 10) / 10} MB`;
+}
+
 function ChallengeSubmissionForm({
   challenge,
   moduleSlug
@@ -197,6 +209,25 @@ export default async function ModuleDetailPage({
                         Latest attempt: {formatLabel(challenge.latestAttempt.result)}
                         {challenge.latestAttempt.feedback ? ` · ${challenge.latestAttempt.feedback}` : ""}
                       </p>
+                    ) : null}
+                    {challenge.attachments.length > 0 ? (
+                      <div className="mt-3 rounded-md border border-border bg-white p-3">
+                        <h4 className="text-sm font-semibold">Files</h4>
+                        <div className="mt-2 grid gap-2">
+                          {challenge.attachments.map((attachment) => (
+                            <a
+                              className="text-sm font-semibold text-teal-700 hover:text-teal-900"
+                              href={`/api/challenge-attachments/${attachment.id}/download`}
+                              key={attachment.id}
+                            >
+                              {attachment.originalName}
+                              <span className="ml-2 font-normal text-muted-foreground">
+                                {formatBytes(attachment.sizeBytes)}
+                              </span>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
                     ) : null}
                     {submissionState?.challenge === challenge.id && submissionState.submission ? (
                       <p

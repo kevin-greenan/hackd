@@ -2,7 +2,7 @@
 
 hackd is a containerized control plane for hands-on security training modules, challenges, sandboxes, validation, and learner progress.
 
-This repository currently implements Milestone 0 through early Milestone 5 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, admin list views, basic user/group/content/assignment management, admin audit visibility, progress reporting with CSV exports, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, recent attempt visibility for admins, and a health endpoint.
+This repository currently implements Milestone 0 through Milestone 6 foundations: a Next.js TypeScript app, Postgres, Prisma, local email/password authentication, signed cookie sessions, server-side RBAC, seeded admin and learner access, seeded core training data, basic learner/admin dashboards, admin list views, basic user/group/content/assignment management, admin audit visibility, progress reporting with CSV exports, module detail pages, Markdown lesson rendering, static flag, exact-text, and multiple-choice challenge submissions, challenge file attachments and downloads, recent attempt visibility for admins, and a health endpoint.
 
 ## Prerequisites
 
@@ -26,8 +26,11 @@ Required variables:
 - `SEED_ADMIN_PASSWORD`
 - `SEED_LEARNER_EMAIL`
 - `SEED_LEARNER_PASSWORD`
+- `FILE_STORAGE_DIR`
+- `MAX_ATTACHMENT_BYTES`
 
 Do not commit real secrets. `SESSION_SECRET` must be at least 32 characters.
+`FILE_STORAGE_DIR` stores admin-uploaded challenge attachments and should point to durable local storage or a mounted volume.
 
 ## Run With Docker Compose
 
@@ -107,17 +110,19 @@ After `docker compose up --build`:
 7. Create a test learner from `/admin/users`, assign it to a group, then disable it.
 8. Create a draft module from `/admin/modules`, update it, and link an existing challenge.
 9. Create a draft challenge from `/admin/challenges`, then update its metadata.
-10. Create, update, and delete a test assignment from `/admin/assignments`.
-11. Open `/admin/reports` and confirm learner progress, module progress, challenge performance, and CSV export links render.
-12. Log out.
-13. Sign in as `learner@hackd.local`.
-14. Confirm `/dashboard` loads for the learner.
-15. Open an assigned module and confirm Markdown content plus challenge sections render.
-16. Submit an incorrect challenge answer and confirm the attempt feedback appears.
-17. Submit the seeded correct static flag `flag{sample}` and confirm progress updates.
-18. Open the secure code review module and confirm the optional multiple-choice challenge renders with selectable answers.
-19. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
-20. Log out and confirm `/dashboard` redirects to `/login`.
+10. Upload and delete a small `.txt` attachment from an admin challenge row.
+11. Create, update, and delete a test assignment from `/admin/assignments`.
+12. Open `/admin/reports` and confirm learner progress, module progress, challenge performance, and CSV export links render.
+13. Log out.
+14. Sign in as `learner@hackd.local`.
+15. Confirm `/dashboard` loads for the learner.
+16. Open an assigned module and confirm Markdown content plus challenge sections render.
+17. Confirm challenge attachments render as download links when files are attached.
+18. Submit an incorrect challenge answer and confirm the attempt feedback appears.
+19. Submit the seeded correct static flag `flag{sample}` and confirm progress updates.
+20. Open the secure code review module and confirm the optional multiple-choice challenge renders with selectable answers.
+21. Open `/admin` and confirm the learner is redirected back to `/dashboard?error=unauthorized`.
+22. Log out and confirm `/dashboard` redirects to `/login`.
 
 ## Implemented
 
@@ -135,6 +140,8 @@ After `docker compose up --build`:
 - Admin create/edit/delete workflows for assignments with audit logging
 - Admin audit log visibility for user, group, module, challenge, and assignment changes
 - Admin progress reports for learners, modules, challenge performance, and CSV exports
+- Admin challenge attachment upload/delete workflows with local file storage
+- Learner challenge attachment downloads for assigned modules
 - Learner module detail pages with Markdown lesson rendering and challenge status sections
 - Static flag, exact-text short-answer, and multiple-choice validation with attempt recording
 - Admin recent-attempt visibility for learner submissions
@@ -150,7 +157,7 @@ After `docker compose up --build`:
 - Password reset and hard user deletion are not implemented yet.
 - Reporting filters and scheduled reports are not implemented yet.
 - Rich type-specific challenge config editors are not implemented yet; validation/runtime config is edited as JSON.
-- File-based and Dockerized challenge submissions are not implemented yet.
+- File-based answer submissions and Dockerized challenge submissions are not implemented yet.
 - Dockerized challenge launching is intentionally not implemented in this pass.
 - Content import, OIDC/SAML, multi-tenancy, and marketplace concepts are deferred.
 - Auth rate limiting is in-memory and suitable only for local/dev foundations.
@@ -162,4 +169,4 @@ Next milestones should expand admin management and challenge coverage:
 
 - Reporting filters and richer exports
 - Assignment lifecycle refinements, including completion reconciliation after assignment deletion
-- File-based challenge support
+- Dockerized challenge runtime

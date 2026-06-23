@@ -25,6 +25,7 @@ Milestone 2 adds small server-side helpers under `lib/core/`:
 - `module-detail.ts` resolves an assigned learner module, Markdown body, linked challenges, and challenge completion state.
 - `challenge-validation.ts` validates supported challenge submissions without leaking expected answers.
 - `challenge-submissions.ts` records attempts and updates module completion.
+- `challenge-attachments.ts` validates uploads, stores local challenge files, enforces attachment download access, and cleans up deleted files.
 - `admin-metrics.ts` collects basic counts and recent learner attempts for the admin dashboard.
 - `admin-lists.ts` powers read-only admin list views for users, groups, modules, challenges, and assignments.
 - `admin-management.ts` validates admin user/group/module/challenge/assignment mutations, module-challenge associations, and writes audit log records.

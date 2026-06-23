@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { mkdir, readFile, rm, writeFile } from "fs/promises";
 import path from "path";
-import { Role } from "@prisma/client";
+import { ContentStatus, Role } from "@prisma/client";
 import { prisma } from "../db/prisma";
 import { logAdminAction } from "./audit-log";
 
@@ -255,7 +255,11 @@ export async function getDownloadableAttachment({
   const canAccess =
     role === Role.ADMIN ||
     attachment.challenge.modules.some((moduleChallenge) => {
-      return moduleChallenge.module.assignments.length > 0;
+      return (
+        attachment.challenge.status === ContentStatus.PUBLISHED &&
+        moduleChallenge.module.status === ContentStatus.PUBLISHED &&
+        moduleChallenge.module.assignments.length > 0
+      );
     });
 
   if (!canAccess) {
