@@ -57,7 +57,7 @@ const ALLOWED_MIME_TYPES = new Set([
 ]);
 
 export function getAttachmentStorageRoot() {
-  return path.resolve(process.env.FILE_STORAGE_DIR ?? path.join(process.cwd(), "data", "uploads"));
+  return path.resolve(process.env.FILE_STORAGE_DIR ?? "/tmp/hackd-uploads");
 }
 
 export function getMaxAttachmentBytes() {

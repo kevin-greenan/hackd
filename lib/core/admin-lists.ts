@@ -134,7 +134,18 @@ export async function getAdminChallenges(limit = DEFAULT_LIMIT) {
         select: {
           modules: true,
           attempts: true,
-          challengeInstances: true
+          challengeInstances: true,
+          attachments: true
+        }
+      },
+      attachments: {
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          originalName: true,
+          mimeType: true,
+          sizeBytes: true,
+          createdAt: true
         }
       }
     }
@@ -152,9 +163,11 @@ export async function getAdminChallenges(limit = DEFAULT_LIMIT) {
     tags: challenge.tags,
     validationConfig: challenge.validationConfig,
     runtimeConfig: challenge.runtimeConfig,
+    attachments: challenge.attachments,
     createdBy: challenge.createdBy,
     modules: challenge._count.modules,
     attempts: challenge._count.attempts,
+    attachmentCount: challenge._count.attachments,
     runningInstances: challenge._count.challengeInstances,
     updatedAt: challenge.updatedAt
   }));
