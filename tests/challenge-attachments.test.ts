@@ -1,5 +1,6 @@
+import { ContentStatus, Role } from "@prisma/client";
 import { describe, expect, it } from "vitest";
-import { validateAttachmentFile } from "@/lib/core/challenge-attachments";
+import { canDownloadAttachment, validateAttachmentFile } from "@/lib/core/challenge-attachments";
 
 describe("challenge attachment validation", () => {
   it("accepts a small allowed document", () => {
@@ -47,5 +48,72 @@ describe("challenge attachment validation", () => {
         maxBytes: 1024
       })
     ).toThrow("size");
+  });
+
+  it("allows admins to download attachments regardless of publication state", () => {
+    expect(
+      canDownloadAttachment({
+        role: Role.ADMIN,
+        challengeStatus: ContentStatus.DRAFT,
+        modules: []
+      })
+    ).toBe(true);
+  });
+
+  it("allows learners assigned to a published module with a published challenge", () => {
+    expect(
+      canDownloadAttachment({
+        role: Role.LEARNER,
+        challengeStatus: ContentStatus.PUBLISHED,
+        modules: [
+          {
+            status: ContentStatus.PUBLISHED,
+            assignmentCount: 1
+          }
+        ]
+      })
+    ).toBe(true);
+  });
+
+  it("rejects learners when the challenge or module is not published", () => {
+    expect(
+      canDownloadAttachment({
+        role: Role.LEARNER,
+        challengeStatus: ContentStatus.DRAFT,
+        modules: [
+          {
+            status: ContentStatus.PUBLISHED,
+            assignmentCount: 1
+          }
+        ]
+      })
+    ).toBe(false);
+    expect(
+      canDownloadAttachment({
+        role: Role.LEARNER,
+        challengeStatus: ContentStatus.PUBLISHED,
+        modules: [
+          {
+            status: ContentStatus.DRAFT,
+            assignmentCount: 1
+          }
+        ]
+      })
+    ).toBe(false);
+  });
+
+  it("rejects learners without a matching assignment", () => {
+    expect(
+      canDownloadAttachment({
+        role: Role.LEARNER,
+        challengeStatus: ContentStatus.PUBLISHED,
+        modules: [
+          {
+            status: ContentStatus.PUBLISHED,
+            assignmentCount: 0
+          }
+        ]
+      })
+    ).toBe(false);
   });
 });

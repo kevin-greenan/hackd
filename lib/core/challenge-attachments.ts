@@ -105,6 +105,31 @@ export function validateAttachmentFile({
   };
 }
 
+export function canDownloadAttachment({
+  role,
+  challengeStatus,
+  modules
+}: {
+  role: Role;
+  challengeStatus: ContentStatus;
+  modules: {
+    status: ContentStatus;
+    assignmentCount: number;
+  }[];
+}) {
+  if (role === Role.ADMIN) {
+    return true;
+  }
+
+  if (challengeStatus !== ContentStatus.PUBLISHED) {
+    return false;
+  }
+
+  return modules.some((module) => {
+    return module.status === ContentStatus.PUBLISHED && module.assignmentCount > 0;
+  });
+}
+
 function attachmentStoragePath(challengeId: string, attachmentId: string, fileName: string) {
   const extension = path.extname(fileName).toLowerCase();
 
@@ -252,15 +277,14 @@ export async function getDownloadableAttachment({
     return null;
   }
 
-  const canAccess =
-    role === Role.ADMIN ||
-    attachment.challenge.modules.some((moduleChallenge) => {
-      return (
-        attachment.challenge.status === ContentStatus.PUBLISHED &&
-        moduleChallenge.module.status === ContentStatus.PUBLISHED &&
-        moduleChallenge.module.assignments.length > 0
-      );
-    });
+  const canAccess = canDownloadAttachment({
+    role,
+    challengeStatus: attachment.challenge.status,
+    modules: attachment.challenge.modules.map((moduleChallenge) => ({
+      status: moduleChallenge.module.status,
+      assignmentCount: moduleChallenge.module.assignments.length
+    }))
+  });
 
   if (!canAccess) {
     return null;
