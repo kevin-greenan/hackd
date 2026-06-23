@@ -141,7 +141,7 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 
 - Admin authoring polish.
 - Preview-before-publish.
-- Backup and restore scripts or command targets.
+- Backup and restore scripts or command targets. (Implemented for Compose-managed Postgres and uploads.)
 - Restore drill documentation.
 - Expanded operational logs.
 - Reporting/export improvements.
@@ -181,7 +181,7 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 - [ ] OIDC decision is made and documented.
 - [ ] Content schema is versioned and documented.
 - [ ] Admin authoring workflows have preview and safe publish states.
-- [ ] Backup and restore flow is executable and tested.
+- [x] Backup and restore flow is executable and tested.
 - [ ] Logs and health checks are sufficient for routine operations.
 - [ ] CSV exports are documented and stable.
 - [ ] Docker runtime support boundary is explicit.

@@ -90,6 +90,22 @@ npm run container:scan
 
 The container scan uses Trivy against the local `hackd-web:latest` and `hackd-runner:latest` images.
 
+## Backup and Restore
+
+Create a timestamped backup of Postgres and uploaded challenge files:
+
+```sh
+npm run ops:backup
+```
+
+Restore into a running stack from a backup directory:
+
+```sh
+npm run ops:restore -- backups/20260623T000000Z
+```
+
+Restore is destructive for the target database and upload volume. Use it first in a disposable local stack to confirm the backup is valid.
+
 ## Demo Checklist
 
 1. Start the stack.
@@ -100,3 +116,4 @@ The container scan uses Trivy against the local `hackd-web:latest` and `hackd-ru
 6. Open an assigned module, submit a wrong answer, then submit a correct seeded challenge answer.
 7. Launch and stop the sample Dockerized web challenge.
 8. Confirm `/api/healthz` reports app and database OK.
+9. Run `npm run ops:backup` and confirm the backup directory contains `postgres.sql`, `uploads.tgz`, and `manifest.txt`.
