@@ -133,6 +133,7 @@ npm run dev
 - [Docker deployment](docs/deployment.md)
 - [Operations runbook](docs/operations-runbook.md)
 - [Release checklist](docs/release.md)
+- [V1 release roadmap](docs/v1-roadmap.md)
 - [Requirements and roadmap](requirements.md)
 
 ## Manual Smoke Test
@@ -171,4 +172,4 @@ After `docker compose up --build`:
 - OIDC/SAML, MFA, SCIM, multi-tenancy, and marketplace concepts are deferred.
 - Auth rate limiting is in-memory and suitable only for local development.
 - CSRF-specific token handling is planned.
-- The `v0.1.0` release tag is not created yet.
+- The `v1.0` release remains planned; see the [V1 release roadmap](docs/v1-roadmap.md).
