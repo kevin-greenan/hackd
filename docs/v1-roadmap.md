@@ -171,7 +171,7 @@ OIDC, SAML, MFA, SCIM, and identity-provider group sync are deferred until after
 
 - [x] `README.md`, `REQUIREMENTS.md`, and docs agree on current release state.
 - [ ] Required commands pass in CI and on a clean local checkout.
-- [ ] Docker Compose deployment path is documented and tested.
+- [x] Docker Compose deployment path is documented and tested.
 - [x] Secrets and local-only defaults are clearly separated.
 - [x] CSRF protection is implemented for state-changing routes.
 - [x] Login and challenge submission throttling are appropriate for the single-host internal `v1.0` scope.
