@@ -136,7 +136,7 @@ async function main() {
       title: "Intro Static Flag",
       summary: "Practice a simple challenge submission workflow with a static flag.",
       bodyMarkdown:
-        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.\n\n### What you will see\n\n- A linked challenge section\n- Attempt history reflected in recent activity\n- Module progress state on the dashboard\n\n```txt\nflag{sample}\n```\n\nSubmit the sample flag to complete the required challenge.",
+        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.\n\n### What you will see\n\n- A linked challenge section\n- Attempt history reflected in recent activity\n- Module progress state on the dashboard\n\nUse this module to confirm the submission workflow without exposing the expected answer in the lesson body.",
       difficulty: "beginner",
       estimatedMinutes: 20,
       status: ContentStatus.PUBLISHED,
@@ -148,11 +148,59 @@ async function main() {
       slug: "intro-static-flag",
       summary: "Practice a simple challenge submission workflow with a static flag.",
       bodyMarkdown:
-        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.\n\n### What you will see\n\n- A linked challenge section\n- Attempt history reflected in recent activity\n- Module progress state on the dashboard\n\n```txt\nflag{sample}\n```\n\nSubmit the sample flag to complete the required challenge.",
+        "## Overview\n\nThis sample module exists to exercise assignment and completion data paths.\n\n### What you will see\n\n- A linked challenge section\n- Attempt history reflected in recent activity\n- Module progress state on the dashboard\n\nUse this module to confirm the submission workflow without exposing the expected answer in the lesson body.",
       difficulty: "beginner",
       estimatedMinutes: 20,
       status: ContentStatus.PUBLISHED,
       tags: ["platform", "challenge-basics"],
+      createdById: admin.id
+    }
+  });
+
+  const practitionerChallengeBody = [
+    "## Overview",
+    "This module is a focused challenge set for realistic web application security review. Each exercise asks you to read a small scenario, identify the security decision that matters, and submit either a derived static flag or the best multiple-choice answer.",
+    "### Static flag format",
+    "For static-flag exercises in this module, do not look for a printed flag. Derive the review action from the scenario, normalize it to lowercase snake_case, and submit it as `flag{normalized_action}`.",
+    "### Scenario A: Password storage review",
+    "A pull request replaces a legacy `sha256(password)` helper with a password hashing abstraction. During review, you should confirm the implementation uses a password hashing algorithm designed for offline attack resistance, stores a unique salt with each password hash, and can increase cost over time.",
+    "### Scenario B: Authorization boundary review",
+    "A profile update endpoint accepts a route parameter and request body from the browser:",
+    "```ts\nexport async function updateProfile(request: Request, profileId: string) {\n  const body = await request.json();\n  const profile = await db.profile.findUnique({ where: { id: profileId } });\n\n  if (!profile) {\n    throw new Error(\"not found\");\n  }\n\n  // Review task: identify the missing ownership control before this update.\n  return db.profile.update({\n    where: { id: profile.id },\n    data: { displayName: body.displayName }\n  });\n}\n```",
+    "Derive the static flag from the action you would require before allowing the update.",
+    "### Scenario C: Logging review",
+    "An incident-response dashboard ingests request metadata. One trace includes a raw password-reset token in an application log:",
+    "```txt\n2026-06-24T00:00:00Z password_reset requested user=alex@example.test token=raw-reset-token-7f2a\n```",
+    "A safe implementation must avoid storing raw reset tokens, session cookies, API keys, or credentials in logs. Derive the static flag from the action that should happen before sensitive data is persisted to logs.",
+    "### Scenario D: Token rotation drill",
+    "A teammate finds a token committed to a temporary troubleshooting script. Deleting the line from Git does not make the exposed secret safe. Derive the static flag from the incident-response action required for the exposed token.",
+    "### Scenario E: Runtime guardrails",
+    "A Dockerized challenge image should be treated as untrusted until proven otherwise. Keep the web application away from the Docker socket, require an image allowlist, avoid privileged containers, drop Linux capabilities, apply CPU/memory/PID limits, and prefer read-only filesystems with tightly scoped writable temp paths."
+  ].join("\n\n");
+
+  const practitionerChallengeModule = await prisma.module.upsert({
+    where: { slug: "web-security-practitioner-challenges" },
+    update: {
+      title: "Web Security Practitioner Challenges",
+      summary:
+        "Practice focused AppSec decisions across authentication, authorization, logging, CSRF, and runtime hardening.",
+      bodyMarkdown: practitionerChallengeBody,
+      difficulty: "intermediate",
+      estimatedMinutes: 45,
+      status: ContentStatus.PUBLISHED,
+      tags: ["appsec", "security-review", "runtime"],
+      createdById: admin.id
+    },
+    create: {
+      title: "Web Security Practitioner Challenges",
+      slug: "web-security-practitioner-challenges",
+      summary:
+        "Practice focused AppSec decisions across authentication, authorization, logging, CSRF, and runtime hardening.",
+      bodyMarkdown: practitionerChallengeBody,
+      difficulty: "intermediate",
+      estimatedMinutes: 45,
+      status: ContentStatus.PUBLISHED,
+      tags: ["appsec", "security-review", "runtime"],
       createdById: admin.id
     }
   });
@@ -270,6 +318,305 @@ async function main() {
     }
   });
 
+  const authzBoundaryFlagChallenge = await prisma.challenge.upsert({
+    where: { slug: "authz-boundary-review-flag" },
+    update: {
+      title: "Authorization Boundary Review",
+      description:
+        "Read Scenario B and submit the flag tied to the missing server-side ownership check.",
+      type: ChallengeType.STATIC_FLAG,
+      difficulty: "intermediate",
+      points: 50,
+      tags: ["appsec", "authorization", "code-review"],
+      validationConfig: {
+        type: "static_flag",
+        flag: "flag{check_owner_before_update}"
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "Authorization Boundary Review",
+      slug: "authz-boundary-review-flag",
+      description:
+        "Read Scenario B and submit the flag tied to the missing server-side ownership check.",
+      type: ChallengeType.STATIC_FLAG,
+      difficulty: "intermediate",
+      points: 50,
+      tags: ["appsec", "authorization", "code-review"],
+      validationConfig: {
+        type: "static_flag",
+        flag: "flag{check_owner_before_update}"
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
+  const loggingRedactionFlagChallenge = await prisma.challenge.upsert({
+    where: { slug: "logging-redaction-review-flag" },
+    update: {
+      title: "Logging Redaction Review",
+      description: "Read Scenario C and submit the flag associated with safe log handling.",
+      type: ChallengeType.STATIC_FLAG,
+      difficulty: "beginner",
+      points: 40,
+      tags: ["appsec", "logging", "incident-response"],
+      validationConfig: {
+        type: "static_flag",
+        flag: "flag{redact_before_logging}"
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "Logging Redaction Review",
+      slug: "logging-redaction-review-flag",
+      description: "Read Scenario C and submit the flag associated with safe log handling.",
+      type: ChallengeType.STATIC_FLAG,
+      difficulty: "beginner",
+      points: 40,
+      tags: ["appsec", "logging", "incident-response"],
+      validationConfig: {
+        type: "static_flag",
+        flag: "flag{redact_before_logging}"
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
+  const tokenRotationFlagChallenge = await prisma.challenge.upsert({
+    where: { slug: "exposed-token-rotation-flag" },
+    update: {
+      title: "Exposed Token Rotation",
+      description: "Read Scenario D and submit the flag for the correct secret-response action.",
+      type: ChallengeType.STATIC_FLAG,
+      difficulty: "beginner",
+      points: 40,
+      tags: ["appsec", "secrets", "incident-response"],
+      validationConfig: {
+        type: "static_flag",
+        flag: "flag{rotate_exposed_token}"
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "Exposed Token Rotation",
+      slug: "exposed-token-rotation-flag",
+      description: "Read Scenario D and submit the flag for the correct secret-response action.",
+      type: ChallengeType.STATIC_FLAG,
+      difficulty: "beginner",
+      points: 40,
+      tags: ["appsec", "secrets", "incident-response"],
+      validationConfig: {
+        type: "static_flag",
+        flag: "flag{rotate_exposed_token}"
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
+  const passwordStorageChoiceChallenge = await prisma.challenge.upsert({
+    where: { slug: "password-storage-review-choice" },
+    update: {
+      title: "Password Storage Review",
+      description: "Choose the safest password-storage requirement for Scenario A.",
+      type: ChallengeType.MULTIPLE_CHOICE,
+      difficulty: "beginner",
+      points: 35,
+      tags: ["appsec", "authentication", "passwords"],
+      validationConfig: {
+        type: "multiple_choice",
+        allowMultiple: false,
+        options: [
+          { id: "fast-hash", label: "Use a fast hash such as SHA-256 so login is efficient." },
+          {
+            id: "password-hash",
+            label:
+              "Use a password hashing algorithm with unique salts and a tunable work factor."
+          },
+          { id: "encrypt-password", label: "Encrypt passwords so support staff can recover them." }
+        ],
+        correctOptionIds: ["password-hash"]
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "Password Storage Review",
+      slug: "password-storage-review-choice",
+      description: "Choose the safest password-storage requirement for Scenario A.",
+      type: ChallengeType.MULTIPLE_CHOICE,
+      difficulty: "beginner",
+      points: 35,
+      tags: ["appsec", "authentication", "passwords"],
+      validationConfig: {
+        type: "multiple_choice",
+        allowMultiple: false,
+        options: [
+          { id: "fast-hash", label: "Use a fast hash such as SHA-256 so login is efficient." },
+          {
+            id: "password-hash",
+            label:
+              "Use a password hashing algorithm with unique salts and a tunable work factor."
+          },
+          { id: "encrypt-password", label: "Encrypt passwords so support staff can recover them." }
+        ],
+        correctOptionIds: ["password-hash"]
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
+  const csrfCoverageChoiceChallenge = await prisma.challenge.upsert({
+    where: { slug: "csrf-coverage-review-choice" },
+    update: {
+      title: "CSRF Coverage Review",
+      description: "Select the controls that belong on authenticated state-changing routes.",
+      type: ChallengeType.MULTIPLE_CHOICE,
+      difficulty: "intermediate",
+      points: 45,
+      tags: ["appsec", "csrf", "session-security"],
+      validationConfig: {
+        type: "multiple_choice",
+        allowMultiple: true,
+        options: [
+          { id: "signed-token", label: "Require a signed CSRF token on POST mutations." },
+          { id: "session-binding", label: "Bind authenticated tokens to the active session user." },
+          { id: "safe-get", label: "Keep GET routes free of state-changing behavior." },
+          { id: "referer-only", label: "Rely only on Referer headers for protection." }
+        ],
+        correctOptionIds: ["signed-token", "session-binding", "safe-get"]
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "CSRF Coverage Review",
+      slug: "csrf-coverage-review-choice",
+      description: "Select the controls that belong on authenticated state-changing routes.",
+      type: ChallengeType.MULTIPLE_CHOICE,
+      difficulty: "intermediate",
+      points: 45,
+      tags: ["appsec", "csrf", "session-security"],
+      validationConfig: {
+        type: "multiple_choice",
+        allowMultiple: true,
+        options: [
+          { id: "signed-token", label: "Require a signed CSRF token on POST mutations." },
+          { id: "session-binding", label: "Bind authenticated tokens to the active session user." },
+          { id: "safe-get", label: "Keep GET routes free of state-changing behavior." },
+          { id: "referer-only", label: "Rely only on Referer headers for protection." }
+        ],
+        correctOptionIds: ["signed-token", "session-binding", "safe-get"]
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
+  const runtimeGuardrailsChoiceChallenge = await prisma.challenge.upsert({
+    where: { slug: "runtime-guardrails-review-choice" },
+    update: {
+      title: "Runtime Guardrails Review",
+      description: "Select the controls that reduce risk for Scenario E challenge containers.",
+      type: ChallengeType.MULTIPLE_CHOICE,
+      difficulty: "intermediate",
+      points: 45,
+      tags: ["runtime", "containers", "hardening"],
+      validationConfig: {
+        type: "multiple_choice",
+        allowMultiple: true,
+        options: [
+          { id: "allowlist", label: "Allow only approved challenge images." },
+          { id: "no-privileged", label: "Run without privileged mode and drop Linux capabilities." },
+          { id: "limits", label: "Apply CPU, memory, and PID limits." },
+          { id: "docker-socket", label: "Mount the host Docker socket into learner containers." }
+        ],
+        correctOptionIds: ["allowlist", "no-privileged", "limits"]
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "Runtime Guardrails Review",
+      slug: "runtime-guardrails-review-choice",
+      description: "Select the controls that reduce risk for Scenario E challenge containers.",
+      type: ChallengeType.MULTIPLE_CHOICE,
+      difficulty: "intermediate",
+      points: 45,
+      tags: ["runtime", "containers", "hardening"],
+      validationConfig: {
+        type: "multiple_choice",
+        allowMultiple: true,
+        options: [
+          { id: "allowlist", label: "Allow only approved challenge images." },
+          { id: "no-privileged", label: "Run without privileged mode and drop Linux capabilities." },
+          { id: "limits", label: "Apply CPU, memory, and PID limits." },
+          { id: "docker-socket", label: "Mount the host Docker socket into learner containers." }
+        ],
+        correctOptionIds: ["allowlist", "no-privileged", "limits"]
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
+  const authzPlacementChoiceChallenge = await prisma.challenge.upsert({
+    where: { slug: "authorization-check-placement-choice" },
+    update: {
+      title: "Authorization Check Placement",
+      description: "Choose where authorization must be enforced for protected data changes.",
+      type: ChallengeType.MULTIPLE_CHOICE,
+      difficulty: "beginner",
+      points: 35,
+      tags: ["appsec", "authorization", "secure-design"],
+      validationConfig: {
+        type: "multiple_choice",
+        allowMultiple: false,
+        options: [
+          { id: "client", label: "Only hide the edit button in the browser for other users." },
+          {
+            id: "server",
+            label: "Enforce ownership server-side before protected reads and writes."
+          },
+          { id: "logging", label: "Allow the write but log suspicious profile IDs afterward." }
+        ],
+        correctOptionIds: ["server"]
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    },
+    create: {
+      title: "Authorization Check Placement",
+      slug: "authorization-check-placement-choice",
+      description: "Choose where authorization must be enforced for protected data changes.",
+      type: ChallengeType.MULTIPLE_CHOICE,
+      difficulty: "beginner",
+      points: 35,
+      tags: ["appsec", "authorization", "secure-design"],
+      validationConfig: {
+        type: "multiple_choice",
+        allowMultiple: false,
+        options: [
+          { id: "client", label: "Only hide the edit button in the browser for other users." },
+          {
+            id: "server",
+            label: "Enforce ownership server-side before protected reads and writes."
+          },
+          { id: "logging", label: "Allow the write but log suspicious profile IDs afterward." }
+        ],
+        correctOptionIds: ["server"]
+      },
+      status: ContentStatus.PUBLISHED,
+      createdById: admin.id
+    }
+  });
+
   const dockerWebChallenge = await prisma.challenge.upsert({
     where: { slug: "launch-sample-web-runtime" },
     update: {
@@ -377,11 +724,47 @@ async function main() {
     }
   });
 
+  const practitionerChallenges = [
+    passwordStorageChoiceChallenge,
+    authzPlacementChoiceChallenge,
+    authzBoundaryFlagChallenge,
+    loggingRedactionFlagChallenge,
+    tokenRotationFlagChallenge,
+    csrfCoverageChoiceChallenge,
+    runtimeGuardrailsChoiceChallenge
+  ];
+
+  for (const [index, challenge] of practitionerChallenges.entries()) {
+    await prisma.moduleChallenge.upsert({
+      where: {
+        moduleId_challengeId: {
+          moduleId: practitionerChallengeModule.id,
+          challengeId: challenge.id
+        }
+      },
+      update: { sortOrder: index + 1, required: true },
+      create: {
+        moduleId: practitionerChallengeModule.id,
+        challengeId: challenge.id,
+        sortOrder: index + 1,
+        required: true
+      }
+    });
+  }
+
   await upsertSeedAssignment({
     moduleId: secureCodeReview.id,
     assignedById: admin.id,
     target: { groupId: appsecGroup.id },
     dueAt: new Date("2026-08-01T05:00:00.000Z"),
+    required: true
+  });
+
+  await upsertSeedAssignment({
+    moduleId: practitionerChallengeModule.id,
+    assignedById: admin.id,
+    target: { groupId: appsecGroup.id },
+    dueAt: new Date("2026-08-15T05:00:00.000Z"),
     required: true
   });
 

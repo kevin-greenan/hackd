@@ -8,7 +8,7 @@ The current foundation is designed for local and single-host internal testing. I
 
 - Local email/password authentication with signed HTTP-only sessions
 - Server-side role checks for learner and admin routes
-- Seeded admin, learner, groups, modules, challenges, assignments, attempts, and completions
+- Seeded admin, learner, groups, modules, challenge sets, assignments, attempts, and completions
 - Learner dashboard with direct and group assignments
 - Module detail pages with Markdown lessons, challenge progress, attachment downloads, attempt history, and Dockerized runtime controls
 - Static flag, exact-text short-answer, and multiple-choice challenge validation
@@ -72,7 +72,7 @@ docker compose up --build
 
 Open [http://localhost:3000](http://localhost:3000).
 
-The web service runs Prisma migrations and seeds local users plus sample content on startup.
+The web service runs Prisma migrations and seeds local users plus starter content on startup, including a practitioner challenge set with static-flag and multiple-choice AppSec exercises.
 
 Default local admin:
 

@@ -21,6 +21,8 @@ Learners use hackd through the dashboard and module detail pages.
 
 Admins can preview published module pages. Learners only see modules assigned to them or to one of their groups.
 
+The local seed includes `Web Security Practitioner Challenges`, a non-sample challenge set covering password storage, server-side authorization, logging redaction, exposed-secret rotation, CSRF controls, and container runtime guardrails.
+
 ## Access Rules
 
 - Learner dashboard access requires an active authenticated user.
