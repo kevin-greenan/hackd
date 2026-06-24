@@ -184,4 +184,4 @@ OIDC, SAML, MFA, SCIM, and identity-provider group sync are deferred until after
 - [x] Docker runtime support boundary is explicit.
 - [x] Runtime containers remain unprivileged and resource-limited.
 - [x] Release checklist includes a restore drill.
-- [ ] `v1.0` tag is created from a clean, verified `main`.
+- [x] `v1.0` tag is created from a clean, verified `main`.
