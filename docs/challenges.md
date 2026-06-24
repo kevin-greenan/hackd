@@ -49,6 +49,8 @@ Docker Compose runs the runner as a separate service with access to `/var/run/do
 
 `RUNTIME_ALLOWED_IMAGES` accepts exact image references and prefix patterns ending in `*`, separated by commas. The local default allows the seeded `nginx:alpine` demo challenge.
 
+The `v1.0` runtime boundary is trusted, allowlisted Docker images on a single internal host. Runtime containers are launched without privileged mode or host filesystem mounts, with Linux capabilities dropped, `no-new-privileges`, a read-only root filesystem, and memory, CPU, and PID limits. Stronger sandboxing is required before running arbitrary hostile workloads.
+
 ## Completion Behavior
 
 When an answer is submitted, hackd checks all required challenges for the module.
@@ -61,5 +63,5 @@ When an answer is submitted, hackd checks all required challenges for the module
 - File-based answer submissions are planned.
 - Expected static flags are stored in `validationConfig` for this local foundation.
 - There is no per-challenge attempt limit yet.
-- Submission throttling is in-memory and should move to durable infrastructure before production use.
+- Submission throttling is in-memory and should move to durable infrastructure before scaled or internet-exposed use.
 - There is no advanced anti-automation for submissions yet.

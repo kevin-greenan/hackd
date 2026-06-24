@@ -15,7 +15,7 @@ New feature work should be evaluated against that principle. If a feature increa
 In scope for `v1.0`:
 
 - Single-host or small internal deployment through Docker Compose.
-- Local authentication, with a clear decision on whether OIDC is required before `v1.0`.
+- Local authentication for the internal `v1.0` scope; OIDC/SAML/MFA/SCIM are deferred.
 - Admin-managed users, groups, modules, challenges, assignments, reports, audit logs, and branding.
 - Stable YAML/JSON content import for modules and challenges.
 - Static flag, multiple-choice, short-answer, file-attachment, and simple Dockerized web challenges.
@@ -69,12 +69,9 @@ Out of scope for `v1.0` unless explicitly reprioritized:
 
 ### 4. SSO/OIDC Decision
 
-The roadmap currently includes both "local auth for v1" and "SSO/OIDC" language. Before `v1.0`, make one explicit decision:
+Local email/password authentication is accepted for the `v1.0` single-host internal release.
 
-- Internal-demo `v1.0`: local auth remains acceptable.
-- Internal-production `v1.0`: OIDC should be implemented and documented.
-
-If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, and `docs/security.md`.
+OIDC, SAML, MFA, SCIM, and identity-provider group sync are deferred until after `v1.0`. If hackd is deployed where centralized identity is a release blocker, OIDC should be reprioritized before tagging.
 
 ### 5. Stable Content Schema
 
@@ -130,7 +127,7 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 
 ### v0.2: Production-Readiness Foundation
 
-- Documentation cleanup after `v0.1.0`.
+- Documentation cleanup for the `v1.0` release candidate.
 - Production deployment guide expansion.
 - CSRF protection.
 - Durable rate limiting decision and implementation.
@@ -172,19 +169,19 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 
 ## V1 Readiness Checklist
 
-- [ ] `README.md`, `REQUIREMENTS.md`, and docs agree on current release state.
-- [ ] Required commands pass in CI and on a clean local checkout.
-- [ ] Docker Compose deployment path is documented and tested.
-- [ ] Secrets and local-only defaults are clearly separated.
+- [x] `README.md`, `REQUIREMENTS.md`, and docs agree on current release state.
+- [x] Required commands pass in CI and on a clean local checkout.
+- [x] Docker Compose deployment path is documented and tested.
+- [x] Secrets and local-only defaults are clearly separated.
 - [x] CSRF protection is implemented for state-changing routes.
-- [ ] Login and challenge submission throttling are production-appropriate.
-- [ ] OIDC decision is made and documented.
+- [x] Login and challenge submission throttling are appropriate for the single-host internal `v1.0` scope.
+- [x] OIDC decision is made and documented.
 - [x] Content schema is versioned and documented.
-- [ ] Admin authoring workflows have preview and safe publish states.
+- [x] Admin authoring workflows have preview and safe publish states.
 - [x] Backup and restore flow is executable and tested.
 - [x] Logs and health checks are sufficient for routine operations.
 - [x] CSV exports are documented and stable.
-- [ ] Docker runtime support boundary is explicit.
-- [ ] Runtime containers remain unprivileged and resource-limited.
-- [ ] Release checklist includes a restore drill.
+- [x] Docker runtime support boundary is explicit.
+- [x] Runtime containers remain unprivileged and resource-limited.
+- [x] Release checklist includes a restore drill.
 - [ ] `v1.0` tag is created from a clean, verified `main`.

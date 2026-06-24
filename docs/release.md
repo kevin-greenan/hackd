@@ -1,6 +1,8 @@
 # Release Checklist
 
-Use this checklist for the first internal release tag.
+Use this checklist for the first stable internal release tag.
+
+Release scope, authentication, rate limiting, runtime, and secrets decisions are recorded in [V1 release readiness](v1-release-readiness.md).
 
 ## Preflight
 
@@ -45,18 +47,18 @@ npm run container:scan
 
 ## Tag
 
-Tag only from a clean, up-to-date `main` branch:
+Tag only from a clean, up-to-date `main` branch after all release gates pass:
 
 ```sh
 git checkout main
 git pull --ff-only origin main
-git tag -s v0.1.0 -m "v0.1.0"
-git push origin v0.1.0
+git tag -s v1.0.0 -m "v1.0.0"
+git push origin v1.0.0
 ```
 
 If signed tags are not configured locally, use an annotated tag instead:
 
 ```sh
-git tag -a v0.1.0 -m "v0.1.0"
-git push origin v0.1.0
+git tag -a v1.0.0 -m "v1.0.0"
+git push origin v1.0.0
 ```

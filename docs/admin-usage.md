@@ -22,6 +22,9 @@ Default Docker Compose credentials are listed in the README and are for local de
 
 - `/admin/modules` creates modules, edits Markdown lesson bodies, and links challenges.
 - `/admin/challenges` creates challenges, edits type-specific validation/runtime settings, and manages downloadable attachments.
+- Modules and challenges start safely as `DRAFT`; publish them only after reviewing content, links, validation settings, runtime settings, and assignments.
+- Admins can open module links from `/admin/modules` to preview draft or unassigned module content. Preview mode does not record learner attempts or runtime launches.
+- Learners only see `PUBLISHED` modules and challenges that are assigned directly or through a group.
 - The form stores validation/runtime settings as JSON so UI-authored content stays compatible with content import/export workflows.
 - The content import CLI can upsert modules and challenges from YAML/JSON bundles:
 

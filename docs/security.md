@@ -40,8 +40,8 @@ This document summarizes the current security posture for local and single-host 
 
 - Login attempts use an in-memory limiter keyed by forwarded IP.
 - Challenge submissions use an in-memory limiter keyed by learner and challenge.
-- This is suitable for the local foundation only.
-- Production deployments should move rate limiting to durable infrastructure such as Redis or an edge layer.
+- This is accepted for the single-host internal `v1.0` scope.
+- Horizontally scaled, shared, or internet-exposed deployments should move rate limiting to durable infrastructure such as Redis or an edge layer.
 
 ## CSRF Protection
 
@@ -94,6 +94,6 @@ This document summarizes the current security posture for local and single-host 
 
 ## Known Security Limitations
 
-- No CSRF-specific token layer is implemented yet; current auth mutations are narrow form posts with same-site cookies.
-- No MFA, OIDC, SAML, or SCIM support exists yet.
+- OIDC, SAML, MFA, SCIM, and identity-provider group sync are deferred after `v1.0`; local auth is the `v1.0` decision.
+- Distributed rate limiting is deferred after `v1.0`; current throttles are process-local.
 - Runtime isolation is a local Docker V1 implementation and does not yet include egress controls, image signing, rootless Docker, gVisor, or Firecracker.
