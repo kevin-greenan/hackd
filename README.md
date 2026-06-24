@@ -60,6 +60,8 @@ Do not commit real secrets. `SESSION_SECRET` must be at least 32 characters.
 
 Branding and theme variables are optional; see [Branding and themes](docs/branding.md).
 
+The `v1.0` release target is a single-host internal Docker Compose deployment. Local email/password authentication and in-memory login/submission throttling are accepted within that scope; OIDC/SAML/MFA/SCIM and distributed rate limiting are deferred. See [V1 release readiness](docs/v1-release-readiness.md).
+
 ## Quick Start
 
 Start the full local stack:
@@ -152,6 +154,7 @@ Operational endpoints:
 - [Docker deployment](docs/deployment.md)
 - [Operations runbook](docs/operations-runbook.md)
 - [Release checklist](docs/release.md)
+- [V1 release readiness](docs/v1-release-readiness.md)
 - [V1 release roadmap](docs/v1-roadmap.md)
 - [Requirements and roadmap](requirements.md)
 
@@ -189,6 +192,6 @@ After `docker compose up --build`:
 - File-based answer submissions are planned.
 - Docker runtime hardening beyond local V1 limits is planned.
 - OIDC/SAML, MFA, SCIM, multi-tenancy, and marketplace concepts are deferred.
-- Auth and challenge submission rate limiting are in-memory and suitable only for local development.
+- Auth and challenge submission rate limiting are in-memory and suitable only for the single-host internal V1 scope.
 - CSRF-specific token handling is implemented for state-changing forms.
 - The `v1.0` release remains planned; see the [V1 release roadmap](docs/v1-roadmap.md).

@@ -2,6 +2,8 @@
 
 hackd is packaged for local or single-host internal testing with Docker Compose.
 
+The `v1.0` support boundary is a single-host internal deployment. Public SaaS, multi-tenant, horizontally scaled, and hostile-workload cyber range deployments require additional architecture and security hardening.
+
 ## Required Configuration
 
 Copy `.env.example` to `.env` and provide:
@@ -24,6 +26,8 @@ Copy `.env.example` to `.env` and provide:
 Optional branding and theme variables are documented in [Branding and themes](branding.md).
 
 Use a unique `SESSION_SECRET` of at least 32 characters. Do not reuse the default local seed passwords outside a private development machine.
+
+The `.env.example` values are development defaults. Rotate the database password, `SESSION_SECRET`, seeded account passwords, and any challenge-specific secrets before sharing the stack with other users.
 
 ## Start
 

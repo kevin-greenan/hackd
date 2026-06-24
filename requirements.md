@@ -1602,7 +1602,7 @@ Tasks
 * [x] Add structured logging.
 * [x] Add global error handling.
 * [x] Document release tagging process.
-* Create v0.1.0 release.
+* Create v1.0.0 release.
 
 Acceptance Criteria
 
@@ -1610,7 +1610,7 @@ Acceptance Criteria
 * [x] Core flows are covered by tests.
 * [x] Basic security checks run in CI.
 * [x] Platform can be demoed locally with seeded content.
-* v0.1.0 release is tagged.
+* v1.0.0 release is tagged.
 
 12. Future Roadmap
 
@@ -1836,4 +1836,6 @@ Recommended implementation order:
 11. Add file-based challenges.
 12. Add Dockerized challenge runtime.
 13. Add content import.
-14. Harden, document, and tag v0.1.0.
+14. Harden, document, and tag v1.0.0.
+
+The v1 decision is local email/password authentication for a single-host internal Docker Compose release. OIDC, SAML, MFA, SCIM, and identity-provider group sync are deferred until after `v1.0`.
