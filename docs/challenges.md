@@ -47,9 +47,9 @@ Attachment storage is local:
 
 Docker Compose runs the runner as a separate service with access to `/var/run/docker.sock`; the web service talks to it through `RUNTIME_RUNNER_URL`.
 
-`RUNTIME_ALLOWED_IMAGES` accepts exact image references and prefix patterns ending in `*`, separated by commas. The local default allows the seeded `nginx:alpine` demo challenge.
+`RUNTIME_ALLOWED_IMAGES` accepts exact image references and prefix patterns ending in `*`, separated by commas. The local default allows the seeded `nginxinc/nginx-unprivileged:alpine` demo challenge.
 
-The `v1.0` runtime boundary is trusted, allowlisted Docker images on a single internal host. Runtime containers are launched without privileged mode or host filesystem mounts, with Linux capabilities dropped, `no-new-privileges`, a read-only root filesystem, and memory, CPU, and PID limits. Stronger sandboxing is required before running arbitrary hostile workloads.
+The `v1.0` runtime boundary is trusted, allowlisted Docker images on a single internal host. Runtime containers are launched without privileged mode or host filesystem mounts, with Linux capabilities dropped, `no-new-privileges`, a read-only root filesystem, bounded writable tmpfs paths for process temp/cache directories, and memory, CPU, and PID limits. Stronger sandboxing is required before running arbitrary hostile workloads.
 
 ## Completion Behavior
 

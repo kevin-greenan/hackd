@@ -114,6 +114,20 @@ function envPairs(env) {
   return Object.entries(env || {}).map(([key, value]) => `${key}=${String(value)}`);
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function containerLogs(containerId) {
+  const logs = await dockerRequest({
+    path: `/containers/${containerId}/logs?stdout=1&stderr=1&tail=80`
+  }).catch(() => "");
+
+  return String(logs).replace(/[^\t\n\r -~]/g, "").trim();
+}
+
 async function startInstance(input) {
   await ensureNetwork();
   await pullImage(input.image);
@@ -152,7 +166,14 @@ async function startInstance(input) {
         },
         Privileged: false,
         ReadonlyRootfs: true,
-        SecurityOpt: ["no-new-privileges"]
+        SecurityOpt: ["no-new-privileges"],
+        Tmpfs: {
+          "/run": "rw,nosuid,nodev,size=8m",
+          "/tmp": "rw,nosuid,nodev,size=64m",
+          "/var/cache/nginx": "rw,nosuid,nodev,size=32m",
+          "/var/run": "rw,nosuid,nodev,size=8m",
+          "/var/tmp": "rw,nosuid,nodev,size=64m"
+        }
       }
     }
   });
@@ -162,9 +183,25 @@ async function startInstance(input) {
     path: `/containers/${created.Id}/start`
   });
 
+  await sleep(750);
+
   const inspected = await dockerRequest({
     path: `/containers/${created.Id}/json`
   });
+
+  if (!inspected.State?.Running) {
+    const logs = await containerLogs(created.Id);
+
+    await dockerRequest({
+      method: "DELETE",
+      path: `/containers/${created.Id}?force=true&v=true`
+    }).catch(() => null);
+
+    throw new Error(
+      logs ? `Challenge container exited during startup: ${logs}` : "Challenge container exited during startup."
+    );
+  }
+
   const hostPort = Number(inspected.NetworkSettings.Ports[exposedPort]?.[0]?.HostPort);
 
   if (!hostPort) {

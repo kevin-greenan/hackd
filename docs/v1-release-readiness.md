@@ -24,7 +24,7 @@ Redis-backed, database-backed, or edge-enforced rate limiting remains a post-`v1
 
 Dockerized challenge support in `v1.0` is limited to trusted, allowlisted images launched by the internal runner service.
 
-The web container does not mount the Docker socket. Runtime containers are created by the runner without privileged mode, without host filesystem mounts, with all Linux capabilities dropped, with `no-new-privileges`, with a read-only root filesystem, and with memory, CPU, and PID limits.
+The web container does not mount the Docker socket. Runtime containers are created by the runner without privileged mode, without host filesystem mounts, with all Linux capabilities dropped, with `no-new-privileges`, with a read-only root filesystem, with bounded writable tmpfs paths for process temp/cache directories, and with memory, CPU, and PID limits.
 
 Before running untrusted challenge images or exposing labs outside a trusted host, add stronger isolation such as rootless Docker, egress controls, image signing, gVisor, Firecracker, or equivalent sandboxing.
 
