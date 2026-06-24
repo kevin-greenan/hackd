@@ -180,7 +180,7 @@ If OIDC is deferred, document that decision in `REQUIREMENTS.md`, `README.md`, a
 - [ ] Login and challenge submission throttling are production-appropriate.
 - [ ] OIDC decision is made and documented.
 - [x] Content schema is versioned and documented.
-- [ ] Admin authoring workflows have preview and safe publish states.
+- [x] Admin authoring workflows have preview and safe publish states.
 - [x] Backup and restore flow is executable and tested.
 - [x] Logs and health checks are sufficient for routine operations.
 - [x] CSV exports are documented and stable.

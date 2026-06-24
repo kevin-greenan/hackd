@@ -137,7 +137,11 @@ export async function getLearnerModuleDetail({
     }
   });
 
-  if (!learningModule || learningModule.status !== ContentStatus.PUBLISHED) {
+  if (!learningModule) {
+    return null;
+  }
+
+  if (learningModule.status !== ContentStatus.PUBLISHED && role !== Role.ADMIN) {
     return null;
   }
 
