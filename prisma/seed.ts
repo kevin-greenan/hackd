@@ -282,8 +282,8 @@ async function main() {
       validationConfig: Prisma.JsonNull,
       runtimeConfig: {
         type: "docker_web",
-        image: "nginx:alpine",
-        containerPort: 80,
+        image: "nginxinc/nginx-unprivileged:alpine",
+        containerPort: 8080,
         memoryMb: 128,
         cpuCount: 0.25,
         ttlMinutes: 30
@@ -302,8 +302,8 @@ async function main() {
       validationConfig: Prisma.JsonNull,
       runtimeConfig: {
         type: "docker_web",
-        image: "nginx:alpine",
-        containerPort: 80,
+        image: "nginxinc/nginx-unprivileged:alpine",
+        containerPort: 8080,
         memoryMb: 128,
         cpuCount: 0.25,
         ttlMinutes: 30

@@ -87,7 +87,7 @@ The `runner` service owns Docker socket access. The `web` service talks to the r
 `RUNTIME_ALLOWED_IMAGES` controls which Docker images learner-launched challenges may use. Use a comma-separated list of exact image references and optional prefix patterns ending in `*`, for example:
 
 ```env
-RUNTIME_ALLOWED_IMAGES="nginx:alpine,ghcr.io/acme-security/hackd-labs/*"
+RUNTIME_ALLOWED_IMAGES="nginxinc/nginx-unprivileged:alpine,ghcr.io/acme-security/hackd-labs/*"
 ```
 
 This runner is suitable for local internal testing. Before using untrusted challenge workloads in a shared environment, add stronger isolation such as rootless Docker, network egress controls, signed image allowlists, and a hardened sandbox runtime.

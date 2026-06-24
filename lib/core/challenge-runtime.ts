@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "../db/prisma";
 
 const DEFAULT_TTL_MINUTES = 30;
-const DEFAULT_ALLOWED_IMAGES = "nginx:alpine";
+const DEFAULT_ALLOWED_IMAGES = "nginxinc/nginx-unprivileged:alpine";
 
 const dockerRuntimeConfigSchema = z.object({
   type: z.literal("docker_web"),
